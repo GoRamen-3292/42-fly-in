@@ -7,7 +7,11 @@ authors = [
     { name = "ktomita", email = "ktomita@student.42tokyo.jp" }
 ]
 requires-python = ">=3.15"
-dependencies = []
+dependencies = [
+    "flake8>=7.4.1",
+    "mypy>=2.4.0",
+    "pydantic>=2.14.1",
+]
 
 [project.scripts]
 fly-in = "fly_in:main"
