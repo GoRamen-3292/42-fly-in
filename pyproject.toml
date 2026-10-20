@@ -1,0 +1,17 @@
+[project]
+name = "fly-in"
+version = "0.1.0"
+description = "This project has been created as part of the 42 curriculum by ktomita."
+readme = "README.md"
+authors = [
+    { name = "ktomita", email = "ktomita@student.42tokyo.jp" }
+]
+requires-python = ">=3.15"
+dependencies = []
+
+[project.scripts]
+fly-in = "fly_in:main"
+
+[build-system]
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
