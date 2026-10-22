@@ -3,7 +3,7 @@ install:
 	uv sync
 
 run:
-	echo "Not implemented yet"
+	uv run main.py
 
 debug:
 	echo "Not implemented yet (debug mode)"
