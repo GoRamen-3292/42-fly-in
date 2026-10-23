@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "ktomita", email = "ktomita@student.42tokyo.jp" }
 ]
-requires-python = ">=3.15"
+requires-python = ">=3.14,<3.16"
 dependencies = [
     "flake8>=7.4.1",
     "mypy>=2.4.0",
@@ -19,3 +19,8 @@ fly-in = "fly_in:main"
 
 [tool.uv]
 package = false
+
+[tool.pytest.ini_options]
+testpaths = [
+    "test",
+]
