@@ -16,13 +16,13 @@ class ZoneType(str, Enum):
     - restricted: ドローンが2ターンを通過に要するゾーン
     - priority: 経路探索において優先されるゾーン、1ターンを通過に要する
     """
-    normal = "normal"
-    blocked = "blocked"
-    restricted = "restricted"
-    priority = "priority"
+    NORMAL = "normal"
+    BLOCKED = "blocked"
+    RESTRICTED = "restricted"
+    PRIORITY = "priority"
 
 
 class HubType(str, Enum):
-    normal = "normal"
-    start = "start"
-    end = "end"
+    NORMAL = "normal"
+    START = "start"
+    END = "end"
