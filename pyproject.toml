@@ -24,3 +24,6 @@ package = false
 testpaths = [
     "test",
 ]
+pythonpath = [
+  "."
+]
