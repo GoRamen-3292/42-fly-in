@@ -4,12 +4,12 @@ from pydantic import (BaseModel, Field, PositiveInt, field_validator)
 
 
 class Hub(BaseModel):
+    hub_type: HubType = HubType.NORMAL
     name: str = Field(min_length=1)
+    coordinate: Coordinate
     zone: ZoneType = ZoneType.NORMAL
     color: str | None = Field(default=None)
-    coordinate: Coordinate
     max_drones: PositiveInt = 1
-    hub_type: HubType = HubType.NORMAL
 
     @field_validator("name", mode="after")
     def validate_name(cls, value: str) -> str:
