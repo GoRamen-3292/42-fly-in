@@ -4,6 +4,22 @@ sys.path.append("../../src")
 sys.path.append("src")
 
 
+def test_hub_type() -> None:
+    from model import HubType
+
+    for hub_type in HubType.__members__.values():
+        assert isinstance(hub_type, str)
+        assert hub_type in ("normal", "start", "end")
+
+
+def test_zone_type() -> None:
+    from model import ZoneType
+
+    for zone_type in ZoneType.__members__.values():
+        assert isinstance(zone_type, str)
+        assert zone_type in ("normal", "blocked", "restricted", "priority")
+
+
 def test_correct_zonetype() -> None:
     from model import Hub, ZoneType
 

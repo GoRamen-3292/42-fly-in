@@ -1,12 +1,8 @@
-import sys
 import pytest
-
-sys.path.append("../../src")
-sys.path.append("src")
+from src.model import Connection
 
 
 def test_valid_hubs_connection() -> None:
-    from model import Connection
 
     HUB_CONNECTIONS = [
         ("hub1", "hub2"),
