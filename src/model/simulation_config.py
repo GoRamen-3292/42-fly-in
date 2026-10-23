@@ -13,9 +13,9 @@ class SimulationConfig(BaseModel):
 
 class SimulationState(SimulationConfig):
     """シミュレーションの状態を表すモデル
-    
+
     実際にシミュレーションを実行しているときに、その状態を管理するためのモデル
-    
+
     オーバーライドによって値の属性を追加する
 
     TODO: ドローンの位置や状態を管理するための属性を追加する
