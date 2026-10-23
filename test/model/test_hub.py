@@ -1,28 +1,19 @@
-import sys
-
-sys.path.append("../../src")
-sys.path.append("src")
+from src.model import Hub, HubType, ZoneType
 
 
 def test_hub_type() -> None:
-    from model import HubType
-
     for hub_type in HubType.__members__.values():
         assert isinstance(hub_type, str)
         assert hub_type in ("normal", "start", "end")
 
 
 def test_zone_type() -> None:
-    from model import ZoneType
-
     for zone_type in ZoneType.__members__.values():
         assert isinstance(zone_type, str)
         assert zone_type in ("normal", "blocked", "restricted", "priority")
 
 
 def test_correct_zonetype() -> None:
-    from model import Hub, ZoneType
-
     # 最低限の引数でHubを作成
     for zone in ZoneType.__members__.values():
         Hub(
@@ -35,14 +26,12 @@ def test_correct_zonetype() -> None:
     for zone in ZoneType.__members__.values():
         Hub(
             name="Hub1",
-            zone=zone.value,
+            zone=zone.value,  # type: ignore
             coordinate=(0, 0),
         )
 
 
 def test_correct_hubtype() -> None:
-    from model import Hub, HubType
-
     for hub_type in HubType.__members__.values():
         Hub(
             name="Hub1",
@@ -55,13 +44,11 @@ def test_correct_hubtype() -> None:
         Hub(
             name="Hub1",
             coordinate=(0, 0),
-            hub_type=hub_type.value
+            hub_type=hub_type.value,  # type: ignore
         )
 
 
 def test_correct_coordinate() -> None:
-    from model import Hub
-
     """正しいHubのリストを持つSimulationConfigのテスト"""
     COORDINATES = [
         (-10000, -10000),
@@ -76,13 +63,11 @@ def test_correct_coordinate() -> None:
     for coordinate in COORDINATES:
         Hub(
             name="Hub1",
-            coordinate=coordinate,
+            coordinate=coordinate,  # type: ignore
         )
 
 
 def test_correct_name() -> None:
-    from model import Hub
-
     NAMES = [
         "A",
         "Abcdefg",
@@ -103,8 +88,6 @@ def test_correct_name() -> None:
 
 
 def test_correct_color() -> None:
-    from model import Hub
-
     COLORS = [
         None,
         "",
@@ -122,8 +105,6 @@ def test_correct_color() -> None:
 
 
 def test_other_attributes() -> None:
-    from model import Hub, HubType, ZoneType
-
     Hub(
         name="Hub1",
         zone=ZoneType.NORMAL,

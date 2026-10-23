@@ -20,8 +20,6 @@ def test_valid_hubs_connection() -> None:
 
 
 def test_invalid_hubs_connection() -> None:
-    from model import Connection
-
     INVALID_HUB_CONNECTIONS = [
         ("hub1", "hub1"),  # 同じハブ名
         ("", "hub2"),  # 空のハブ名
@@ -36,6 +34,6 @@ def test_invalid_hubs_connection() -> None:
     for hubs in INVALID_HUB_CONNECTIONS:
         with pytest.raises(ValueError):
             Connection(
-                hubs=hubs,
+                hubs=hubs,  # type: ignore
                 max_link_capacity=1,
             )

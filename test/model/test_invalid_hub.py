@@ -1,14 +1,9 @@
-import sys
 import pytest
+from src.model import Hub, HubType, ZoneType
 from pydantic import ValidationError
-
-sys.path.append("../../src")
-sys.path.append("src")
 
 
 def test_incorrect_zonetype() -> None:
-    from model import Hub, ZoneType
-
     # 最低限の引数でHubを作成
     for zone in (
         "undefined",
@@ -17,21 +12,19 @@ def test_incorrect_zonetype() -> None:
         with pytest.raises(ValidationError):
             Hub(
                 name="Hub1",
-                zone=zone,
+                zone=zone,  # type: ignore
                 coordinate=(0, 0),
             )
 
     with pytest.raises(AttributeError):
         Hub(
             name="Hub1",
-            zone=ZoneType.UNDEF_ARG,
+            zone=ZoneType.UNDEF_ARG,  # type: ignore
             coordinate=(0, 0),
         )
 
 
 def test_incorrect_hubtype() -> None:
-    from model import Hub
-
     for hub_type in (
         "undefined",
         None,
@@ -40,13 +33,11 @@ def test_incorrect_hubtype() -> None:
             Hub(
                 name="Hub1",
                 coordinate=(0, 0),
-                hub_type=hub_type
+                hub_type=hub_type,  # type: ignore
             )
 
 
 def test_incorrect_coordinate() -> None:
-    from model import Hub
-
     COORDINATES = (
         "aaa",
         "1000, 2000",
@@ -59,13 +50,11 @@ def test_incorrect_coordinate() -> None:
         with pytest.raises(ValidationError):
             Hub(
                 name="Hub1",
-                coordinate=coordinate,
+                coordinate=coordinate,  # type: ignore
             )
 
 
 def test_incorrect_name() -> None:
-    from model import Hub
-
     NAMES = [
         32482094,
         None,
@@ -80,14 +69,12 @@ def test_incorrect_name() -> None:
     for name in NAMES:
         with pytest.raises(ValidationError):
             Hub(
-                name=name,
+                name=name,  # type: ignore
                 coordinate=(0, 0),
             )
 
 
 def test_incorrect_color() -> None:
-    from model import Hub
-
     COLORS = [
         4932,
         123.43,
@@ -104,13 +91,11 @@ def test_incorrect_color() -> None:
             Hub(
                 name="Hub1",
                 coordinate=(0, 0),
-                color=color
+                color=color,  # type: ignore
             )
 
 
 def test_other_attributes() -> None:
-    from model import Hub, HubType, ZoneType
-
     with pytest.raises(ValidationError):
         Hub(
             name="Hub1",
