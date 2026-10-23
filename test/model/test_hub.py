@@ -1,13 +1,11 @@
 import sys
-import pytest
-from pathlib import Path
 
 sys.path.append("../../src")
 sys.path.append("src")
 
 
 def test_correct_zonetype() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub, ZoneType
 
     # 最低限の引数でHubを作成
     for zone in ZoneType.__members__.values():
@@ -27,7 +25,7 @@ def test_correct_zonetype() -> None:
 
 
 def test_correct_hubtype() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub, HubType
 
     for hub_type in HubType.__members__.values():
         Hub(
@@ -46,7 +44,7 @@ def test_correct_hubtype() -> None:
 
 
 def test_correct_coordinate() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub
 
     """正しいHubのリストを持つSimulationConfigのテスト"""
     COORDINATES = [
@@ -67,7 +65,7 @@ def test_correct_coordinate() -> None:
 
 
 def test_correct_name() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub
 
     NAMES = [
         "A",
@@ -89,7 +87,7 @@ def test_correct_name() -> None:
 
 
 def test_correct_color() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub
 
     COLORS = [
         None,

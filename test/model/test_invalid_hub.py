@@ -1,14 +1,13 @@
 import sys
 import pytest
 from pydantic import ValidationError
-from pathlib import Path
 
 sys.path.append("../../src")
 sys.path.append("src")
 
 
 def test_incorrect_zonetype() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub, ZoneType
 
     # 最低限の引数でHubを作成
     for zone in (
@@ -31,7 +30,7 @@ def test_incorrect_zonetype() -> None:
 
 
 def test_incorrect_hubtype() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub
 
     for hub_type in (
         "undefined",
@@ -46,7 +45,7 @@ def test_incorrect_hubtype() -> None:
 
 
 def test_incorrect_coordinate() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub
 
     COORDINATES = (
         "aaa",
@@ -65,7 +64,7 @@ def test_incorrect_coordinate() -> None:
 
 
 def test_incorrect_name() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub
 
     NAMES = [
         32482094,
@@ -87,7 +86,7 @@ def test_incorrect_name() -> None:
 
 
 def test_incorrect_color() -> None:
-    from model import Hub, HubType, ZoneType
+    from model import Hub
 
     COLORS = [
         4932,
