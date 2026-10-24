@@ -8,7 +8,7 @@ class SimulationConfig(BaseModel):
     """シミュレーションの設定を表すモデル"""
     nb_drones: PositiveInt
     hubs: list[Hub]
-    connections: list[Connection] = []
+    connections: list[Connection]
 
 
 class SimulationState(SimulationConfig):
