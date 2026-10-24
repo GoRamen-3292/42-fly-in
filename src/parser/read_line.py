@@ -1,4 +1,5 @@
 from ..model import Connection, Hub, HubType, SimulationConfig
+from pydantic import ValidationError
 
 
 def parse_line(line: str, config: SimulationConfig) -> None:
@@ -7,9 +8,10 @@ def parse_line(line: str, config: SimulationConfig) -> None:
         return
 
     try:
-        key, value = line.split(":")
-        key = key.strip()
-        value = value.strip()
+        splits = line.split(":")
+        if len(splits) != 2:
+            raise ValueError(f"Invalid number of ':' in line: {line}")
+        key, value = (x.strip() for x in splits)
 
         if key in HubType.__members__.values():
             config.hubs.append(_parse_hub_line(HubType(key), value, config))
@@ -19,8 +21,10 @@ def parse_line(line: str, config: SimulationConfig) -> None:
             if config.nb_drones is not None:
                 raise ValueError("nb_drones is already set")
             config.nb_drones = int(value)
-    except ValueError:
-        raise ValueError(f"Invalid line format: {line}")
+        else:
+            raise ValueError(f"Unknown key: {key}")
+    except (ValueError, ValidationError, IndexError) as e:
+        raise ValueError(f"Invalid line format: {line}" + "\n" + str(e))
 
 
 def _parse_hub_line(hub_type: HubType, value: str,
@@ -28,32 +32,30 @@ def _parse_hub_line(hub_type: HubType, value: str,
     """hubの行をパースする関数"""
     values = value.split()
 
-    if len(values) >= 3:
-        name, x, y = values[:3]
-        options = values[3:] if len(values) > 3 else []
-    else:
-        raise ValueError(f"Too few args for line ==N==: {value}")
+    name, x, y = values[:3]
+    options = values[3:] if len(values) > 3 else []
 
     d: dict[str, str] = _parse_options(" ".join(options))
 
-    zone = d.get("zone", Hub.model_fields["zone"].default)
-    max_drones = int(
-        d.get("max_drones", Hub.model_fields["max_drones"].default))
-    return Hub(
-        hub_type=hub_type,
-        name=name,
-        coordinate=(int(x), int(y)),
-        zone=zone,
-        max_drones=max_drones,
-        color=d.get("color")
+    return Hub.model_validate(
+        {
+            **d,
+            "hub_type": hub_type,
+            "name": name,
+            "coordinate": (int(x), int(y)),
+            "color": d.get("color"),
+        }
     )
 
 
 def _parse_options(options: str) -> dict[str, str]:
     """オプションのパースをする関数"""
+    options = options.strip()
+    if not options:
+        return {}
+
     result: dict[str, str] = {}
-    options = options.strip().strip("[]")
-    for option in options.split():
+    for option in extract_brackets(options).split():
         key, value = (x.strip() for x in option.split("="))
         result[key] = value
 
@@ -63,4 +65,29 @@ def _parse_options(options: str) -> dict[str, str]:
 def _parse_connection_line(value: str, config: SimulationConfig) -> Connection:
     """connectionの行をパースする関数"""
     # ここでvalueを解析してConnectionを作成し、configに追加する処理を書く
-    raise NotImplementedError("Connection parsing is not implemented yet.")
+    options = value.split()
+    if len(options) == 2:
+        return Connection(
+            hubs=(options[0], options[1]),
+        )
+    elif len(options) == 3:
+        metadata = options[2].strip()
+        d = _parse_options(metadata)
+
+        return Connection.model_validate(
+            {
+                **d,
+                "hubs": (options[0], options[1]),
+                "max_link_capacity": int(options[2]),
+            }
+        )
+    else:
+        raise ValueError(f"Invalid connection line: {value}")
+
+
+def extract_brackets(s: str) -> str:
+    """文字列から角括弧で囲まれた部分を抽出する"""
+    s = s.strip()
+    if s[0] != "[" or s[-1] != "]":
+        raise ValueError(f"Options must be enclosed in brackets")
+    return s[1:-1]

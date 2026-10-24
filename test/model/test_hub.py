@@ -93,6 +93,9 @@ def test_correct_name(name: str) -> None:
     "white",
     "#FFFFFF",
     "aaa-aaa",
+    "]",
+    "]]]",
+    "[",
 ])
 def test_correct_color(color: str | None) -> None:
     Hub(

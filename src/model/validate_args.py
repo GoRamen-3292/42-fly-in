@@ -22,7 +22,7 @@ def validate_metadata(name: str, value: str) -> str:
     """
     メタデータの文字列の値が正しい形式であることを検証する関数
     """
-    for char in ("[", "]", " ", "="):
+    for char in (" ", "="):
         if char in value:
             raise ValueError(
                 f"{name} must not contain '{char}'"

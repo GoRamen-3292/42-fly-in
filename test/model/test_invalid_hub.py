@@ -67,11 +67,8 @@ def test_incorrect_name(name: str) -> None:
 @pytest.mark.parametrize("color", [
     4932,
     123.43,
-    "]",
-    "]]]",
     "red=",
     "red ",
-    "[",
     "[=]"
     "aaa=aaaaa"
 ])

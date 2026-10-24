@@ -11,9 +11,7 @@ class Hub(BaseModel):
     zone: ZoneType = ZoneType.NORMAL
     color: str | None = Field(default=None)
     max_drones: PositiveInt = 1
-    model_config = ConfigDict({
-        "extra": "forbid",
-    })
+    model_config = ConfigDict(extra="forbid")
 
     @field_validator("name", mode="after")
     def validate_name(cls, value: str) -> str:
