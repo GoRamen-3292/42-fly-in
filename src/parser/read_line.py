@@ -41,7 +41,7 @@ def _parse_hub_line(hub_type: HubType, value: str,
 
     zone = d.get("zone", Hub.model_fields["zone"].default)
     max_drones = int(
-        d.get("max_drones", "")) if d.get("max_drones", "") else Hub.model_fields["max_drones"].default
+        d.get("max_drones", Hub.model_fields["max_drones"].default))
     return Hub(
         hub_type=hub_type,
         name=name,
