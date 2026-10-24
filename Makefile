@@ -1,9 +1,11 @@
-# uvのデフォルトのsyncコマンド
+# ディレクトリ
+CHECK_DIRS = src test sandbox
+
 install:
 	uv sync
 
 run:
-	echo "Not implemented yet"
+	uv run main.py
 
 debug:
 	echo "Not implemented yet (debug mode)"
@@ -18,9 +20,15 @@ clean:
 	find . -type d \( -name "__pycache__" -o -name ".mypy_cache" \) -exec rm -rf {} +
 
 lint:
-	flake8 src
-	mypy src --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs
+	flake8 $(CHECK_DIRS)
+	mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports \
+	--disallow-untyped-defs --check-untyped-defs $(CHECK_DIRS)
 
 lint-strict:
-	uv run flake8 src
-	uv run mypy --strict src
+	uv run flake8 $(CHECK_DIRS)
+	uv run mypy --strict $(CHECK_DIRS)
+
+test:
+	uv run pytest
+
+.PHONY: install run debug clean lint lint-strict test

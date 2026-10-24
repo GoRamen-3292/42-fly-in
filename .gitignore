@@ -9,5 +9,11 @@ wheels/
 # Virtual environments
 .venv
 
+# Python Version Lock file
+.python-version
+
 # Mac OS
 .DS_Store
+
+# 42 assets
+en.subject.pdf
