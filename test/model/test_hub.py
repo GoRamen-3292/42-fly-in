@@ -4,7 +4,7 @@ from src.model import Hub, HubType, ZoneType
 def test_hub_type() -> None:
     for hub_type in HubType.__members__.values():
         assert isinstance(hub_type, str)
-        assert hub_type in ("normal", "start", "end")
+        assert hub_type in ("hub", "start_hub", "end_hub")
 
 
 def test_zone_type() -> None:
@@ -111,7 +111,7 @@ def test_other_attributes() -> None:
         color="white",
         coordinate=(0, 0),
         max_drones=10,
-        hub_type=HubType.START
+        hub_type=HubType.START_HUB
     )
     Hub(
         name="Hub1",
@@ -119,5 +119,5 @@ def test_other_attributes() -> None:
         color="white",
         coordinate=(0, 0),
         max_drones=10,
-        hub_type=HubType.START
+        hub_type=HubType.START_HUB
     )

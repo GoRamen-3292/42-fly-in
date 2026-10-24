@@ -4,7 +4,7 @@ from pydantic import (BaseModel, Field, PositiveInt, field_validator)
 
 
 class Hub(BaseModel):
-    hub_type: HubType = HubType.NORMAL
+    hub_type: HubType = HubType.NORMAL_HUB
     name: str = Field(min_length=1)
     coordinate: Coordinate
     zone: ZoneType = ZoneType.NORMAL

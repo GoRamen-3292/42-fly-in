@@ -103,7 +103,7 @@ def test_other_attributes() -> None:
             color="white",
             coordinate=(0, 0),
             max_drones=0,
-            hub_type=HubType.START
+            hub_type=HubType.START_HUB
         )
 
     with pytest.raises(ValidationError):
@@ -113,5 +113,5 @@ def test_other_attributes() -> None:
             color="white",
             coordinate=(0, 0),
             max_drones=0,
-            hub_type=HubType.START
+            hub_type=HubType.START_HUB
         )
