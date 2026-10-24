@@ -1,4 +1,5 @@
-from src.model import Hub, HubType, ZoneType
+import pytest
+from src.model import Hub, HubType, ZoneType, Coordinate
 
 
 def test_hub_type() -> None:
@@ -48,60 +49,57 @@ def test_correct_hubtype() -> None:
         )
 
 
-def test_correct_coordinate() -> None:
+@pytest.mark.parametrize("coordinate", [
+    (-10000, -10000),
+    (-10000, 10000),
+    (10000, -10000),
+    (10000, 10000),
+    ("1000", "2000"),
+    ("0", 42),
+    (42, "-42"),
+    (0, 0),
+])
+def test_correct_coordinate(coordinate: Coordinate) -> None:
     """正しいHubのリストを持つSimulationConfigのテスト"""
-    COORDINATES = [
-        (-10000, -10000),
-        (-10000, 10000),
-        (10000, -10000),
-        (10000, 10000),
-        ("1000", "2000"),
-        ("0", 42),
-        (42, "-42"),
-        (0, 0),
-    ]
-    for coordinate in COORDINATES:
-        Hub(
-            name="Hub1",
-            coordinate=coordinate,  # type: ignore
-        )
+    Hub(
+        name="Hub1",
+        coordinate=coordinate,
+    )
 
 
-def test_correct_name() -> None:
-    NAMES = [
-        "A",
-        "Abcdefg",
-        "あいうえお",
-        "アイウエオ",
-        "alpha_bet",
-        "1234567890",
-        "aaa=aaa",
-        "#fjapdfasifjai",
-        "#=[]",
-        "[]",
-    ]
-    for name in NAMES:
-        Hub(
-            name=name,
-            coordinate=(0, 0),
-        )
+@pytest.mark.parametrize("name", [
+    "A",
+    "Abcdefg",
+    "あいうえお",
+    "アイウエオ",
+    "alpha_bet",
+    "1234567890",
+    "aaa=aaa",
+    "#fjapdfasifjai",
+    "#=[]",
+    "[]",
+])
+def test_correct_name(name: str) -> None:
+    Hub(
+        name=name,
+        coordinate=(0, 0),
+    )
 
 
-def test_correct_color() -> None:
-    COLORS = [
-        None,
-        "",
-        "red",
-        "white",
-        "#FFFFFF",
-        "aaa-aaa",
-    ]
-    for color in COLORS:
-        Hub(
-            name="Hub1",
-            coordinate=(0, 0),
-            color=color
-        )
+@pytest.mark.parametrize("color", [
+    None,
+    "",
+    "red",
+    "white",
+    "#FFFFFF",
+    "aaa-aaa",
+])
+def test_correct_color(color: str | None) -> None:
+    Hub(
+        name="Hub1",
+        coordinate=(0, 0),
+        color=color
+    )
 
 
 def test_other_attributes() -> None:
