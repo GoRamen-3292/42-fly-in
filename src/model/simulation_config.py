@@ -1,4 +1,4 @@
-from pydantic import BaseModel, PositiveInt
+from pydantic import BaseModel, ConfigDict, PositiveInt
 from .hub import Hub
 from .connection import Connection
 
@@ -9,6 +9,9 @@ class SimulationConfig(BaseModel):
     nb_drones: PositiveInt
     hubs: list[Hub]
     connections: list[Connection]
+    model_config = ConfigDict({
+        "extra": "forbid",
+    })
 
 
 class SimulationState(SimulationConfig):
@@ -19,5 +22,8 @@ class SimulationState(SimulationConfig):
     オーバーライドによって値の属性を追加する
 
     TODO: ドローンの位置や状態を管理するための属性を追加する
+    TODO: 解決をする場所まで移動する?
     """
-    pass
+    model_config = ConfigDict({
+        "extra": "allow",
+    })

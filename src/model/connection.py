@@ -1,5 +1,5 @@
 from .validate_args import validate_hub_name
-from pydantic import BaseModel, PositiveInt, field_validator
+from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
 
 
 class Connection(BaseModel):
@@ -8,6 +8,9 @@ class Connection(BaseModel):
     """
     hubs: tuple[str, str]
     max_link_capacity: PositiveInt = 1
+    model_config = ConfigDict({
+        "extra": "forbid",
+    })
 
     @field_validator("hubs", mode="after")
     @classmethod

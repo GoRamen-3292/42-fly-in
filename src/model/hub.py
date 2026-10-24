@@ -1,6 +1,7 @@
 from .types import Coordinate, ZoneType, HubType
 from .validate_args import validate_hub_name, validate_metadata
-from pydantic import (BaseModel, Field, PositiveInt, field_validator)
+from pydantic import (BaseModel, ConfigDict,
+                      Field, PositiveInt, field_validator)
 
 
 class Hub(BaseModel):
@@ -10,6 +11,9 @@ class Hub(BaseModel):
     zone: ZoneType = ZoneType.NORMAL
     color: str | None = Field(default=None)
     max_drones: PositiveInt = 1
+    model_config = ConfigDict({
+        "extra": "forbid",
+    })
 
     @field_validator("name", mode="after")
     def validate_name(cls, value: str) -> str:
