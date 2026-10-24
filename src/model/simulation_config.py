@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, PositiveInt
+from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
 from .hub import Hub
 from .connection import Connection
 
@@ -12,6 +12,20 @@ class SimulationConfig(BaseModel):
     model_config = ConfigDict({
         "extra": "forbid",
     })
+
+    @classmethod
+    @field_validator("hubs", mode="after")
+    def validate_hubs(cls, value: list[Hub]) -> list[Hub]:
+        """ハブの重複を検証するバリデータ"""
+        hub_names = [hub.name for hub in value]
+        if len(hub_names) != len(set(hub_names)):
+            raise ValueError("Duplicate hub names are not allowed")
+        return value
+
+    # @classmethod
+    # @field_validator("connections", mode="after")
+    # def validate_connections(cls, value: list[Connection]) -> list[Connection]:
+    #     """接続の重複を検証するバリデータ"""
 
 
 class SimulationState(SimulationConfig):
