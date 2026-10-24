@@ -31,6 +31,8 @@ def test_parse_line(line: str) -> None:
     "hub: invalid_drones 10.32 20.19 [max_drones=0 color=red]",
     "hub: unclosed_equal 10 20 [zone= max_drones=5 color=red]",
     " hub   :  double_equals  10\t 20 [    zone=priority=x   max_drones=5    color=red   ]   ",
+    " hub   :  double_equals  10\t 20 [    ==x   max_drones=5    color=red   ]   ",
+    " hub   :  value_only  10\t 20 [    =x   max_drones=5    color=red   ]   ",
     "hub    ::  two_columns  10\t 20 [    zone=priority=x   max_drones=5    color=red   ]   ",
     "hub   :   unclosed_metadata   10\t 20 [    zone=priority   max_drones=5    color=red      ",
     "   hub   : unstarted_metadata  hub1   10\t 20     zone=priority   max_drones=5    color=red ]     ",
@@ -41,6 +43,9 @@ def test_parse_line(line: str) -> None:
     "hub:   too_many_brackets   10\t 20   [max_drones=2   max_drones=5    ]]]]     ",
     "hub:   too_many_brackets   10\t 20   [color=fasdf[adfa]   max_drones=5    ]]]]     ",
     "hub:   too_many_brackets   10\t 20   [color=fasdf[adfa]   max_drones=5    ]]     ",
+    "hub:   too_many_args   10 20   [color=fasdf[adfa]   max_drones=5  test=non_existent  ]     ",
+    "hub:   too_many_args   10 20   [color=fasdf[adfa] ==  max_drones=5  test=non_existent  ]     ",
+    "hub:   double_args   10 20   [color=fasdf[adfa]  color=color  test=non_existent  ]     ",
 ])
 def test_parse_line_with_options(line: str) -> None:
     config = SimulationConfig(
@@ -50,3 +55,25 @@ def test_parse_line_with_options(line: str) -> None:
     )
     with pytest.raises(ValueError):
         parse_line(line, config)
+
+
+def test_multiple_start_hubs() -> None:
+    config = SimulationConfig(
+        nb_drones=10,
+        hubs=[],
+        connections=[],
+    )
+    parse_line("start_hub: start1 10 20", config)
+    with pytest.raises(ValueError):
+        parse_line("start_hub: start2 30 40", config)
+
+
+def test_multiple_end_hubs() -> None:
+    config = SimulationConfig(
+        nb_drones=10,
+        hubs=[],
+        connections=[],
+    )
+    parse_line("end_hub: start1 10 20", config)
+    with pytest.raises(ValueError):
+        parse_line("end_hub: start2 30 40", config)

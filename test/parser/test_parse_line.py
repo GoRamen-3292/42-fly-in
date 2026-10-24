@@ -64,6 +64,10 @@ def test_parse_line_with_options_with_values(line: str) -> None:
 
 
 @pytest.mark.parametrize("line", [
+    "hub: hub1 10 20 []",
+    "hub: hub1 10 20 [color=or-ange]",
+    "hub: hub1 10 20 [zone=normal]",
+    "hub: hub1 10 20 [max_drones=6]",
     "hub: hub1 10 20 [color=or-ange zone=normal max_drones=5]",
     "hub: hub1 10 20 [zone=blocked color=red max_drones=1]",
     "hub: hub1 -100 -304 [zone=priority color=red max_drones=1]",
