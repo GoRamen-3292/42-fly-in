@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 from src.model import SimulationConfig
 from src.parser.read_line import Parser
 from src.model import Hub, HubType, ZoneType
@@ -19,7 +20,7 @@ parser = Parser()
     "hub :hub1  1 0    2 0 3 3 43",
 ])
 def test_parse_line(line: str) -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
@@ -51,7 +52,7 @@ def test_parse_line(line: str) -> None:
     "hub:   double_args   10 20   [color=fasdf[adfa]  color=color  test=non_existent  ]     ",
 ])
 def test_parse_line_with_options(line: str) -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
@@ -61,19 +62,32 @@ def test_parse_line_with_options(line: str) -> None:
 
 
 def test_multiple_start_hubs() -> None:
-    config = SimulationConfig.construct(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
     )
-    parser.parse_line("start_hub: start1 10 20", config)
-    parser.parse_line("start_hub: start2 30 40", config)
-    with pytest.raises(ValueError):
-        SimulationConfig.validate(config)
+    # parser.parse_line("start_hub: start1 10 20", config)
+    # parser.parse_line("start_hub: start2 30 40", config)
+    config.hubs.append(Hub(
+        name="start3",
+        coordinate=(50, 60),
+        hub_type=HubType.START_HUB,
+        zone=ZoneType.NORMAL,
+    ))
+    config.hubs.append(Hub(
+        name="start4",
+        coordinate=(70, 80),
+        hub_type=HubType.START_HUB,
+        zone=ZoneType.NORMAL,
+    ))
+    assert len(config.hubs) == 2
+    with pytest.raises(ValidationError):
+        SimulationConfig.model_validate(config)
 
 
 def test_multiple_end_hubs() -> None:
-    config = SimulationConfig.construct(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
@@ -82,5 +96,5 @@ def test_multiple_end_hubs() -> None:
     # a
     parser.parse_line("end_hub: start1 10 20", config)
     parser.parse_line("end_hub: start2 30 40", config)
-    with pytest.raises(ValueError):
-        SimulationConfig.validate(config)
+    with pytest.raises(ValidationError):
+        SimulationConfig.model_validate(config)

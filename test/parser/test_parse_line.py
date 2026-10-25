@@ -16,7 +16,7 @@ parse_line = Parser().parse_line
     "hub :hub1  10    20",
 ])
 def test_parse_line_with_values(line: str) -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
@@ -36,7 +36,7 @@ def test_parse_line_with_values(line: str) -> None:
     "end_hub: test_hub 10 20 [zone=priority]",
 ])
 def test_parse_line(line: str) -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
@@ -53,7 +53,7 @@ def test_parse_line(line: str) -> None:
     "   hub   :   hub1   10\t 20 [    zone=priority   max_drones=5    color=red]]   ",
 ])
 def test_parse_line_with_options_with_values(line: str) -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
@@ -80,7 +80,7 @@ def test_parse_line_with_options_with_values(line: str) -> None:
     "   hub   :   hub1   10\t 20 [    zone=normal   max_drones=5    color=red   ]   ",
 ])
 def test_parse_line_with_options(line: str) -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.model_construct(
         nb_drones=10,
         hubs=[],
         connections=[],
