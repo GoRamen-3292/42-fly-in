@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
+from .types import HubType
 from .hub import Hub
 from .connection import Connection
 
@@ -9,9 +10,7 @@ class SimulationConfig(BaseModel):
     nb_drones: PositiveInt
     hubs: list[Hub]
     connections: list[Connection]
-    model_config = ConfigDict({
-        "extra": "forbid",
-    })
+    model_config = ConfigDict(extra="forbid", revalidate_instances='always')
 
     @field_validator("hubs", mode="after")
     @classmethod
@@ -20,6 +19,14 @@ class SimulationConfig(BaseModel):
         hub_names = [hub.name for hub in value]
         if len(hub_names) != len(set(hub_names)):
             raise ValueError("Duplicate hub names are not allowed")
+
+        start_hubs = [
+            hub for hub in value if (hub.hub_type == HubType.START_HUB)]
+        end_hubs = [hub for hub in value if hub.hub_type == HubType.END_HUB]
+        if len(start_hubs) != 1 or len(end_hubs) != 1:
+            raise ValueError(
+                "There must be exactly one start hub and one end hub")
+
         return value
 
     # @classmethod
