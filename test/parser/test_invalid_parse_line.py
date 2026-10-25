@@ -1,7 +1,10 @@
 import pytest
 from src.model import SimulationConfig
-from src.parser.read_line import parse_line
+from src.parser.read_line import Parser
 from src.model import Hub, HubType, ZoneType
+
+
+parser = Parser()
 
 
 @pytest.mark.parametrize("line", [
@@ -22,7 +25,7 @@ def test_parse_line(line: str) -> None:
         connections=[],
     )
     with pytest.raises(ValueError):
-        parse_line(line, config)
+        parser.parse_line(line, config)
 
 
 @pytest.mark.parametrize("line", [
@@ -54,26 +57,30 @@ def test_parse_line_with_options(line: str) -> None:
         connections=[],
     )
     with pytest.raises(ValueError):
-        parse_line(line, config)
+        parser.parse_line(line, config)
 
 
 def test_multiple_start_hubs() -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.construct(
         nb_drones=10,
         hubs=[],
         connections=[],
     )
-    parse_line("start_hub: start1 10 20", config)
+    parser.parse_line("start_hub: start1 10 20", config)
+    parser.parse_line("start_hub: start2 30 40", config)
     with pytest.raises(ValueError):
-        parse_line("start_hub: start2 30 40", config)
+        SimulationConfig.validate(config)
 
 
 def test_multiple_end_hubs() -> None:
-    config = SimulationConfig(
+    config = SimulationConfig.construct(
         nb_drones=10,
         hubs=[],
         connections=[],
     )
-    parse_line("end_hub: start1 10 20", config)
+
+    # a
+    parser.parse_line("end_hub: start1 10 20", config)
+    parser.parse_line("end_hub: start2 30 40", config)
     with pytest.raises(ValueError):
-        parse_line("end_hub: start2 30 40", config)
+        SimulationConfig.validate(config)

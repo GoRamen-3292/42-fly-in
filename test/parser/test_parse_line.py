@@ -1,7 +1,10 @@
 import pytest
 from src.model import SimulationConfig
-from src.parser.read_line import parse_line
+from src.parser.read_line import Parser
 from src.model import Hub, HubType, ZoneType
+
+
+parse_line = Parser().parse_line
 
 
 @pytest.mark.parametrize("line", [
