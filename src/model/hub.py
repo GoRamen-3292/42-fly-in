@@ -14,11 +14,13 @@ class Hub(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     @field_validator("name", mode="after")
+    @classmethod
     def validate_name(cls, value: str) -> str:
         validate_hub_name(value)
         return value
 
     @field_validator("color", mode="after")
+    @classmethod
     def validate_zone(cls, value: str | None) -> str | None:
         if value:
             validate_metadata("color", value)

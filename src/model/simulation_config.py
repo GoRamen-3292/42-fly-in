@@ -13,8 +13,8 @@ class SimulationConfig(BaseModel):
         "extra": "forbid",
     })
 
-    @classmethod
     @field_validator("hubs", mode="after")
+    @classmethod
     def validate_hubs(cls, value: list[Hub]) -> list[Hub]:
         """ハブの重複を検証するバリデータ"""
         hub_names = [hub.name for hub in value]
