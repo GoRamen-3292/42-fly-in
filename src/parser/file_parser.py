@@ -4,6 +4,26 @@ from pydantic import ValidationError
 
 class FileParser:
     @classmethod
+    def parse_file(cls, file_path: str) -> SimulationConfig:
+        """ファイルをパースする関数
+
+        Args:
+            file_path (str): パースするファイルのパス
+        Raises:
+            ValueError: ファイルのパースに失敗した場合
+            FileNotFoundError: ファイルが存在しない場合
+        """
+        config = SimulationConfig.model_construct(
+            nb_drones=None,
+            hubs=[],
+            connections=[],
+        )
+        with open(file_path, "r", encoding="utf-8") as f:
+            for line in f:
+                cls.parse_line(line.strip(), config)
+        return SimulationConfig.model_validate(config)
+
+    @classmethod
     def parse_line(cls, line: str, config: SimulationConfig) -> None:
         """1行のパースをする関数"""
         if line.startswith("#") or not line:
@@ -64,32 +84,31 @@ class FileParser:
         return result
 
     @classmethod
-    def _parse_connection_line(cls, value: str, config: SimulationConfig) -> Connection:
+    def _parse_connection_line(cls, value: str,
+                               config: SimulationConfig) -> Connection:
         """connectionの行をパースする関数"""
         # ここでvalueを解析してConnectionを作成し、configに追加する処理を書く
         options = value.split()
-        if len(options) == 2:
+        hub1, hub2 = options[0].split("-")
+        if len(options) == 1:
             return Connection(
-                hubs=(options[0], options[1]),
+                hubs=(hub1, hub2),
             )
-        elif len(options) == 3:
-            metadata = options[2].strip()
-            d = cls._parse_options(metadata)
+        else:
+            options = options[1:]
+            d = cls._parse_options(" ".join(options))
 
             return Connection.model_validate(
                 {
                     **d,
-                    "hubs": (options[0], options[1]),
-                    "max_link_capacity": int(options[2]),
+                    "hubs": (hub1, hub2),
                 }
             )
-        else:
-            raise ValueError(f"Invalid connection line: {value}")
 
     @staticmethod
     def extract_brackets(s: str) -> str:
         """文字列から角括弧で囲まれた部分を抽出する"""
         s = s.strip()
         if s[0] != "[" or s[-1] != "]":
-            raise ValueError(f"Options must be enclosed in brackets")
+            raise ValueError("Options must be enclosed in brackets")
         return s[1:-1]
