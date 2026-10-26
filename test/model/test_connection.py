@@ -1,5 +1,5 @@
 import pytest
-from src.model import Connection, Coordinate
+from src.model import Connection
 
 
 @pytest.mark.parametrize("hubs", [
