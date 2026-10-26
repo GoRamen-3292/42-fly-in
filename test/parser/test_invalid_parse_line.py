@@ -1,11 +1,11 @@
 import pytest
 from pydantic import ValidationError
 from src.model import SimulationConfig
-from src.parser.read_line import Parser
+from src.parser import FileParser
 from src.model import Hub, HubType, ZoneType
 
 
-parser = Parser()
+parser = FileParser()
 
 
 @pytest.mark.parametrize("line", [

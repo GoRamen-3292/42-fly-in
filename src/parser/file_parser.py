@@ -2,7 +2,7 @@ from ..model import Connection, Hub, HubType, SimulationConfig
 from pydantic import ValidationError
 
 
-class Parser:
+class FileParser:
     @classmethod
     def parse_line(cls, line: str, config: SimulationConfig) -> None:
         """1行のパースをする関数"""
