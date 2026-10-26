@@ -29,10 +29,19 @@ class SimulationConfig(BaseModel):
 
         return value
 
-    # @classmethod
-    # @field_validator("connections", mode="after")
-    # def validate_connections(cls, value: list[Connection]) -> list[Connection]:
-    #     """接続の重複を検証するバリデータ"""
+    @classmethod
+    @field_validator("connections", mode="after")
+    def validate_connections(cls,
+                             value: list[Connection]) -> list[Connection]:
+        """接続の重複を検証するバリデータ"""
+        # TODO: 直す
+        for i, connection in enumerate(value):
+            for other_connection in range(i + 1, len(value)):
+                if connection.hubs == value[other_connection].hubs or \
+                        connection.hubs == value[other_connection].hubs[::-1]:
+                    raise ValueError(
+                        f"Duplicate connections are not allowed: {connection.hubs}")
+        return value
 
 
 class SimulationState(SimulationConfig):
