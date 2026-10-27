@@ -38,7 +38,8 @@ class FileParser:
                 config.hubs.append(cls._parse_hub_line(
                     HubType(key), value, config))
             elif key == "connection":
-                cls._parse_connection_line(value, config)
+                config.connections.append(
+                    cls._parse_connection_line(value, config))
             elif key == "nb_drones":
                 if config.nb_drones is not None:
                     raise ValueError("nb_drones is already set")
