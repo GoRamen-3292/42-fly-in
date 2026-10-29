@@ -30,9 +30,10 @@ class FileParser:
             return
         try:
             splits = line.split(":")
-            if len(splits) != 2:
+            if len(splits) <= 1:
                 raise ValueError(f"Invalid number of ':' in line: {line}")
-            key, value = (x.strip() for x in splits)
+            key = splits[0].strip()
+            value = ":".join(splits[1:]).strip()
 
             if key in HubType.__members__.values():
                 config.hubs.append(cls._parse_hub_line(
