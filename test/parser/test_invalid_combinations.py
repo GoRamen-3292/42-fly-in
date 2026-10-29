@@ -110,3 +110,31 @@ def test_duplicate_connections(hub_2_hubs: tuple[str, str]) -> None:
     ))
     with pytest.raises(ValidationError):
         SimulationConfig.model_validate(config.connections)
+
+
+def test_connection_with_nonexistent_hub() -> None:
+    config = SimulationConfig.model_construct(
+        nb_drones=10,
+        hubs=[
+            Hub(
+                name="hub1",
+                coordinate=(50, 60),
+                hub_type=HubType.START_HUB,
+                zone=ZoneType.NORMAL,
+            ),
+            Hub(
+                name="hub2",
+                coordinate=(70, 80),
+                hub_type=HubType.END_HUB,
+                zone=ZoneType.NORMAL,
+            ),
+        ],
+        connections=[
+            Connection(
+                hubs=("hub1", "hub3"),
+                max_link_capacity=5,
+            )
+        ],
+    )
+    with pytest.raises(ValidationError):
+        SimulationConfig.model_validate(config.connections)
