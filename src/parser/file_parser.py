@@ -29,10 +29,10 @@ class FileParser:
         if line.startswith("#") or not line:
             return
         try:
-            splits = line.split(":", maxsplit=1)
-            if len(splits) <= 1:
-                raise ValueError(f"Invalid number of ':' in line: {line}")
-            key, value = (x.strip() for x in splits)
+            splits = line.partition(":")
+            if splits[1] != ":":
+                raise ValueError("Line must contain a ':' separator")
+            key, value = (x.strip() for x in (splits[i] for i in (0, 2)))
 
             if key in HubType.__members__.values():
                 config.hubs.append(cls._parse_hub_line(
