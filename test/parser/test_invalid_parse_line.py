@@ -67,20 +67,8 @@ def test_multiple_start_hubs() -> None:
         hubs=[],
         connections=[],
     )
-    # parser.parse_line("start_hub: start1 10 20", config)
-    # parser.parse_line("start_hub: start2 30 40", config)
-    config.hubs.append(Hub(
-        name="start3",
-        coordinate=(50, 60),
-        hub_type=HubType.START_HUB,
-        zone=ZoneType.NORMAL,
-    ))
-    config.hubs.append(Hub(
-        name="start4",
-        coordinate=(70, 80),
-        hub_type=HubType.START_HUB,
-        zone=ZoneType.NORMAL,
-    ))
+    parser.parse_line("start_hub: start1 10 20", config)
+    parser.parse_line("start_hub: start2 30 40", config)
     assert len(config.hubs) == 2
     with pytest.raises(ValidationError):
         SimulationConfig.model_validate(config)
