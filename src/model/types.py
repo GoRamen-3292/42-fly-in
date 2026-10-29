@@ -23,6 +23,6 @@ class ZoneType(str, Enum):
 
 
 class HubType(str, Enum):
-    NORMAL = "normal"
-    START = "start"
-    END = "end"
+    NORMAL_HUB = "hub"
+    START_HUB = "start_hub"
+    END_HUB = "end_hub"

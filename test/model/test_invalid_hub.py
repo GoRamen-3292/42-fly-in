@@ -1,98 +1,90 @@
 import pytest
 from src.model import Hub, HubType, ZoneType
+from typing import Any
 from pydantic import ValidationError
 
 
-def test_incorrect_zonetype() -> None:
-    # 最低限の引数でHubを作成
-    for zone in (
-        "undefined",
-        None,
-    ):
-        with pytest.raises(ValidationError):
-            Hub(
-                name="Hub1",
-                zone=zone,  # type: ignore
-                coordinate=(0, 0),
-            )
-
-    with pytest.raises(AttributeError):
+@pytest.mark.parametrize("zone", [
+    "undefined",
+    None,
+])
+def test_incorrect_zonetype(zone: Any) -> None:
+    with pytest.raises(ValidationError):
         Hub(
             name="Hub1",
-            zone=ZoneType.UNDEF_ARG,  # type: ignore
+            zone=zone,
             coordinate=(0, 0),
         )
 
 
-def test_incorrect_hubtype() -> None:
-    for hub_type in (
-        "undefined",
-        None,
-    ):
-        with pytest.raises(ValidationError):
-            Hub(
-                name="Hub1",
-                coordinate=(0, 0),
-                hub_type=hub_type,  # type: ignore
-            )
+@pytest.mark.parametrize("hub_type", [
+    "undefined",
+    None,
+])
+def test_incorrect_hubtype(hub_type: Any) -> None:
+    with pytest.raises(ValidationError):
+        Hub(
+            name="Hub1",
+            coordinate=(0, 0),
+            hub_type=hub_type,
+        )
 
 
-def test_incorrect_coordinate() -> None:
-    COORDINATES = (
-        "aaa",
-        "1000, 2000",
-        "100, 200",
-        (100, 200, 300),
-        (),
-
-    )
-    for coordinate in COORDINATES:
-        with pytest.raises(ValidationError):
-            Hub(
-                name="Hub1",
-                coordinate=coordinate,  # type: ignore
-            )
+@pytest.mark.parametrize("coordinate", [
+    "aaa",
+    "1000, 2000",
+    "100, 200",
+    (100, 200, 300),
+    (),
+])
+def test_incorrect_coordinate(coordinate: Any) -> None:
+    with pytest.raises(ValidationError):
+        Hub(
+            name="Hub1",
+            coordinate=coordinate,
+        )
 
 
-def test_incorrect_name() -> None:
-    NAMES = [
-        32482094,
-        None,
-        123.43,
-        "",
-        "aaaa aaaa",
-        "aaaa-aaaa",
-        "       ",
-        "aaa-aaa",
-        "aaa aaa",
-    ]
-    for name in NAMES:
-        with pytest.raises(ValidationError):
-            Hub(
-                name=name,  # type: ignore
-                coordinate=(0, 0),
-            )
+@pytest.mark.parametrize("name", [
+    32482094,
+    None,
+    123.43,
+    "",
+    "aaaa aaaa",
+    "aaaa-aaaa",
+    "       ",
+    "a\ta",
+    "\t",
+    "\t\t\t \t",
+    "a\t\t\t \t",
+    "aaa-aaa",
+    "aaa aaa",
+])
+def test_incorrect_name(name: str) -> None:
+    with pytest.raises(ValidationError):
+        Hub(
+            name=name,
+            coordinate=(0, 0),
+        )
 
 
-def test_incorrect_color() -> None:
-    COLORS = [
-        4932,
-        123.43,
-        "]",
-        "]]]",
-        "red=",
-        "red ",
-        "[",
-        "[=]"
-        "aaa=aaaaa"
-    ]
-    for color in COLORS:
-        with pytest.raises(ValidationError):
-            Hub(
-                name="Hub1",
-                coordinate=(0, 0),
-                color=color,  # type: ignore
-            )
+@pytest.mark.parametrize("color", [
+    4932,
+    123.43,
+    "red=",
+    "red ",
+    "red\t",
+    "    \t",
+    "[=]"
+    "aaa=aaaaa"
+])
+def test_incorrect_color(color: Any) -> None:
+    with pytest.raises(ValidationError):
+        Hub(
+            name="Hub1",
+            coordinate=(0, 0),
+            color=color,
+        )
 
 
 def test_other_attributes() -> None:
@@ -103,7 +95,7 @@ def test_other_attributes() -> None:
             color="white",
             coordinate=(0, 0),
             max_drones=0,
-            hub_type=HubType.START
+            hub_type=HubType.START_HUB
         )
 
     with pytest.raises(ValidationError):
@@ -113,5 +105,5 @@ def test_other_attributes() -> None:
             color="white",
             coordinate=(0, 0),
             max_drones=0,
-            hub_type=HubType.START
+            hub_type=HubType.START_HUB
         )

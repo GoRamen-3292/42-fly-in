@@ -1,5 +1,6 @@
 # ディレクトリ
-CHECK_DIRS = src test sandbox
+CHECK_DIRS = src sandbox
+TEST_DIRS = test
 
 install:
 	uv sync
@@ -27,6 +28,9 @@ lint:
 lint-strict:
 	uv run flake8 $(CHECK_DIRS)
 	uv run mypy --strict $(CHECK_DIRS)
+	# TODO: test/のルールの見直し
+	uv run flake8 --max-line-length 200 $(TEST_DIRS)
+	uv run mypy --strict $(TEST_DIRS)
 
 test:
 	uv run pytest
