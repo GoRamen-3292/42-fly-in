@@ -25,6 +25,11 @@ def test_valid_hubs_connection(hubs: tuple[str, str]) -> None:
     ("hub-1", "hub-2"),  # ハブ名にハイフンが含まれる
     ("aaa", "bbb", "ccc"),  # ハブ名が3つ以上
     (),  # ハブ名が0個
+    (" aaa "),  # 空白
+    (" "),  # 空白
+    (" \t"),  # 空白
+    ("\t aaaa \t"),  # 空白
+    (" aaaa "),  # 空白
     "fdasifa",
     4324431,
 ])

@@ -53,6 +53,10 @@ def test_incorrect_coordinate(coordinate: Any) -> None:
     "aaaa aaaa",
     "aaaa-aaaa",
     "       ",
+    "a\ta",
+    "\t",
+    "\t\t\t \t",
+    "a\t\t\t \t",
     "aaa-aaa",
     "aaa aaa",
 ])
@@ -69,6 +73,8 @@ def test_incorrect_name(name: str) -> None:
     123.43,
     "red=",
     "red ",
+    "red\t",
+    "    \t",
     "[=]"
     "aaa=aaaaa"
 ])

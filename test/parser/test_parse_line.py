@@ -54,8 +54,11 @@ def test_parse_line(line: str) -> None:
     "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed]",
     "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed:]",
     "    hub: hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",
+    "    hub\t:hub1\t10\t20\t[    zone=priority   max_drones=5    color=red   ]   ",
     "   hub   :   hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",
     "   hub   :   hub1   10\t 20 [    zone=priority   max_drones=5    color=red]]   ",
+    "hub\t:hub1\t10\t20\t[\tzone=priority\tmax_drones=5\tcolor=red]]\t",
+    "hub :    hub1\t10\t20\t[\tzone=priority\tmax_drones=5\tcolor=red]]\t",
 ])
 def test_parse_line_with_options_with_values(line: str) -> None:
     config = SimulationConfig.model_construct(
