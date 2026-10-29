@@ -40,7 +40,8 @@ class SimulationConfig(BaseModel):
                 if connection.hubs == value[j].hubs or \
                         connection.hubs == value[j].hubs[::-1]:
                     raise ValueError(
-                        f"Duplicate connections are not allowed: {connection.hubs}")
+                        "Duplicate connections are not allowed: " +
+                        str(connection.hubs))
         return value
 
 
@@ -54,6 +55,4 @@ class SimulationState(SimulationConfig):
     TODO: ドローンの位置や状態を管理するための属性を追加する
     TODO: 解決をする場所まで移動する?
     """
-    model_config = ConfigDict({
-        "extra": "allow",
-    })
+    model_config = ConfigDict(extra="forbid", revalidate_instances='never')
