@@ -2,6 +2,7 @@ def validate_hub_name(name: str) -> str:
     """
     hubの名前が正しい形式であることを検証する関数
 
+    空白についてはPydantic側で検証されるため不要
     Args:
         name (str): The name to verify.
     Raises:
@@ -21,13 +22,11 @@ def validate_hub_name(name: str) -> str:
 def validate_metadata(name: str, value: str) -> str:
     """
     メタデータの文字列の値が正しい形式であることを検証する関数
+
+    空白についてはPydantic側で検証されるため不要
     """
     if "=" in value or any(c.isspace() for c in value):
         raise ValueError(
             f"{name} must not contain spaces or equal signs."
-        )
-    elif not value:
-        raise ValueError(
-            f"{name} must not be empty."
         )
     return value
