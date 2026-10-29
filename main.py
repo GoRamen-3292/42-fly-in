@@ -1,5 +1,4 @@
 from src.parser import FileParser
-from src.model import SimulationConfig
 
 
 def main() -> None:
