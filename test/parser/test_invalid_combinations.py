@@ -64,6 +64,12 @@ def test_duplicate_hub_names() -> None:
         hub_type=HubType.END_HUB,
         zone=ZoneType.NORMAL,
     ))
+    config.hubs.append(Hub(
+        name="hub2",
+        coordinate=(90, 100),
+        hub_type=HubType.NORMAL_HUB,
+        zone=ZoneType.NORMAL,
+    ))
     config.connections.append(Connection(
         hubs=("hub1", "hub2"),
         max_link_capacity=5,
