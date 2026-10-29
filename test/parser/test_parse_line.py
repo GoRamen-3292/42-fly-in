@@ -13,6 +13,7 @@ parse_line = FileParser().parse_line
     "     hub     : hub1 10\t20",
     "hub: hub1 10 20     ",
     "      hub   : hub1 10 20     ",
+    "      hub   : hub1 10 20     ",
     "hub :hub1  10    20",
 ])
 def test_parse_line_with_values(line: str) -> None:
@@ -33,6 +34,8 @@ def test_parse_line_with_values(line: str) -> None:
     "hub: test=hub 10 20",
     "hub: test/hub 10 20 [zone=priority]",
     "start_hub: test_hub 10 20 [zone=priority]",
+    "start_hub: test:hub 10 20 [zone=priority]",
+    "start_hub: :::: 10 20 [zone=priority]",
     "end_hub: test_hub 10 20 [zone=priority]",
 ])
 def test_parse_line(line: str) -> None:
@@ -48,6 +51,8 @@ def test_parse_line(line: str) -> None:
     "hub: hub1 10 20 [color=red zone=priority max_drones=5]",
     "hub: hub1 10 20 [zone=priority color=red max_drones=5]",
     "hub: hub1 10 20 [zone=priority max_drones=5 color=red]",
+    "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed]",
+    "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed:]",
     "    hub: hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",
     "   hub   :   hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",
     "   hub   :   hub1   10\t 20 [    zone=priority   max_drones=5    color=red]]   ",

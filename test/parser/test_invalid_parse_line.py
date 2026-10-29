@@ -2,7 +2,6 @@ import pytest
 from pydantic import ValidationError
 from src.model import SimulationConfig
 from src.parser import FileParser
-from src.model import Hub, HubType, ZoneType
 
 
 parser = FileParser()
@@ -37,7 +36,6 @@ def test_parse_line(line: str) -> None:
     " hub   :  double_equals  10\t 20 [    zone=priority=x   max_drones=5    color=red   ]   ",
     " hub   :  double_equals  10\t 20 [    ==x   max_drones=5    color=red   ]   ",
     " hub   :  value_only  10\t 20 [    =x   max_drones=5    color=red   ]   ",
-    "hub    ::  two_columns  10\t 20 [    zone=priority=x   max_drones=5    color=red   ]   ",
     "hub   :   unclosed_metadata   10\t 20 [    zone=priority   max_drones=5    color=red      ",
     "   hub   : unstarted_metadata  hub1   10\t 20     zone=priority   max_drones=5    color=red ]     ",
     "hub   : empty_metadata_with_additional_arguments     10\t 20   []  zone=priority   max_drones=5    color=red ]     ",
@@ -50,6 +48,8 @@ def test_parse_line(line: str) -> None:
     "hub:   too_many_args   10 20   [color=fasdf[adfa]   max_drones=5  test=non_existent  ]     ",
     "hub:   too_many_args   10 20   [color=fasdf[adfa] ==  max_drones=5  test=non_existent  ]     ",
     "hub:   double_args   10 20   [color=fasdf[adfa]  color=color  test=non_existent  ]     ",
+    "hub    ::  two_columns  10 20 [    zone=priority   max_drones=5    color=red   ]   ",
+    "hub    ::  two_columns  10 [    zone=priority   max_drones=5    color=red   ]   ",
 ])
 def test_parse_line_with_options(line: str) -> None:
     config = SimulationConfig.model_construct(
