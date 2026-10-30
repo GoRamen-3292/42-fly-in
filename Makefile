@@ -25,12 +25,15 @@ lint:
 	mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports \
 	--disallow-untyped-defs --check-untyped-defs $(CHECK_PATHS)
 
+# TODO: test/のルールの見直し
 lint-strict:
 	uv run flake8 $(CHECK_PATHS)
 	uv run mypy --strict $(CHECK_PATHS)
-	# TODO: test/のルールの見直し
 	uv run flake8 --max-line-length 200 $(TEST_PATHS)
 	uv run mypy --strict $(TEST_PATHS)
+
+check: lint-strict test
+	@echo ">> All checks passed! :D"
 
 test:
 	uv run pytest
