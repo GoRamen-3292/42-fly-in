@@ -1,6 +1,6 @@
 # ディレクトリ
-CHECK_DIRS = src sandbox
-TEST_DIRS = test
+CHECK_PATHS = src sandbox main.py
+TEST_PATHS = test
 
 install:
 	uv sync
@@ -21,16 +21,19 @@ clean:
 	find . -type d \( -name "__pycache__" -o -name ".mypy_cache" \) -exec rm -rf {} +
 
 lint:
-	flake8 $(CHECK_DIRS)
+	flake8 $(CHECK_PATHS)
 	mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports \
-	--disallow-untyped-defs --check-untyped-defs $(CHECK_DIRS)
+	--disallow-untyped-defs --check-untyped-defs $(CHECK_PATHS)
 
+# TODO: test/のルールの見直し
 lint-strict:
-	uv run flake8 $(CHECK_DIRS)
-	uv run mypy --strict $(CHECK_DIRS)
-	# TODO: test/のルールの見直し
-	uv run flake8 --max-line-length 200 $(TEST_DIRS)
-	uv run mypy --strict $(TEST_DIRS)
+	uv run flake8 $(CHECK_PATHS)
+	uv run mypy --strict $(CHECK_PATHS)
+	uv run flake8 --max-line-length 200 $(TEST_PATHS)
+	uv run mypy --strict $(TEST_PATHS)
+
+check: lint-strict test
+	@echo ">> Checks completed! :D"
 
 test:
 	uv run pytest
