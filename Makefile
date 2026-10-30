@@ -33,7 +33,7 @@ lint-strict:
 	uv run mypy --strict $(TEST_PATHS)
 
 check: lint-strict test
-	@echo ">> All checks passed! :D"
+	@echo ">> Checks completed! :D"
 
 test:
 	uv run pytest
