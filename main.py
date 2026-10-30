@@ -1,4 +1,4 @@
-from src.parser import FileParser
+from src import FileParser, Simulation
 
 
 def main() -> None:
@@ -6,7 +6,10 @@ def main() -> None:
     print("Hello, World!")
     try:
         config = FileParser.parse_file("test.txt")
-        print(config.model_dump(mode="Python"))
+        # print(config.model_dump(mode="Python"))
+        for i in Simulation(config)._drones:
+            print(i)
+            print(vars(i))
     except FileNotFoundError:
         print("File not found")
     except ValueError as e:
