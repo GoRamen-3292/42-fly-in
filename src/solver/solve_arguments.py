@@ -16,9 +16,8 @@ class Simulation:
         if start_hub is None:
             raise ValueError("シミュレーションの開始ハブが見つかりません。")
 
-        for i in range(config.nb_drones):
-            drone = Drone(id=i, position=start_hub)
-            self._drones.append(drone)
+        self._drones = [Drone(id=i, position=start_hub)
+                        for i in range(config.nb_drones)]
 
     def get_result(self) -> SimulationResult:
         """シミュレーションの結果を取得するメソッド"""
@@ -30,7 +29,7 @@ class Simulation:
         """シミュレーションを実行するメソッド"""
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
-
+        self._simulate_next_turn()
         raise NotImplementedError("シミュレーションの実装はまだ行われていません。")
 
     def _simulate_next_turn(self) -> None:
@@ -41,5 +40,18 @@ class Simulation:
 
     def _simulate_one_drone(self, drone: Drone) -> None:
         """1台のドローンのシミュレーションを実行するメソッド"""
-        # ドローンの移動ロジックを実装する
-        pass
+        cur_hub = drone.position
+
+        if cur_hub.hub_type == HubType.END_HUB:
+            print("End Hub")
+            return
+        next_hubs = []
+        for connection in self._connections:
+            hubs = connection.hubs
+            if hubs[0] == cur_hub.name:
+                next_hubs.append(hubs[1])
+            elif hubs[1] == cur_hub.name:
+                next_hubs.append(hubs[0])
+
+        print("===")
+        print(next_hubs)

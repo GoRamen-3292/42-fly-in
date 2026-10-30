@@ -7,9 +7,12 @@ def main() -> None:
     try:
         config = FileParser.parse_file("test.txt")
         # print(config.model_dump(mode="Python"))
-        for i in Simulation(config)._drones:
+        fly_in = Simulation(config)
+        for i in fly_in._drones:
             print(i)
             print(vars(i))
+        fly_in.simulate()
+
     except FileNotFoundError:
         print("File not found")
     except ValueError as e:
