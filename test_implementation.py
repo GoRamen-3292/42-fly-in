@@ -26,26 +26,34 @@ def get_shortest_path() -> tuple[list[str] | None, int | None]:
         SolverHub(
             hub_type=HubType.START_HUB,
             name="start",
-            connections={"h1", "h2"},
-            min_cost=0
+            connections={"h2", "h4"},
         ),
         SolverHub(
-            name="h1",
+            name="h4",
             connections={"start", "goal"},
         ),
         SolverHub(
             name="h2",
-            connections={"start", "goal"},
+            connections={"start", "h3"},
+        ),
+        SolverHub(
+            name="h3",
+            connections={"h2", "goal"}
         ),
         SolverHub(
             name="goal",
-            connections={"h1", "h2"},
+            connections={"h4", "h3"},
             hub_type=HubType.END_HUB,
         ),
     ]
-    # 最小コスト、str
-    queue: list[tuple[int, str]] = [
-        (0, hub.name) for hub in hubs if hub.hub_type == HubType.START_HUB]
+    queue: list[tuple[int, str]] = []
+    for hub in hubs:
+        if hub.hub_type == HubType.START_HUB:
+            hub.min_cost = 0
+            queue.append((0, hub.name))
+
+    if not queue:
+        raise IndexError("No Start Hub found.")
     while queue:
         _, cur_node_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
         cur_node = search_hub(cur_node_name, hubs)
