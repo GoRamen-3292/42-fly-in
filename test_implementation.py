@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from src.model.types import HubType, ZoneType
+from src.model import Hub, Connection
 import heapq
 
 
@@ -15,48 +16,50 @@ class SolverHub:
     hub_type: HubType = HubType.NORMAL_HUB
 
 
-def search_hub(name: str, queue: list[SolverHub]) -> SolverHub:
-    return next(
-        (node for node in queue if node.name == name)
-    )
+# def search_hub(name: str, queue: list[SolverHub]) -> SolverHub:
+#     return next(
+#         (node for node in queue if node.name == name)
+#     )
 
 
-def get_shortest_path() -> tuple[list[str] | None, int | None]:
-    hubs: list[SolverHub] = [
-        SolverHub(
-            hub_type=HubType.START_HUB,
-            name="start",
-            connections={"h2", "h4"},
-        ),
-        SolverHub(
-            name="h4",
-            connections={"start", "goal"},
-        ),
-        SolverHub(
-            name="h2",
-            connections={"start", "h3"},
-        ),
-        SolverHub(
-            name="h3",
-            connections={"h2", "goal"}
-        ),
-        SolverHub(
-            name="goal",
-            connections={"h4", "h3"},
-            hub_type=HubType.END_HUB,
-        ),
-    ]
+def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]) -> tuple[list[str] | None, int | None]:
+    # hubs: dict[str, SolverHub] = {
+    #     "start": SolverHub(
+    #         hub_type=HubType.START_HUB,
+    #         name="start",
+    #         connections={"h2", "h4"},
+    #     ),
+    #     "h4": SolverHub(
+    #         name="h4",
+    #         connections={"start", "goal"},
+    #     ),
+    #     "h2": SolverHub(
+    #         name="h2",
+    #         connections={"start", "h3"},
+    #     ),
+    #     "h3": SolverHub(
+    #         name="h3",
+    #         connections={"h2", "goal"}
+    #     ),
+    #     "goal": SolverHub(
+    #         name="goal",
+    #         connections={"h4", "h3"},
+    #         hub_type=HubType.END_HUB,
+    #     ),
+    # }
+    hubs: dict[str, SolverHub] = convert_hubs(hubs_arg, connections_arg)
+
     queue: list[tuple[int, str]] = []
-    for hub in hubs:
+    for name, hub in hubs.items():
         if hub.hub_type == HubType.START_HUB:
             hub.min_cost = 0
-            queue.append((0, hub.name))
+            queue.append((0, name))
 
     if not queue:
         raise IndexError("No Start Hub found.")
     while queue:
         _, current_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
-        current_hub = search_hub(current_name, hubs)
+        current_hub = hubs[current_name]
         # 来訪済みなら、return
         if current_hub.seen:
             continue
@@ -75,7 +78,7 @@ def get_shortest_path() -> tuple[list[str] | None, int | None]:
 
         # すべての接続に対して...
         for next_name in current_hub.connections:
-            next_node = search_hub(next_name, hubs)
+            next_node = hubs[next_name]
             prev_min_cost = next_node.min_cost
             if current_hub.min_cost is None:
                 raise Exception(
@@ -92,4 +95,67 @@ def get_shortest_path() -> tuple[list[str] | None, int | None]:
     return (None, None)
 
 
-print(get_shortest_path())
+def convert_hubs(hubs: list[Hub], connections: list[Connection]) -> dict[str, SolverHub]:
+    result: dict[str, SolverHub] = {}
+    for hub in hubs:
+        result[hub.name] = (SolverHub(
+            name=hub.name,
+            connections=set(),
+            zone=hub.zone,
+            hub_type=hub.hub_type
+        ))
+    for connection in connections:
+        hub_1, hub_2 = connection.hubs
+        result[hub_1].connections.add(hub_2)
+        result[hub_2].connections.add(hub_1)
+    return result
+
+
+result = get_shortest_path(
+    [
+        Hub(
+            hub_type=HubType.START_HUB,
+            name="start",
+            coordinate=(0, 0),
+        ),
+        Hub(
+            name="h4",
+            coordinate=(0, 1),
+        ),
+        Hub(
+            name="h2",
+            coordinate=(1, 0)
+        ),
+        Hub(
+            name="h3",
+            coordinate=(1, 1)
+        ),
+        Hub(
+            name="goal",
+            hub_type=HubType.END_HUB,
+            coordinate=(1, 2)
+        ),
+    ], [
+        Connection(
+            hubs=("start", "h4"),
+            max_link_capacity=1
+        ),
+        Connection(
+            hubs=("start", "h2"),
+            max_link_capacity=1
+        ),
+        Connection(
+            hubs=("h4", "goal"),
+            max_link_capacity=1
+        ),
+        Connection(
+            hubs=("h2", "h3"),
+            max_link_capacity=1
+        ),
+        Connection(
+            hubs=("h3", "goal"),
+            max_link_capacity=1
+        ),
+    ])
+
+print(result)
