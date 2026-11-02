@@ -55,36 +55,36 @@ def get_shortest_path() -> tuple[list[str] | None, int | None]:
     if not queue:
         raise IndexError("No Start Hub found.")
     while queue:
-        _, cur_node_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
-        cur_node = search_hub(cur_node_name, hubs)
+        _, current_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
+        current_hub = search_hub(current_name, hubs)
         # 来訪済みなら、return
-        if cur_node.seen:
+        if current_hub.seen:
             continue
         # 探索済みにする
-        cur_node.seen = True
+        current_hub.seen = True
 
         # 最短経路の置き換え
-        if cur_node.shortest_path is None:
-            path = [cur_node.name]
+        if current_hub.shortest_path is None:
+            path = [current_hub.name]
         else:
-            path = cur_node.shortest_path + [cur_node.name]
+            path = current_hub.shortest_path + [current_hub.name]
 
         # ゴール到達
-        if cur_node.hub_type == HubType.END_HUB:
-            return (path, cur_node.min_cost)
+        if current_hub.hub_type == HubType.END_HUB:
+            return (path, current_hub.min_cost)
 
         # すべての接続に対して...
-        for next_node_name in cur_node.connections:
-            next_node = search_hub(next_node_name, hubs)
+        for next_name in current_hub.connections:
+            next_node = search_hub(next_name, hubs)
             prev_min_cost = next_node.min_cost
-            if cur_node.min_cost is None:
+            if current_hub.min_cost is None:
                 raise Exception(
                     "min_cost is unset. Did you set when you push to the queue?")
-            new_min_cost = next_node.cost + cur_node.min_cost
+            new_min_cost = next_node.cost + current_hub.min_cost
             if prev_min_cost is None or new_min_cost < prev_min_cost:
                 next_node.min_cost = new_min_cost
                 next_node.shortest_path = path
-                heapq.heappush(queue, (new_min_cost, next_node_name))
+                heapq.heappush(queue, (new_min_cost, next_name))
                 print(f"Pushed {next_node.name}", vars(next_node), sep="\n")
 
             # コストの比較をする
