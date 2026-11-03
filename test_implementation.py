@@ -16,37 +16,7 @@ class SolverHub:
     hub_type: HubType = HubType.NORMAL_HUB
 
 
-# def search_hub(name: str, queue: list[SolverHub]) -> SolverHub:
-#     return next(
-#         (node for node in queue if node.name == name)
-#     )
-
-
 def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]) -> tuple[list[str] | None, int | None]:
-    # hubs: dict[str, SolverHub] = {
-    #     "start": SolverHub(
-    #         hub_type=HubType.START_HUB,
-    #         name="start",
-    #         connections={"h2", "h4"},
-    #     ),
-    #     "h4": SolverHub(
-    #         name="h4",
-    #         connections={"start", "goal"},
-    #     ),
-    #     "h2": SolverHub(
-    #         name="h2",
-    #         connections={"start", "h3"},
-    #     ),
-    #     "h3": SolverHub(
-    #         name="h3",
-    #         connections={"h2", "goal"}
-    #     ),
-    #     "goal": SolverHub(
-    #         name="goal",
-    #         connections={"h4", "h3"},
-    #         hub_type=HubType.END_HUB,
-    #     ),
-    # }
     hubs: dict[str, SolverHub] = convert_hubs(hubs_arg, connections_arg)
 
     queue: list[tuple[int, str]] = []

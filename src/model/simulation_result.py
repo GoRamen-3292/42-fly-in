@@ -5,7 +5,7 @@ from .hub import Hub
 class Drone:
     """ドローンの状態を表すデータクラス"""
 
-    def __init__(self, id: int, position: Hub):
+    def __init__(self, id: int, position: str):
         self.id = id
         self.position = position
 

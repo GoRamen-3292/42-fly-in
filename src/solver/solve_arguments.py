@@ -1,22 +1,38 @@
 from src.model import (Connection, Drone, Hub, HubType,
                        SimulationConfig, SimulationResult)
+from src.model.types import HubType, ZoneType
+from dataclasses import dataclass
+import heapq
+
+
+@dataclass
+class SolverHub:
+    name: str
+    connections: set[str]
+    seen: bool = False
+    shortest_path: list[str] | None = None
+    min_cost: int | None = None
+    cost: int = 1
+    zone: ZoneType = ZoneType.NORMAL
+    hub_type: HubType = HubType.NORMAL_HUB
 
 
 class Simulation:
     def __init__(self, config: SimulationConfig):
         self._config = config
-        self._hubs: list[Hub] = config.hubs
         self._connections: list[Connection] = config.connections
         self._result: SimulationResult | None = None
         self._drones: list[Drone] = []
+        self._hubs: dict[str, SolverHub] = self.convert_hubs(
+            config.hubs, config.connections)
 
         start_hub = next(
-            (hub for hub in self._hubs
+            (hub for hub in self._hubs.values()
              if hub.hub_type == HubType.START_HUB), None)
         if start_hub is None:
             raise ValueError("シミュレーションの開始ハブが見つかりません。")
 
-        self._drones = [Drone(id=i, position=start_hub)
+        self._drones = [Drone(id=i, position=start_hub.name)
                         for i in range(config.nb_drones)]
 
     def get_result(self) -> SimulationResult:
@@ -40,18 +56,91 @@ class Simulation:
 
     def _simulate_one_drone(self, drone: Drone) -> None:
         """1台のドローンのシミュレーションを実行するメソッド"""
-        cur_hub = drone.position
+        cur_hub = self._hubs[drone.position]
 
-        if cur_hub.hub_type == HubType.END_HUB:
-            print("End Hub")
-            return
-        next_hubs = []
-        for connection in self._connections:
-            hubs = connection.hubs
-            if hubs[0] == cur_hub.name:
-                next_hubs.append(hubs[1])
-            elif hubs[1] == cur_hub.name:
-                next_hubs.append(hubs[0])
+        path, distance = self.get_shortest_path(cur_hub.name)
+        print(
+            f"## Drone {drone.id}",
+            f"- Current Hub: {cur_hub.name}",
+            f"- Shortest Path: {path}",
+            f"- Distance: {distance}",
+            sep="\n",
+        )
+        # if cur_hub.hub_type == HubType.END_HUB:
+        #     print("End Hub")
+        #     return
+        # next_hubs = []
+        # for connection in self._connections:
+        #     hubs = connection.hubs
+        #     if hubs[0] == cur_hub.name:
+        #         next_hubs.append(hubs[1])
+        #     elif hubs[1] == cur_hub.name:
+        #         next_hubs.append(hubs[0])
 
-        print("===")
-        print(next_hubs)
+        # print("===")
+        # print(next_hubs)
+
+    def get_shortest_path(self, start_hub: str) -> tuple[list[str] | None, int | None]:
+        if start_hub not in self._hubs:
+            raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
+        queue: list[tuple[int, str]] = [(0, start_hub)]
+        for hub in self._hubs.values():
+            hub.seen = False
+            hub.shortest_path = None
+            hub.min_cost = None
+        self._hubs[start_hub].min_cost = 0
+
+        if not queue:
+            raise IndexError("No Start Hub found.")
+        while queue:
+            _, current_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
+            current_hub = self._hubs[current_name]
+            # 来訪済みなら、return
+            if current_hub.seen:
+                continue
+            # 探索済みにする
+            current_hub.seen = True
+
+            # 最短経路の置き換え
+            if current_hub.shortest_path is None:
+                path = [current_hub.name]
+            else:
+                path = current_hub.shortest_path + [current_hub.name]
+
+            # ゴール到達
+            if current_hub.hub_type == HubType.END_HUB:
+                return (path, current_hub.min_cost)
+
+            # すべての接続に対して...
+            for next_name in current_hub.connections:
+                next_node = self._hubs[next_name]
+                prev_min_cost = next_node.min_cost
+                if current_hub.min_cost is None:
+                    raise Exception(
+                        "min_cost is unset. Did you set when you push to the queue?")
+                new_min_cost = next_node.cost + current_hub.min_cost
+                if prev_min_cost is None or new_min_cost < prev_min_cost:
+                    next_node.min_cost = new_min_cost
+                    next_node.shortest_path = path
+                    heapq.heappush(queue, (new_min_cost, next_name))
+                    # print(f"Pushed {next_node.name}",
+                    #       vars(next_node), sep="\n")
+
+                # コストの比較をする
+
+        return (None, None)
+
+    def convert_hubs(self, hubs: list[Hub], connections: list[Connection]) -> dict[str, SolverHub]:
+        result: dict[str, SolverHub] = {}
+        for hub in hubs:
+            result[hub.name] = (SolverHub(
+                name=hub.name,
+                connections=set(),
+                zone=hub.zone,
+                hub_type=hub.hub_type
+            ))
+        for connection in connections:
+            hub_1, hub_2 = connection.hubs
+            result[hub_1].connections.add(hub_2)
+            result[hub_2].connections.add(hub_1)
+        return result
