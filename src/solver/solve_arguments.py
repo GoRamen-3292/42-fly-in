@@ -1,6 +1,6 @@
 from src.model import (Connection, Drone, Hub, HubType,
                        SimulationConfig, SimulationResult)
-from src.model.types import HubType, ZoneType
+from src.model.types import ZoneType
 from dataclasses import dataclass
 import heapq
 
@@ -45,16 +45,31 @@ class Simulation:
         """シミュレーションを実行するメソッド"""
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
-        self._simulate_next_turn()
+        while not all(self._hubs[drone.position].hub_type == HubType.END_HUB for drone in self._drones):
+            print("=== Next Turn ===")
+            self._simulate_next_turn()
         raise NotImplementedError("シミュレーションの実装はまだ行われていません。")
 
     def _simulate_next_turn(self) -> None:
         """シミュレーションの次のターンを実行するメソッド"""
+        next_candidates: dict[int, str] = {}
         for drone in self._drones:
-            # ドローンの移動ロジックを実装する
-            self._simulate_one_drone(drone)
+            next_candidates[drone.id] = self._simulate_one_drone(drone)
+        for drone in self._drones:
+            id = drone.id
+            next_hub = next_candidates[id]
+            if self._hubs[next_hub].hub_type == HubType.END_HUB or \
+                    all(drone.position != next_hub for drone in self._drones):
+                drone.position = next_hub
+                print(f"Drone {id} moved to {next_hub}.")
+            else:
+                print(f"Drone {id} cannot move to {next_hub}.")
+                # ドローンが移動できない場合の処理を追加する
+                # 例えば、ドローンが次のハブに移動できない場合の処理をここに追加する
+                # 例: ドローンが次のハブに移動できない場合、現在の位置に留まるなど
+                # drone.position = drone.position  # 現在の位置に留まる
 
-    def _simulate_one_drone(self, drone: Drone) -> None:
+    def _simulate_one_drone(self, drone: Drone) -> str:
         """1台のドローンのシミュレーションを実行するメソッド"""
         cur_hub = self._hubs[drone.position]
 
@@ -66,6 +81,7 @@ class Simulation:
             f"- Distance: {distance}",
             sep="\n",
         )
+        return path[1] if path and len(path) > 1 else cur_hub.name
         # if cur_hub.hub_type == HubType.END_HUB:
         #     print("End Hub")
         #     return
