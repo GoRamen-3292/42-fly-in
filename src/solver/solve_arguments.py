@@ -45,9 +45,13 @@ class Simulation:
         """シミュレーションを実行するメソッド"""
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
+        i = 1
         while not all(self._hubs[drone.position].hub_type == HubType.END_HUB for drone in self._drones):
-            print("=== Next Turn ===")
+            print(f"=== Turn {i} ===")
             self._simulate_next_turn()
+            i += 1
+            # ここに出力処理を追加?
+
         raise NotImplementedError("シミュレーションの実装はまだ行われていません。")
 
     def _simulate_next_turn(self) -> None:
@@ -55,15 +59,16 @@ class Simulation:
         next_candidates: dict[int, str] = {}
         for drone in self._drones:
             next_candidates[drone.id] = self._simulate_one_drone(drone)
+        print()
         for drone in self._drones:
             id = drone.id
             next_hub = next_candidates[id]
             if self._hubs[next_hub].hub_type == HubType.END_HUB or \
                     all(drone.position != next_hub for drone in self._drones):
                 drone.position = next_hub
-                print(f"Drone {id} moved to {next_hub}.")
+                print(f"D{id}-{next_hub} ")
             else:
-                print(f"Drone {id} cannot move to {next_hub}.")
+                print(f"Failed: D{id}-{next_hub}.")
                 # ドローンが移動できない場合の処理を追加する
                 # 例えば、ドローンが次のハブに移動できない場合の処理をここに追加する
                 # 例: ドローンが次のハブに移動できない場合、現在の位置に留まるなど
@@ -82,19 +87,15 @@ class Simulation:
             sep="\n",
         )
         return path[1] if path and len(path) > 1 else cur_hub.name
-        # if cur_hub.hub_type == HubType.END_HUB:
-        #     print("End Hub")
-        #     return
-        # next_hubs = []
-        # for connection in self._connections:
-        #     hubs = connection.hubs
-        #     if hubs[0] == cur_hub.name:
-        #         next_hubs.append(hubs[1])
-        #     elif hubs[1] == cur_hub.name:
-        #         next_hubs.append(hubs[0])
 
-        # print("===")
-        # print(next_hubs)
+    def is_full_hub(self, hub_name: str) -> bool:
+        """指定されたハブが満杯かどうかを判定するメソッド"""
+        hub = self._hubs.get(hub_name)
+        if hub and hub.hub_type == HubType.END_HUB:
+            return False
+        # if hub is None:
+        #     raise ValueError(f"Hub '{hub_name}' not found.")
+        return any(drone.position == hub_name for drone in self._drones)
 
     def get_shortest_path(self, start_hub: str) -> tuple[list[str] | None, int | None]:
         if start_hub not in self._hubs:
@@ -129,6 +130,8 @@ class Simulation:
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
+                if self.is_full_hub(next_name):  # ドローンがいるハブはスキップする
+                    continue  # ドローンがいるハブはスキップする
                 next_node = self._hubs[next_name]
                 prev_min_cost = next_node.min_cost
                 if current_hub.min_cost is None:
