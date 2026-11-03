@@ -50,9 +50,14 @@ class Simulation:
             print(f"=== Turn {i} ===")
             self._simulate_next_turn()
             i += 1
-            # ここに出力処理を追加?
+            if i > 1000:
+                # TODO: この処理を消去する
+                raise RuntimeError(
+                    "シミュレーションが終了しませんでした。無限ループの可能性があります。")
 
-        raise NotImplementedError("シミュレーションの実装はまだ行われていません。")
+        raise NotImplementedError(
+            f"シミュレーションは{i}手で終了しました。"
+            "visualizeの実装はまだ行われていません。")
 
     def _simulate_next_turn(self) -> None:
         """シミュレーションの次のターンを実行するメソッド"""
@@ -130,13 +135,15 @@ class Simulation:
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
-                if self.is_full_hub(next_name):  # ドローンがいるハブはスキップする
-                    continue  # ドローンがいるハブはスキップする
-                next_node = self._hubs[next_name]
-                prev_min_cost = next_node.min_cost
                 if current_hub.min_cost is None:
                     raise Exception(
                         "min_cost is unset. Did you set when you push to the queue?")
+                elif self.is_full_hub(next_name):
+                    continue  # ドローンがいるハブはスキップする
+                next_node = self._hubs[next_name]
+                if next_node.zone == ZoneType.BLOCKED:
+                    continue  # 制限区域のハブはスキップする
+                prev_min_cost = next_node.min_cost
                 new_min_cost = next_node.cost + current_hub.min_cost
                 if prev_min_cost is None or new_min_cost < prev_min_cost:
                     next_node.min_cost = new_min_cost
