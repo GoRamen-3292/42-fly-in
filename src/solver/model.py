@@ -1,4 +1,18 @@
 from dataclasses import dataclass
+from src.model import ZoneType, HubType
+
+
+@dataclass
+class SolverHub:
+    name: str
+    connections: set[str]
+    seen: bool = False
+    shortest_path: list[str] | None = None
+    min_cost: int | None = None
+    # max_drones: int
+    cost: int = 1
+    zone: ZoneType = ZoneType.NORMAL
+    hub_type: HubType = HubType.NORMAL_HUB
 
 
 class Drone:

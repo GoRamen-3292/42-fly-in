@@ -1,20 +1,7 @@
-from src.model import (Connection, Drone, Hub, HubType,
-                       SimulationConfig, SimulationResult)
+from src.model import Connection, Hub, HubType, SimulationConfig
 from src.model.types import ZoneType
-from dataclasses import dataclass
+from .model import Drone, SolverHub, SimulationResult
 import heapq
-
-
-@dataclass
-class SolverHub:
-    name: str
-    connections: set[str]
-    seen: bool = False
-    shortest_path: list[str] | None = None
-    min_cost: int | None = None
-    cost: int = 1
-    zone: ZoneType = ZoneType.NORMAL
-    hub_type: HubType = HubType.NORMAL_HUB
 
 
 class Simulation:
@@ -46,14 +33,17 @@ class Simulation:
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
         i = 1
-        while not all(self._hubs[drone.position].hub_type == HubType.END_HUB for drone in self._drones):
+        while not all(
+            self._hubs[drone.position].hub_type == HubType.END_HUB
+                for drone in self._drones):
             print(f"=== Turn {i} ===")
             self._simulate_next_turn()
             i += 1
             if i > 1000:
                 # TODO: この処理を消去する
                 raise RuntimeError(
-                    "シミュレーションが終了しませんでした。無限ループの可能性があります。")
+                    "シミュレーションが終了しませんでした。"
+                    "無限ループの可能性があります。")
 
         raise NotImplementedError(
             f"シミュレーションは{i}手で終了しました。"
@@ -102,7 +92,8 @@ class Simulation:
         #     raise ValueError(f"Hub '{hub_name}' not found.")
         return any(drone.position == hub_name for drone in self._drones)
 
-    def get_shortest_path(self, start_hub: str) -> tuple[list[str] | None, int | None]:
+    def get_shortest_path(
+            self, start_hub: str) -> tuple[list[str] | None, int | None]:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
         queue: list[tuple[int, str]] = [(0, start_hub)]
@@ -137,7 +128,9 @@ class Simulation:
             for next_name in current_hub.connections:
                 if current_hub.min_cost is None:
                     raise Exception(
-                        "min_cost is unset. Did you set when you push to the queue?")
+                        "min_cost is unset. "
+                        "Did you set when you push to the queue?"
+                    )
                 elif self.is_full_hub(next_name):
                     continue  # ドローンがいるハブはスキップする
                 next_node = self._hubs[next_name]
@@ -156,7 +149,8 @@ class Simulation:
 
         return (None, None)
 
-    def convert_hubs(self, hubs: list[Hub], connections: list[Connection]) -> dict[str, SolverHub]:
+    def convert_hubs(self, hubs: list[Hub],
+                     connections: list[Connection]) -> dict[str, SolverHub]:
         result: dict[str, SolverHub] = {}
         for hub in hubs:
             result[hub.name] = (SolverHub(
