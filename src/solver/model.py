@@ -15,12 +15,11 @@ class SolverHub:
     hub_type: HubType = HubType.NORMAL_HUB
 
 
+@dataclass
 class Drone:
     """ドローンの状態を表すデータクラス"""
-
-    def __init__(self, id: int, position: str):
-        self.id = id
-        self.position = position
+    id: int
+    position: str
 
 
 @dataclass(frozen=True)
