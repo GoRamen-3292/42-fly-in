@@ -73,12 +73,11 @@ class Simulation:
         """1台のドローンのシミュレーションを実行するメソッド"""
         cur_hub = self._hubs[drone.position]
 
-        path, distance = self.get_shortest_path(cur_hub.name)
+        path = self.get_shortest_path(cur_hub.name)
         print(
             f"## Drone {drone.id}",
             f"- Current Hub: {cur_hub.name}",
             f"- Shortest Path: {path}",
-            f"- Distance: {distance}",
             sep="\n",
         )
         return path[1] if path and len(path) > 1 else cur_hub.name
@@ -92,41 +91,65 @@ class Simulation:
         #     raise ValueError(f"Hub '{hub_name}' not found.")
         return any(drone.position == hub_name for drone in self._drones)
 
+    def trace_back_path(self, parent: dict[str, str | None],
+                        end_hub: str) -> list[str]:
+        """最短経路を復元するメソッド"""
+        # print("OK: Reached end hub. Tracing back path...",
+        #       f" parent: {parent}, end_hub: {end_hub}", sep="\n")
+        current_hub: str | None = end_hub
+        path: list[str] = []
+        while current_hub is not None:
+            path.append(current_hub)
+            current_hub = parent[current_hub]
+        path.reverse()
+        return path
+
     def get_shortest_path(
-            self, start_hub: str) -> tuple[list[str] | None, int | None]:
+            self, start_hub: str) -> list[str] | None:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
-        queue: list[tuple[int, str]] = [(0, start_hub)]
-        for hub in self._hubs.values():
-            hub.seen = False
-            hub.shortest_path = None
-            hub.min_cost = None
-        self._hubs[start_hub].min_cost = 0
 
-        if not queue:
-            raise IndexError("No Start Hub found.")
+        queue: list[tuple[int, str]] = [(0, start_hub)]
+        """
+        キューを用いて、次に探索するハブを管理する
+
+        tuple型で、コストとハブ名を格納
+        """
+        visited: set[str] = set()
+        """
+        「来訪済み」のハブ、除外に利用
+        """
+        min_cost: dict[str, int] = {start_hub: 0}
+        """
+        それぞれのハブごとにかかる最小のコストを記録する辞書
+        """
+        parent: dict[str, str | None] = {start_hub: None}
+        """
+        直前のハブを記録する
+        """
+
         while queue:
             _, current_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
             current_hub = self._hubs[current_name]
             # 来訪済みなら、return
-            if current_hub.seen:
+            if current_name in visited:
                 continue
             # 探索済みにする
-            current_hub.seen = True
+            visited.add(current_hub.name)
 
             # 最短経路の置き換え
-            if current_hub.shortest_path is None:
-                path = [current_hub.name]
-            else:
-                path = current_hub.shortest_path + [current_hub.name]
+            # if current_hub.shortest_path is None:
+            #     path = [current_name]
+            # else:
+            #     path = current_hub.shortest_path + [current_name]
 
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
-                return (path, current_hub.min_cost)
+                return self.trace_back_path(parent, current_name)
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
-                if current_hub.min_cost is None:
+                if min_cost[current_name] is None:
                     raise Exception(
                         "min_cost is unset. "
                         "Did you set when you push to the queue?"
@@ -136,18 +159,22 @@ class Simulation:
                 next_node = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
-                prev_min_cost = next_node.min_cost
-                new_min_cost = next_node.cost + current_hub.min_cost
+
+                # コストを算出する
+                # 見つからなかったらNone、つまり「無限大」にする
+                prev_min_cost = min_cost[next_name] if next_name in min_cost else None
+                # TODO: ここのコストを1以外にHubTypeに応じて分岐する
+                new_min_cost = 1 + min_cost[current_name]
                 if prev_min_cost is None or new_min_cost < prev_min_cost:
-                    next_node.min_cost = new_min_cost
-                    next_node.shortest_path = path
+                    min_cost[next_name] = new_min_cost
                     heapq.heappush(queue, (new_min_cost, next_name))
+                    parent[next_name] = current_name
                     # print(f"Pushed {next_node.name}",
                     #       vars(next_node), sep="\n")
 
                 # コストの比較をする
 
-        return (None, None)
+        return None
 
     def convert_hubs(self, hubs: list[Hub],
                      connections: list[Connection]) -> dict[str, SolverHub]:
@@ -157,7 +184,8 @@ class Simulation:
                 name=hub.name,
                 connections=set(),
                 zone=hub.zone,
-                hub_type=hub.hub_type
+                hub_type=hub.hub_type,
+                max_drones=hub.max_drones,
             ))
         for connection in connections:
             hub_1, hub_2 = connection.hubs
