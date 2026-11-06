@@ -64,10 +64,6 @@ class Simulation:
                 print(f"D{id}-{next_hub} ")
             else:
                 print(f"Failed: D{id}-{next_hub}.")
-                # ドローンが移動できない場合の処理を追加する
-                # 例えば、ドローンが次のハブに移動できない場合の処理をここに追加する
-                # 例: ドローンが次のハブに移動できない場合、現在の位置に留まるなど
-                # drone.position = drone.position  # 現在の位置に留まる
 
     def _simulate_one_drone(self, drone: Drone) -> str:
         """1台のドローンのシミュレーションを実行するメソッド"""
@@ -87,15 +83,12 @@ class Simulation:
         hub = self._hubs.get(hub_name)
         if hub and hub.hub_type == HubType.END_HUB:
             return False
-        # if hub is None:
-        #     raise ValueError(f"Hub '{hub_name}' not found.")
+
         return any(drone.position == hub_name for drone in self._drones)
 
     def trace_back_path(self, parent: dict[str, str | None],
                         end_hub: str) -> list[str]:
         """最短経路を復元するメソッド"""
-        # print("OK: Reached end hub. Tracing back path...",
-        #       f" parent: {parent}, end_hub: {end_hub}", sep="\n")
         current_hub: str | None = end_hub
         path: list[str] = []
         while current_hub is not None:
@@ -137,12 +130,6 @@ class Simulation:
             # 探索済みにする
             visited.add(current_hub.name)
 
-            # 最短経路の置き換え
-            # if current_hub.shortest_path is None:
-            #     path = [current_name]
-            # else:
-            #     path = current_hub.shortest_path + [current_name]
-
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
                 return self.trace_back_path(parent, current_name)
@@ -169,8 +156,6 @@ class Simulation:
                     min_cost[next_name] = new_min_cost
                     heapq.heappush(queue, (new_min_cost, next_name))
                     parent[next_name] = current_name
-                    # print(f"Pushed {next_node.name}",
-                    #       vars(next_node), sep="\n")
 
                 # コストの比較をする
 
