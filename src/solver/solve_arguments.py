@@ -1,6 +1,6 @@
 from src.model import Connection, Hub, HubType, SimulationConfig
 from src.model.types import ZoneType
-from .model import Drone, SolverHub, SimulationResult
+from .types import Drone, PlanHeapElement, SolverHub, SimulationResult
 import heapq
 
 
@@ -102,7 +102,7 @@ class Simulation:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
 
-        queue: list[tuple[int, str]] = [(0, start_hub)]
+        queue: list[PlanHeapElement] = [(0, start_hub)]
         """
         キューを用いて、次に探索するハブを管理する
 
