@@ -103,6 +103,22 @@ class Simulation:
         path.reverse()
         return path
 
+    def heappush_next_hubs(self, queue: list[PlanElement],
+                           current: PlanElement, next_name: str,
+                           parent: ParentMap) -> None:
+        """次のハブをヒープに追加するメソッド"""
+
+        # TODO: ここのコストを1以外にHubTypeに応じて分岐する
+        new_turns = current[0] + 1
+
+        new_el = (new_turns, next_name)
+        if new_el not in parent:
+            if new_turns > self._max_turns:
+                # 最大ターン数を超えた場合は最短経路ではないのでスキップする
+                return
+            heapq.heappush(queue, new_el)
+            parent[new_el] = current
+
     def get_shortest_path(
             self, start_hub: str) -> list[PlanElement] | None:
         if start_hub not in self._hubs:
@@ -140,6 +156,9 @@ class Simulation:
                 return self.trace_back_path(
                     parent, (current_turns, current_name))
 
+            # そのまま待機する場合も探索の候補に追加
+            self.heappush_next_hubs(queue, current, current_name, parent)
+
             # すべての接続に対して...
             for next_name in current_hub.connections:
                 if self.is_full_hub(next_name):
@@ -147,17 +166,7 @@ class Simulation:
                 next_node: SolverHub = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
-
-                # コストを算出する
-                # TODO: ここのコストを1以外にHubTypeに応じて分岐する
-                new_turns = 1 + current_turns
-                new_el = (new_turns, next_name)
-                if new_el not in parent:
-                    if new_turns > self._max_turns:
-                        # 最大ターン数を超えた場合は最短経路ではないのでスキップする
-                        continue
-                    heapq.heappush(queue, (new_turns, next_name))
-                    parent[new_el] = current
+                self.heappush_next_hubs(queue, current, next_name, parent)
 
         return None
 
