@@ -2,9 +2,16 @@ from dataclasses import dataclass, field
 from src.model import ZoneType, HubType
 
 
-type PlanHeapElement = tuple[int, str]
+type PlanElement = tuple[int, str]
+"""
+時刻と現在の位置についてのタプル型
+
+時間を活用した探索のためのもの
 """
 
+type ParentMap = dict[PlanElement, PlanElement | None]
+"""
+直前にいたハブを記録し、最後に経路を復元するための辞書型
 """
 
 

@@ -1,6 +1,6 @@
 from src.model import Connection, Hub, HubType, SimulationConfig
 from src.model.types import ZoneType
-from .types import Drone, PlanHeapElement, SolverHub, SimulationResult
+from .types import Drone, PlanElement, ParentMap, SolverHub, SimulationResult
 import heapq
 
 
@@ -76,7 +76,7 @@ class Simulation:
             f"- Shortest Path: {path}",
             sep="\n",
         )
-        return path[1] if path and len(path) > 1 else cur_hub.name
+        return path[1][1] if path and len(path) > 1 else cur_hub.name
 
     def is_full_hub(self, hub_name: str) -> bool:
         """指定されたハブが満杯かどうかを判定するメソッド"""
@@ -86,11 +86,11 @@ class Simulation:
 
         return any(drone.position == hub_name for drone in self._drones)
 
-    def trace_back_path(self, parent: dict[str, str | None],
-                        end_hub: str) -> list[str]:
+    def trace_back_path(self, parent: ParentMap,
+                        end_hub: PlanElement) -> list[PlanElement]:
         """最短経路を復元するメソッド"""
-        current_hub: str | None = end_hub
-        path: list[str] = []
+        current_hub: PlanElement | None = end_hub
+        path: list[PlanElement] = []
         while current_hub is not None:
             path.append(current_hub)
             current_hub = parent[current_hub]
@@ -98,64 +98,63 @@ class Simulation:
         return path
 
     def get_shortest_path(
-            self, start_hub: str) -> list[str] | None:
+            self, start_hub: str) -> list[PlanElement] | None:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
 
-        queue: list[PlanHeapElement] = [(0, start_hub)]
+        queue: list[PlanElement] = [(0, start_hub)]
         """
         キューを用いて、次に探索するハブを管理する
 
         tuple型で、コストとハブ名を格納
         """
-        visited: set[str] = set()
+        visited: set[PlanElement] = set()
         """
         「来訪済み」のハブ、除外に利用
         """
-        min_cost: dict[str, int] = {start_hub: 0}
-        """
-        それぞれのハブごとにかかる最小のコストを記録する辞書
-        """
-        parent: dict[str, str | None] = {start_hub: None}
+        parent: ParentMap = {(0, start_hub): None}
         """
         直前のハブを記録する
         """
 
         while queue:
-            _, current_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
+            current: PlanElement = heapq.heappop(queue)
+            current_turns, current_name = current
             current_hub = self._hubs[current_name]
             # 来訪済みなら、return
-            if current_name in visited:
+            if current in visited:
                 continue
             # 探索済みにする
-            visited.add(current_hub.name)
+            visited.add(current)
 
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
-                return self.trace_back_path(parent, current_name)
+                return self.trace_back_path(
+                    parent, (current_turns, current_name))
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
-                if min_cost[current_name] is None:
-                    raise Exception(
-                        "min_cost is unset. "
-                        "Did you set when you push to the queue?"
-                    )
-                elif self.is_full_hub(next_name):
+                # if min_cost[current_name] is None:
+                #     raise Exception(
+                #         "min_cost is unset. "
+                #         "Did you set when you push to the queue?"
+                #     )
+                if self.is_full_hub(next_name):
                     continue  # ドローンがいるハブはスキップする
-                next_node = self._hubs[next_name]
+                next_node: SolverHub = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
 
                 # コストを算出する
                 # 見つからなかったらNone、つまり「無限大」にする
-                prev_min_cost = min_cost[next_name] if next_name in min_cost else None
+                # prev_turns = min_cost[next_name] \
+                #  if next_name in min_cost else None
                 # TODO: ここのコストを1以外にHubTypeに応じて分岐する
-                new_min_cost = 1 + min_cost[current_name]
-                if prev_min_cost is None or new_min_cost < prev_min_cost:
-                    min_cost[next_name] = new_min_cost
-                    heapq.heappush(queue, (new_min_cost, next_name))
-                    parent[next_name] = current_name
+                new_turns = 1 + current_turns
+                new_el = (new_turns, next_name)
+                if new_el not in visited:
+                    heapq.heappush(queue, (new_turns, next_name))
+                    parent[new_el] = current
 
                 # コストの比較をする
 
