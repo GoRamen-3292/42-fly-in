@@ -13,6 +13,12 @@ class Simulation:
         self._hubs: dict[str, SolverHub] = self.convert_hubs(
             config.hubs, config.connections)
 
+        # 最大ターンの設定
+        # どれだけかかっても、すべてのハブの数 + ドローンの数の2倍以内で終わるはず
+        # 理由は、すべてのハブが同じ経路ですべてrestrictedだった場合であるため
+        # TODO: この場合についてのテストケースを作る
+        self._max_turns = (len(self._hubs) + config.nb_drones) * 2
+
         start_hub = next(
             (hub for hub in self._hubs.values()
              if hub.hub_type == HubType.START_HUB), None)
@@ -108,10 +114,12 @@ class Simulation:
 
         tuple型で、コストとハブ名を格納
         """
+
         visited: set[PlanElement] = set()
         """
         「来訪済み」のハブ、除外に利用
         """
+
         parent: ParentMap = {(0, start_hub): None}
         """
         直前のハブを記録する
@@ -134,11 +142,6 @@ class Simulation:
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
-                # if min_cost[current_name] is None:
-                #     raise Exception(
-                #         "min_cost is unset. "
-                #         "Did you set when you push to the queue?"
-                #     )
                 if self.is_full_hub(next_name):
                     continue  # ドローンがいるハブはスキップする
                 next_node: SolverHub = self._hubs[next_name]
@@ -146,17 +149,15 @@ class Simulation:
                     continue  # 制限区域のハブはスキップする
 
                 # コストを算出する
-                # 見つからなかったらNone、つまり「無限大」にする
-                # prev_turns = min_cost[next_name] \
-                #  if next_name in min_cost else None
                 # TODO: ここのコストを1以外にHubTypeに応じて分岐する
                 new_turns = 1 + current_turns
                 new_el = (new_turns, next_name)
-                if new_el not in visited:
+                if new_el not in parent:
+                    if new_turns > self._max_turns:
+                        # 最大ターン数を超えた場合は最短経路ではないのでスキップする
+                        continue
                     heapq.heappush(queue, (new_turns, next_name))
                     parent[new_el] = current
-
-                # コストの比較をする
 
         return None
 
