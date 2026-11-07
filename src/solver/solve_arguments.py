@@ -1,7 +1,6 @@
 from src.model import Connection, Hub, HubType, SimulationConfig
 from src.model.types import ZoneType
 from .types import Drone, PlanElement, ParentMap, SolverHub, SimulationResult
-from collections import defaultdict
 import heapq
 
 
@@ -56,7 +55,8 @@ class Simulation:
 
     def _plan(self):
         for drone in self._drones:
-            path = self.get_shortest_path(drone.position)
+            path: list[PlanElement] | None = \
+                self.get_shortest_path(drone.position)
             if not path:
                 raise Exception("合理的な手数の範囲内で経路が見つかりません")
             for _, el in enumerate(path):
@@ -65,7 +65,7 @@ class Simulation:
 
     def is_full_hub(self, plan: PlanElement) -> bool:
         """指定されたハブが満杯かどうかを判定するメソッド"""
-        hub = self._hubs.get(plan[1])
+        hub: SolverHub | None = self._hubs.get(plan[1])
         if not hub:
             raise Exception("Cannot find hub")
         elif hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
@@ -93,7 +93,7 @@ class Simulation:
         # TODO: ここのコストを1以外にHubTypeに応じて分岐する
         new_turns = current[0] + 1
 
-        new_el = (new_turns, next_name)
+        new_el: PlanElement = (new_turns, next_name)
         if self.is_full_hub(new_el):
             return  # ドローンがいるハブはスキップする
         elif new_turns > self._max_turns:
@@ -127,7 +127,7 @@ class Simulation:
         while queue:
             current: PlanElement = heapq.heappop(queue)
             current_turns, current_name = current
-            current_hub = self._hubs[current_name]
+            current_hub: SolverHub = self._hubs[current_name]
             # 来訪済みなら、return
             if current in visited:
                 continue
