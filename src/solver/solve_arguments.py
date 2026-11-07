@@ -53,13 +53,13 @@ class Simulation:
         )
         return self._result
 
-    def _plan(self):
+    def _plan(self) -> None:
         for drone in self._drones:
             path: list[PlanElement] | None = \
                 self.get_shortest_path(drone.position)
             if not path:
                 raise Exception("合理的な手数の範囲内で経路が見つかりません")
-            for _, el in enumerate(path):
+            for el in path:
                 drone.timeline.append(el)
                 self._scheduler[el] = self._scheduler.get(el, 0) + 1
 

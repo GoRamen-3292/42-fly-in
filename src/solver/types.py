@@ -45,7 +45,7 @@ class Drone:
     """
     id: int
     position: str
-    timeline: list[str] = field(default_factory=list)
+    timeline: list[PlanElement] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
