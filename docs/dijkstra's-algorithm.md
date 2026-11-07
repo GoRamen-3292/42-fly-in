@@ -8,12 +8,14 @@
 
 ## 参考文献
 
+### 実装例
+
+- [ダイクストラ法（Dijkstra's Algorithm）をPythonで実装する #Python - Qiita](https://qiita.com/gomagoma000/items/edd3ff714e4d964c670c)
+
+実装した際に利用した [コード](../sandbox/dijkstra/python_example.py) があった。
+
 ### わかりやすそう
 
 - [ダイクストラ法についてまとめてみた【経路探索アルゴリズム】｜らるす](https://note.com/rarusu/n/na7c9ca8ba1a0)
 - [マップ上の最短距離を見つけるダイクストラ法を図解でわかりやすく説明 | python実装あり｜スイスのアボカド](https://note.com/avocado81230/n/n1a0e8a835d05)
 - [【C++日記】A*アルゴリズム 編｜Frira](https://note.com/fgr_frira/n/n67c0b664140c)
-
-### 読んだ
-
-- ...
