@@ -47,9 +47,12 @@ class Simulation:
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
         self._plan()
-        self._show_result()
-        raise NotImplementedError(
-            "visualizeの実装はまだ行われていません。")
+        # self._show_result()
+        self._result = SimulationResult(
+            is_successful=True,
+            drones=self._drones,
+        )
+        return self._result
 
     def _plan(self):
         for drone in self._drones:
@@ -59,7 +62,6 @@ class Simulation:
             for _, el in enumerate(path):
                 drone.timeline.append(el)
                 self._scheduler[el] = self._scheduler.get(el, 0) + 1
-            # print("===", self._scheduler, sep="\n")
 
     def is_full_hub(self, plan: PlanElement) -> bool:
         """指定されたハブが満杯かどうかを判定するメソッド"""
@@ -165,16 +167,3 @@ class Simulation:
             result[hub_1].connections.add(hub_2)
             result[hub_2].connections.add(hub_1)
         return result
-
-    def _show_result(self):
-        result: defaultdict[list[str]] = defaultdict(list)
-        for drone in self._drones:
-            for i, el in enumerate(drone.timeline):
-                result[i].append(
-                    f"D{drone.id}-{drone.timeline[i][1]}")
-                print("Appended: "
-                      f"D{drone.id}-{drone.timeline[i][1]}")
-
-        sorted_keys = sorted(result.keys())
-        for key in sorted_keys:
-            print(" ".join(result[key]))
