@@ -28,6 +28,13 @@ class Simulation:
         self._drones = [Drone(id=i, position=start_hub.name)
                         for i in range(config.nb_drones)]
 
+        self._scheduler: dict[PlanElement, int] = {}
+        """
+        ドローンがどのターンにどの位置にいるのかを記録する辞書型
+
+        キーはPlanElement型で、値はドローンの数
+        """
+
     def get_result(self) -> SimulationResult:
         """シミュレーションの結果を取得するメソッド"""
         if self._result is None:
@@ -38,59 +45,29 @@ class Simulation:
         """シミュレーションを実行するメソッド"""
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
-        i = 1
-        while not all(
-            self._hubs[drone.position].hub_type == HubType.END_HUB
-                for drone in self._drones):
-            print(f"=== Turn {i} ===")
-            self._simulate_next_turn()
-            i += 1
-            if i > 1000:
-                # TODO: この処理を消去する
-                raise RuntimeError(
-                    "シミュレーションが終了しませんでした。"
-                    "無限ループの可能性があります。")
-
+        self._plan()
         raise NotImplementedError(
-            f"シミュレーションは{i}手で終了しました。"
             "visualizeの実装はまだ行われていません。")
 
-    def _simulate_next_turn(self) -> None:
-        """シミュレーションの次のターンを実行するメソッド"""
-        next_candidates: dict[int, str] = {}
+    def _plan(self):
         for drone in self._drones:
-            next_candidates[drone.id] = self._simulate_one_drone(drone)
-        print()
-        for drone in self._drones:
-            id = drone.id
-            next_hub = next_candidates[id]
-            if self._hubs[next_hub].hub_type == HubType.END_HUB or \
-                    all(drone.position != next_hub for drone in self._drones):
-                drone.position = next_hub
-                print(f"D{id}-{next_hub} ")
-            else:
-                print(f"Failed: D{id}-{next_hub}.")
+            path = self.get_shortest_path(drone.position)
+            if not path:
+                raise Exception("合理的な手数の範囲内で経路が見つかりません")
+            for el in path:
+                self._scheduler[el] = self._scheduler.get(el, 0) + 1
+            print("===", self._scheduler, sep="\n")
 
-    def _simulate_one_drone(self, drone: Drone) -> str:
-        """1台のドローンのシミュレーションを実行するメソッド"""
-        cur_hub = self._hubs[drone.position]
-
-        path = self.get_shortest_path(cur_hub.name)
-        print(
-            f"## Drone {drone.id}",
-            f"- Current Hub: {cur_hub.name}",
-            f"- Shortest Path: {path}",
-            sep="\n",
-        )
-        return path[1][1] if path and len(path) > 1 else cur_hub.name
-
-    def is_full_hub(self, hub_name: str) -> bool:
+    def is_full_hub(self, plan: PlanElement) -> bool:
         """指定されたハブが満杯かどうかを判定するメソッド"""
-        hub = self._hubs.get(hub_name)
-        if hub and hub.hub_type == HubType.END_HUB:
+        hub = self._hubs.get(plan[1])
+        if not hub:
+            raise Exception("Cannot find hub")
+        elif hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
             return False
 
-        return any(drone.position == hub_name for drone in self._drones)
+        cur_hubs: int | None = self._scheduler.get(plan, None)
+        return cur_hubs >= hub.max_drones if cur_hubs else False
 
     def trace_back_path(self, parent: ParentMap,
                         end_hub: PlanElement) -> list[PlanElement]:
@@ -112,10 +89,11 @@ class Simulation:
         new_turns = current[0] + 1
 
         new_el = (new_turns, next_name)
-        if new_el not in parent:
-            if new_turns > self._max_turns:
-                # 最大ターン数を超えた場合は最短経路ではないのでスキップする
-                return
+        if self.is_full_hub(new_el):
+            return  # ドローンがいるハブはスキップする
+        elif new_turns > self._max_turns:
+            return  # 最大ターン数を超えた場合は最短経路ではないのでスキップする
+        elif new_el not in parent:
             heapq.heappush(queue, new_el)
             parent[new_el] = current
 
@@ -161,8 +139,6 @@ class Simulation:
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
-                if self.is_full_hub(next_name):
-                    continue  # ドローンがいるハブはスキップする
                 next_node: SolverHub = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
