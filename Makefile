@@ -19,6 +19,10 @@ debug:
 # -exec rm -rf {} +: ファイル削除、 {} はファイル名、 +は複数ファイルをまとめてrmで削除するオプション
 clean:
 	find . -type d \( -name "__pycache__" -o -name ".mypy_cache" \) -exec rm -rf {} +
+	rm -rf .pytest_cache
+
+fclean: clean
+	rm -rf .venv
 
 lint:
 	flake8 $(CHECK_PATHS)
