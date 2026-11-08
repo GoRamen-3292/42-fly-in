@@ -21,9 +21,10 @@ _This project has been created as part of the 42 curriculum by ktomita._
 - 各種環境整備と、そのためのコマンドの生成
 - プロジェクトのコメントの生成 (予定)
 - READMEの執筆の補助
-- "Reduce repetitive or tedious tasks" の目的のためにGitHub CopilotのTab補完の利用 (予定)
+- "Reduce repetitive or tedious tasks" の目的のためにGitHub CopilotのTab補完の利用
+- メインとなるダイクストラ法のアルゴリズムの着想や、一度執筆したコードの修正の方針を考える際の補助
 
-全てのコードを完全に理解した上で、AIが生成したコードをレビューし、必要に応じて修正を加えました。
+全てのコードを完全に理解した上で、部分的に用いたAIが生成したコードをレビューし必要に応じて修正を加えました。
 
 ## Additional Notes
 
