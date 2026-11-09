@@ -2,14 +2,28 @@ from dataclasses import dataclass, field
 from src.model import ZoneType, HubType
 
 
+type ConnectionKey = tuple[str, str]
+"""
+接続へのキー
+"""
+
+# type PlanElement = tuple[int, str | ConnectionKey]
 type PlanElement = tuple[int, str]
 """
-ターンと現在の位置についてのタプル型
+ターンと現在滞在しているハブについてのタプル型
 
 時間を活用した探索のためのもの
 """
 
-type ParentMap = dict[PlanElement, PlanElement | None]
+type PlanConnectionElement = tuple[int, ConnectionKey]
+"""
+ターンと現在滞在しているConnectionについてのタプル型
+
+スケジュールと出力に利用する
+"""
+
+type ParentMap = dict[PlanElement | PlanConnectionElement,
+                      PlanElement | PlanConnectionElement | None]
 """
 直前にいたハブを記録し、最後に経路を復元するための辞書型
 """
@@ -41,11 +55,12 @@ class Drone:
     Attributes:
         id (int): ドローンの識別子
         position (str): ドローンの現在位置
-        timeline (list[str]): ドローンのTurnごとの位置の履歴、[0]に初期位置
+        timeline (list[PlanElement | PlanConnectionElement]): ドローンのTurnごとの位置の履歴、[0]に初期位置
     """
     id: int
     position: str
-    timeline: list[PlanElement] = field(default_factory=list)
+    timeline: list[PlanElement | PlanConnectionElement] = field(
+        default_factory=list)
 
 
 @dataclass(frozen=True)
