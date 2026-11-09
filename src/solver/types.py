@@ -4,7 +4,7 @@ from src.model import ZoneType, HubType
 
 type PlanElement = tuple[int, str]
 """
-時刻と現在の位置についてのタプル型
+ターンと現在の位置についてのタプル型
 
 時間を活用した探索のためのもの
 """

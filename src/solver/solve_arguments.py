@@ -1,6 +1,8 @@
-from src.model import Connection, Hub, HubType, SimulationConfig
+from src.model import Connection, Hub, HubType, SimulationConfig, connection
 from src.model.types import ZoneType
-from .types import Drone, PlanElement, ParentMap, SolverHub, SimulationResult
+from .types import (Drone, PlanElement,
+                    ParentMap, SolverHub, SimulationResult)
+from typing import cast
 import heapq
 
 
@@ -63,16 +65,17 @@ class Simulation:
                 drone.timeline.append(el)
                 self._scheduler[el] = self._scheduler.get(el, 0) + 1
 
-    def is_full_hub(self, plan: PlanElement) -> bool:
+    def _is_full_hub(self, plan: PlanElement) -> bool:
         """指定されたハブが満杯かどうかを判定するメソッド"""
-        hub: SolverHub | None = self._hubs.get(plan[1])
+        hub_name: str = plan[1]
+        hub: SolverHub | None = self._hubs.get(hub_name)
         if not hub:
             raise Exception("Cannot find hub")
         elif hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
             return False
 
-        cur_hubs: int | None = self._scheduler.get(plan, None)
-        return cur_hubs >= hub.max_drones if cur_hubs else False
+        cur_drones: int | None = self._scheduler.get(plan, None)
+        return cur_drones >= hub.max_drones if cur_drones else False
 
     def trace_back_path(self, parent: ParentMap,
                         end_hub: PlanElement) -> list[PlanElement]:
@@ -94,13 +97,15 @@ class Simulation:
         new_turns = current[0] + 1
 
         new_el: PlanElement = (new_turns, next_name)
-        if self.is_full_hub(new_el):
+        if self._is_full_hub(new_el):
             return  # ドローンがいるハブはスキップする
         elif new_turns > self._max_turns:
             return  # 最大ターン数を超えた場合は最短経路ではないのでスキップする
-        elif new_el not in parent:
-            heapq.heappush(queue, new_el)
-            parent[new_el] = current
+        elif new_el in parent:
+            return
+
+        heapq.heappush(queue, new_el)
+        parent[new_el] = current
 
     def get_shortest_path(
             self, start_hub: str) -> list[PlanElement] | None:
@@ -126,8 +131,8 @@ class Simulation:
 
         while queue:
             current: PlanElement = heapq.heappop(queue)
-            current_turns, current_name = current
-            current_hub: SolverHub = self._hubs[current_name]
+            current_turns, current_pos = current
+            current_hub: SolverHub = self._hubs[current_pos]
             # 来訪済みなら、return
             if current in visited:
                 continue
@@ -137,10 +142,10 @@ class Simulation:
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
                 return self.trace_back_path(
-                    parent, (current_turns, current_name))
+                    parent, (current_turns, current_pos))
 
             # そのまま待機する場合も探索の候補に追加
-            self.heappush_next_hubs(queue, current, current_name, parent)
+            self.heappush_next_hubs(queue, current, current_pos, parent)
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
