@@ -53,9 +53,9 @@ class Drone:
     """ドローンの状態を表すデータクラス
 
     Attributes:
-        id (int): ドローンの識別子
-        position (str): ドローンの現在位置
-        timeline (list[PlanElement | PlanConnectionElement]): ドローンのTurnごとの位置の履歴、[0]に初期位置
+        id: ドローンの識別子
+        position: ドローンの現在位置
+        timeline: ドローンのTurnごとの位置の履歴、[0]に初期位置
     """
     id: int
     position: str

@@ -16,7 +16,8 @@ class SolverHub:
     hub_type: HubType = HubType.NORMAL_HUB
 
 
-def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]) -> tuple[list[str] | None, int | None]:
+def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]
+                      ) -> tuple[list[str] | None, int | None]:
     hubs: dict[str, SolverHub] = convert_hubs(hubs_arg, connections_arg)
 
     queue: list[tuple[int, str]] = []
@@ -52,7 +53,8 @@ def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]) ->
             prev_min_cost = next_node.min_cost
             if current_hub.min_cost is None:
                 raise Exception(
-                    "min_cost is unset. Did you set when you push to the queue?")
+                    "min_cost is unset."
+                    + "Did you set when you push to the queue?")
             new_min_cost = next_node.cost + current_hub.min_cost
             if prev_min_cost is None or new_min_cost < prev_min_cost:
                 next_node.min_cost = new_min_cost
@@ -65,7 +67,8 @@ def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]) ->
     return (None, None)
 
 
-def convert_hubs(hubs: list[Hub], connections: list[Connection]) -> dict[str, SolverHub]:
+def convert_hubs(hubs: list[Hub], connections: list[Connection]
+                 ) -> dict[str, SolverHub]:
     result: dict[str, SolverHub] = {}
     for hub in hubs:
         result[hub.name] = (SolverHub(

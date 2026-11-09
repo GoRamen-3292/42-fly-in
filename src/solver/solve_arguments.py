@@ -100,8 +100,8 @@ class Simulation:
         cur_drones: int | None = self._scheduler.get(plan, None)
         return cur_drones >= hub.max_drones if cur_drones else False
 
-    def trace_back_path(self, parent: ParentMap,
-                        end_hub: PlanElement) -> list[PlanElement | PlanConnectionElement]:
+    def trace_back_path(self, parent: ParentMap, end_hub: PlanElement) \
+            -> list[PlanElement | PlanConnectionElement]:
         """最短経路を復元するメソッド"""
         current_hub: PlanElement | PlanConnectionElement | None = end_hub
         path: list[PlanElement | PlanConnectionElement] = []
@@ -148,8 +148,8 @@ class Simulation:
             parent[new_el] = current
         heapq.heappush(queue, new_el)
 
-    def get_shortest_path(
-            self, start_hub: str) -> list[PlanElement | PlanConnectionElement] | None:
+    def get_shortest_path(self, start_hub: str) \
+            -> list[PlanElement | PlanConnectionElement] | None:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
 
@@ -214,7 +214,8 @@ class Simulation:
             result[hub_2].connections.add(hub_1)
         return result
 
-    def convert_connections(self, connections: list[Connection]) -> list[Connection]:
+    def convert_connections(self,
+                            connections: list[Connection]) -> list[Connection]:
         result: list[Connection] = []
         for conn in connections:
             result.append(
