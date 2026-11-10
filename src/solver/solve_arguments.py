@@ -19,7 +19,7 @@ class Simulation:
         # どれだけかかっても、すべてのハブの数 + ドローンの数の2倍以内で終わるはず
         # 理由は、すべてのハブが同じ経路ですべてrestrictedだった場合であるため
         # TODO: この場合についてのテストケースを作る
-        self._max_turns = (len(self._hubs) + config.nb_drones) * 2
+        self._max_turns = (len(self._hubs) + config.nb_drones) * 3
 
         start_hub: SolverHub | None = next(
             (hub for hub in self._hubs.values()
