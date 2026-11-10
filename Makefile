@@ -1,12 +1,13 @@
 # ディレクトリ
 CHECK_PATHS = src sandbox main.py
 TEST_PATHS = test
+MAP = test.txt
 
 install:
 	uv sync
 
 run:
-	uv run main.py
+	@uv run main.py $(MAP)
 
 debug:
 	echo "Not implemented yet (debug mode)"
