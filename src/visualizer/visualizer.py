@@ -1,4 +1,4 @@
-from src.solver.types import ConnectionKey, Drone, PlanConnectionElement, PlanElement, SimulationResult
+from src.solver.types import ConnectionKey, SimulationResult
 from collections import defaultdict
 
 
