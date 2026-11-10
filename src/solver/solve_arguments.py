@@ -74,8 +74,7 @@ class Simulation:
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
                 else:
-                    pc_el: PlanConnectionElement = \
-                        (el[0], normalize_connction_key(el[1]))
+                    pc_el = (el[0], normalize_connction_key(el[1]))
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
                 prev_hub = el[1] if isinstance(el[1], str) else el[1][1]
@@ -97,7 +96,7 @@ class Simulation:
         elif hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
             return False
 
-        cur_drones: int | None = self._scheduler.get(plan, 0)
+        cur_drones: int = self._scheduler.get(plan, 0)
         return cur_drones >= hub.max_drones
 
     def trace_back_path(self, parent: ParentMap, end_hub: PlanElement) \
@@ -126,7 +125,6 @@ class Simulation:
         else:
             new_turns = prev_turns + 2
 
-        conn_turn: PlanConnectionElement | None = None
         if prev_hub != next_hub.name:
             connection = normalize_connction_key((prev_hub, next_name))
             conn_turn = (prev_turns + 1, connection)
