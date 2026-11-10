@@ -8,6 +8,12 @@ type Coordinate = tuple[int, int]
 """
 
 
+type ConnectionKey = tuple[str, str]
+"""
+接続へのキー
+"""
+
+
 class ZoneType(str, Enum):
     """ゾーンの種類を表す列挙型
 

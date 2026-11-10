@@ -1,11 +1,5 @@
 from dataclasses import dataclass, field
-from src.model import ZoneType, HubType
-
-
-type ConnectionKey = tuple[str, str]
-"""
-接続へのキー
-"""
+from src.model import ConnectionKey, ZoneType, HubType
 
 # type PlanElement = tuple[int, str | ConnectionKey]
 type PlanElement = tuple[int, str]

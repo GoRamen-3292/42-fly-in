@@ -1,5 +1,13 @@
 from .validate_args import validate_hub_name
 from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
+from .types import ConnectionKey
+
+
+def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
+    if conn[0] < conn[1]:
+        return conn
+    else:
+        return conn[1], conn[0]
 
 
 class Connection(BaseModel):

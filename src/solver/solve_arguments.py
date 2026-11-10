@@ -1,6 +1,6 @@
-from src.model import Connection, Hub, HubType, SimulationConfig
-from src.model.types import ZoneType
-from .types import (ConnectionKey, Drone, PlanElement, PlanConnectionElement,
+from src.model import (Connection, Hub, HubType,
+                       SimulationConfig, ZoneType, normalize_connction_key)
+from .types import (Drone, PlanElement, PlanConnectionElement,
                     ParentMap, SolverHub, SimulationResult)
 import heapq
 
@@ -56,13 +56,6 @@ class Simulation:
         )
         return self._result
 
-    @staticmethod
-    def _normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
-        if conn[0] < conn[1]:
-            return conn
-        else:
-            return conn[1], conn[0]
-
     def _plan(self) -> None:
         for drone in self._drones:
             path: list[PlanElement | PlanConnectionElement] | None = \
@@ -76,7 +69,7 @@ class Simulation:
                     self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
                 else:
                     pc_el: PlanConnectionElement = \
-                        (el[0], self._normalize_connction_key(el[1]))
+                        (el[0], normalize_connction_key(el[1]))
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
 
@@ -126,7 +119,7 @@ class Simulation:
         else:
             new_turns = prev_turns + 2
 
-            connection = self._normalize_connction_key((prev_hub, next_name))
+            connection = normalize_connction_key((prev_hub, next_name))
             conn_turn = (prev_turns + 1, connection)
             if self._is_full_connection(conn_turn):
                 return  # Connectionはいっぱいである
@@ -221,7 +214,7 @@ class Simulation:
             result.append(
                 Connection.model_validate(
                     obj={
-                        "hubs": self._normalize_connction_key(conn.hubs),
+                        "hubs": normalize_connction_key(conn.hubs),
                         "max_link_capacity": conn.max_link_capacity,
                     }
                 ))

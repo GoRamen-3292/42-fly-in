@@ -1,4 +1,5 @@
-from src.solver.types import ConnectionKey, SimulationResult
+from src.model import ConnectionKey
+from src.solver.types import SimulationResult
 from collections import defaultdict
 
 
