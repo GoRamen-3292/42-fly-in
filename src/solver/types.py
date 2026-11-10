@@ -58,7 +58,7 @@ class Drone:
         timeline: ドローンのTurnごとの位置の履歴、[0]に初期位置
     """
     id: int
-    position: str
+    start_pos: str
     timeline: list[PlanElement | PlanConnectionElement] = field(
         default_factory=list)
 

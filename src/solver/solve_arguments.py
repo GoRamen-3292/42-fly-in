@@ -27,7 +27,7 @@ class Simulation:
         if start_hub is None:
             raise ValueError("シミュレーションの開始ハブが見つかりません。")
 
-        self._drones = [Drone(id=i, position=start_hub.name)
+        self._drones = [Drone(id=i, start_pos=start_hub.name)
                         for i in range(config.nb_drones)]
 
         self._scheduler: dict[PlanElement, int] = {}
@@ -66,7 +66,7 @@ class Simulation:
     def _plan(self) -> None:
         for drone in self._drones:
             path: list[PlanElement | PlanConnectionElement] | None = \
-                self.get_shortest_path(drone.position)
+                self.get_shortest_path(drone.start_pos)
             if not path:
                 raise Exception("合理的な手数の範囲内で経路が見つかりません")
             for el in path:
