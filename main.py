@@ -3,7 +3,6 @@ from src import FileParser, Simulation, Visualizer
 
 def main() -> None:
     """メイン関数"""
-    print("Hello, World!")
     try:
         config = FileParser.parse_file("maps/easy/01_linear_path.txt")
         # print(config.model_dump(mode="Python"))
