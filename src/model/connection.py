@@ -35,4 +35,5 @@ class Connection(BaseModel):
             raise ValueError("hubs must contain two different hub names")
         return value
 
-    # TODO: post_init等でこの時点で正規化を行ってしまう?
+    def __post_init__(self) -> None:
+        self.hubs = normalize_connction_key(self.hubs)
