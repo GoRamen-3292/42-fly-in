@@ -1,5 +1,5 @@
 import pytest
-from src.model import Connection
+from src.model import Connection, normalize_connction_key
 
 
 @pytest.mark.parametrize("hubs", [
@@ -39,3 +39,45 @@ def test_invalid_hubs_connection(hubs: tuple[str, str]) -> None:
             hubs=hubs,
             max_link_capacity=1,
         )
+
+
+@pytest.mark.parametrize("max_link_capacity", [
+    1,
+    10,
+    100,
+    4371809348157145981473597198543719878945980143509731089462093659143609135719857149375,
+])
+def test_valid_max_link_capacity(max_link_capacity: int) -> None:
+    Connection(
+        hubs=("hub1", "hub2"),
+        max_link_capacity=max_link_capacity,
+    )
+
+
+@pytest.mark.parametrize("max_link_capacity", [
+    0,
+    -1,
+    -100,
+    -4371809348157145981473597198543719878945980143509731089462093659143609135719857149375,
+])
+def test_invalid_max_link_capacity(max_link_capacity: int) -> None:
+    with pytest.raises(ValueError):
+        Connection(
+            hubs=("hub1", "hub2"),
+            max_link_capacity=max_link_capacity,
+        )
+
+
+@pytest.mark.parametrize("hubs", [
+    ("hub1", "hub2"),
+    ("hub2", "hub1"),
+    ("hub1", "hub3"),
+    ("hub2", "hub3"),
+    ("hub3", "hub1"),
+])
+def test_normalization_of_hubs(hubs: tuple[str, str]) -> None:
+    connection = Connection(
+        hubs=hubs,
+        max_link_capacity=1,
+    )
+    assert connection.hubs == normalize_connction_key(hubs)

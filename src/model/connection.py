@@ -1,6 +1,7 @@
 from .validate_args import validate_hub_name
 from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
 from .types import ConnectionKey
+from typing import Any
 
 
 def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
@@ -35,5 +36,5 @@ class Connection(BaseModel):
             raise ValueError("hubs must contain two different hub names")
         return value
 
-    def __post_init__(self) -> None:
+    def model_post_init(self, context: Any) -> None:
         self.hubs = normalize_connction_key(self.hubs)
