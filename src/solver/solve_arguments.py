@@ -73,13 +73,15 @@ class Simulation:
                         el[0], normalize_connction_key((prev_hub, el[1])))
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
+                    prev_hub = el[1]
                 else:
                     pc_el = (el[0], normalize_connction_key(el[1]))
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
-                prev_hub = el[1] if isinstance(el[1], str) else el[1][1]
+                    prev_hub = el[1][1]
 
     def _is_full_connection(self, plan: PlanConnectionElement) -> bool:
+        plan = plan[0], normalize_connction_key(plan[1])
         connection: Connection = next(
             el for el in self._connections if el.hubs == plan[1]
         )
@@ -126,8 +128,7 @@ class Simulation:
             new_turns = prev_turns + 2
 
         if prev_hub != next_hub.name:
-            connection = normalize_connction_key((prev_hub, next_name))
-            conn_turn = (prev_turns + 1, connection)
+            conn_turn = (prev_turns + 1, (prev_hub, next_name))
             if self._is_full_connection(conn_turn):
                 return  # Connectionはいっぱいである
         new_el: PlanElement = (new_turns, next_name)
