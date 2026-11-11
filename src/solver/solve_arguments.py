@@ -197,7 +197,9 @@ class Simulation:
 
             # 優先度の高いハブを先に探索する
             values = sorted(
-                values, key=lambda x: self._hubs[x[2]].zone is ZoneType.PRIORITY, reverse=True)
+                values,
+                key=lambda x: self._hubs[x[2]].zone is ZoneType.PRIORITY,
+                reverse=True)
             for queue, current, next_name, parent in values:
                 self.heappush_next_hubs(queue, current, next_name, parent)
 
