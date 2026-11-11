@@ -186,13 +186,19 @@ class Simulation:
                     parent, (current_turns, current_pos))
 
             # そのまま待機する場合も探索の候補に追加
-            self.heappush_next_hubs(queue, current, current_pos, parent)
+            values = [(queue, current, current_pos, parent)]
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
                 next_node: SolverHub = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
+                values.append((queue, current, next_name, parent))
+
+            # 優先度の高いハブを先に探索する
+            values = sorted(
+                values, key=lambda x: self._hubs[x[2]].zone is ZoneType.PRIORITY, reverse=True)
+            for queue, current, next_name, parent in values:
                 self.heappush_next_hubs(queue, current, next_name, parent)
 
         return None
