@@ -2,6 +2,7 @@ from src.model import (Connection, Hub, HubType,
                        SimulationConfig, ZoneType, normalize_connction_key)
 from .types import (Drone, PlanElement, PlanConnectionElement,
                     ParentMap, SolverHub, SimulationResult)
+from typing import cast
 import heapq
 
 
@@ -27,7 +28,7 @@ class Simulation:
         if start_hub is None:
             raise ValueError("シミュレーションの開始ハブが見つかりません。")
 
-        self._drones = [Drone(id=i, start_pos=start_hub.name)
+        self._drones = [Drone(id=i + 1, start_pos=start_hub.name)
                         for i in range(config.nb_drones)]
 
         self._scheduler: dict[PlanElement, int] = {}
@@ -62,24 +63,29 @@ class Simulation:
                 self.get_shortest_path(drone.start_pos)
             if not path:
                 raise Exception("合理的な手数の範囲内で経路が見つかりません")
+            prev_hub: str = drone.start_pos
             for el in path:
                 drone.timeline.append(el)
                 if isinstance(el[1], str):
                     p_el: PlanElement = el[0], el[1]
                     self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
-                else:
-                    pc_el: PlanConnectionElement = \
-                        (el[0], normalize_connction_key(el[1]))
+                    pc_el: PlanConnectionElement = (
+                        el[0], normalize_connction_key((prev_hub, el[1])))
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
+                else:
+                    pc_el = (el[0], normalize_connction_key(el[1]))
+                    self._connection_scheduler[pc_el] = \
+                        self._connection_scheduler.get(pc_el, 0) + 1
+                prev_hub = el[1] if isinstance(el[1], str) else el[1][1]
 
     def _is_full_connection(self, plan: PlanConnectionElement) -> bool:
         connection: Connection = next(
             el for el in self._connections if el.hubs == plan[1]
         )
         max_con = connection.max_link_capacity
-        cur_drones = self._connection_scheduler.get(plan)
-        return max_con >= cur_drones if cur_drones else False
+        cur_drones = self._connection_scheduler.get(plan, 0)
+        return cur_drones >= max_con
 
     def _is_full_hub(self, plan: PlanElement) -> bool:
         """指定されたハブが満杯かどうかを判定するメソッド"""
@@ -90,8 +96,8 @@ class Simulation:
         elif hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
             return False
 
-        cur_drones: int | None = self._scheduler.get(plan, None)
-        return cur_drones >= hub.max_drones if cur_drones else False
+        cur_drones: int = self._scheduler.get(plan, 0)
+        return cur_drones >= hub.max_drones
 
     def trace_back_path(self, parent: ParentMap, end_hub: PlanElement) \
             -> list[PlanElement | PlanConnectionElement]:
@@ -119,6 +125,7 @@ class Simulation:
         else:
             new_turns = prev_turns + 2
 
+        if prev_hub != next_hub.name:
             connection = normalize_connction_key((prev_hub, next_name))
             conn_turn = (prev_turns + 1, connection)
             if self._is_full_connection(conn_turn):
@@ -133,9 +140,8 @@ class Simulation:
             return
 
         if next_hub.zone == ZoneType.RESTRICTED and prev_hub != next_hub.name:
-            if not conn_turn:
-                raise Exception("あるはずのconn_turnが存在しません")
-            parent[conn_turn] = current  # TODO: RESTRICTEDの処理について
+            conn_turn = cast(PlanConnectionElement, conn_turn)
+            parent[conn_turn] = current
             parent[new_el] = conn_turn
         else:
             parent[new_el] = current

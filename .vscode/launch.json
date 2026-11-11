@@ -15,7 +15,10 @@
       "name": "Python Debugger: Debug main.py",
       "type": "debugpy",
       "request": "launch",
-      "program": "${workspaceFolder}/main.py"
+      "program": "${workspaceFolder}/main.py",
+      "args": [
+        "${workspaceFolder}/test.txt"
+      ]
     },
   ]
 }
