@@ -37,10 +37,16 @@ def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
     assert file[1] <= lines <= file[1] * 1.25
 
 
-# def test_priority_hub_preference() -> None:
-#     result = subprocess.run(
-#         ["uv", "run", "python3", "main.py", "maps/medium/03_priority_puzzle.txt"], check=True, text=True, capture_output=True)
-#     lines = str(result.stdout).splitlines()
-#     # Check if the output contains the expected path that goes through the priority hub
-#     # Assuming HubB is the priority hub
-#     assert any("HubB" in line for line in lines)
+@pytest.mark.parametrize("file", [
+    "test/maps/no_path_b/01_simple_fork_priority.txt",
+    "test/maps/no_path_b/02_simple_fork_priority.txt",
+])
+def test_priority_hub_preference(file: str) -> None:
+    result = subprocess.run(
+        ["uv", "run", "python3", "main.py", file], check=True, text=True, capture_output=True)
+    lines = str(result.stdout).splitlines()
+    # Check if the output contains the expected path that goes through the priority hub
+    # Assuming HubB is the priority hub
+    assert any("path_a" in line for line in lines)
+    assert not any("path_b" in line for line in lines)
+    assert any("goal" in line for line in lines)

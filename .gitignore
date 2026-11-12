@@ -21,6 +21,7 @@ wheels/
 
 # 42 assets
 en.subject.pdf
-maps/
+/maps/
 maps.tar.gz
 *.txt
+!test/maps/no_path_b/*.txt
