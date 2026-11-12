@@ -50,7 +50,6 @@ class Simulation:
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
         self._plan()
-        # self._show_result()
         self._result = SimulationResult(
             is_successful=True,
             drones=self._drones,
