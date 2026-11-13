@@ -27,3 +27,8 @@ testpaths = [
 pythonpath = [
   "."
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.5",
+]
