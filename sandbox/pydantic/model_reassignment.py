@@ -15,7 +15,7 @@ model.a = -1
 
 print(model)
 
-print("== aの値を負の数にする ==")
+print("== aの型を暗黙的に変更する ==")
 model.a = "str"  # type: ignore
 
 print(model)
