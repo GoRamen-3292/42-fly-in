@@ -13,11 +13,6 @@ debug:
 	echo "Not implemented yet (debug mode)"
 
 # DOCS:
-# find: ディレクトリ名
-# . : cwd
-# -type d: ディレクトリに限定
-# \( condition \): 条件一覧
-# -exec rm -rf {} +: ファイル削除、 {} はファイル名、 +は複数ファイルをまとめてrmで削除するオプション
 clean:
 	find . -type d \( -name "__pycache__" -o -name ".mypy_cache" \) -exec rm -rf {} +
 	rm -rf .pytest_cache
@@ -25,20 +20,25 @@ clean:
 fclean: clean
 	rm -rf .venv
 
+# TODO: ${CHECK_PATHS} を cwd `.` で置き換える
 lint:
-	mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports \
+	uv run mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports \
 	--disallow-untyped-defs --check-untyped-defs $(CHECK_PATHS)
-	flake8 $(CHECK_PATHS)
-
-# TODO: test/のルールの見直し
-lint-strict:
-	uv run mypy --strict $(CHECK_PATHS)
 	uv run flake8 $(CHECK_PATHS)
-	uv run mypy --strict $(TEST_PATHS)
-	uv run flake8 --max-line-length 200 $(TEST_PATHS)
+
+# TODO: $(TEST_PATHS) のルールの見直し、先頭の `-` の条件の見直し
+lint-strict:
+	uv run mypy --strict $(CHECK_PATHS) $(TEST_PATHS)
+	uv run flake8 --disable-noqa $(CHECK_PATHS)
+	uv run flake8 --max-line-length 200 --disable-noqa $(TEST_PATHS)
+	-uv run ruff check $(CHECK_PATHS) $(TEST_PATHS)
+
+# TODO: 先頭の `-`の条件の見直し
+lint-fix:
+	uv run ruff format $(CHECK_PATHS) $(TEST_PATHS)
+	-uv run ruff check --fix $(CHECK_PATHS) $(TEST_PATHS)
 
 check: lint-strict test
-	@echo ">> Checks completed! :D"
 
 test:
 	uv run pytest
