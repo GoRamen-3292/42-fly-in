@@ -77,8 +77,8 @@ def test_incorrect_name(name: str) -> None:
     "red ",
     "red\t",
     "    \t",
-    "[=]"
-    "aaa=aaaaa"
+    "[=]",
+    "aaa=aaaaa",
 ])
 def test_incorrect_color(color: Any) -> None:
     with pytest.raises(ValidationError):
