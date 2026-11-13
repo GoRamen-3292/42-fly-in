@@ -11,7 +11,7 @@ parser = FileParser()
     "hub hub1 10 20",
     "     hub :: hub1 10 20",
     "     hub:      hub1 2 10\t20",
-    "hub:      hub1 1 0 20",
+    "hub:hub1 1 0 20",
     "hub:      hub1 1 0 20",
     "hub hub1 10 20:     ",
     "hub: hub1 10 20 fasf   ",
