@@ -38,15 +38,15 @@ def shortest_path(graph: Graph, start: str, end: str) -> tuple[float, Path]:
 
 # define graph
 graph: Graph = {
-    'v0': {'v1': 8, 'v2': 3, 'v3': 1},
-    'v1': {'v0': 8, 'v2': 3, 'v4': 1},
-    'v2': {'v0': 3, 'v1': 3, 'v4': 4},
-    'v3': {'v0': 1, 'v4': 2},
-    'v4': {'v1': 1, 'v2': 4, 'v3': 2}
+    "v0": {"v1": 8, "v2": 3, "v3": 1},
+    "v1": {"v0": 8, "v2": 3, "v4": 1},
+    "v2": {"v0": 3, "v1": 3, "v4": 4},
+    "v3": {"v0": 1, "v4": 2},
+    "v4": {"v1": 1, "v2": 4, "v3": 2},
 }
 
 # Create a list of all vertices
-vertices: list[str] = ['v' + str(i) for i in range(0, 5)]
+vertices: list[str] = ["v" + str(i) for i in range(5)]
 
 # Iterate over all pairs of vertices
 for start in vertices:

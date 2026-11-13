@@ -1,13 +1,18 @@
-import pytest
-from src.model import Hub, HubType, ZoneType
 from typing import Any
+
+import pytest
 from pydantic import ValidationError
 
+from src.model import Hub, HubType, ZoneType
 
-@pytest.mark.parametrize("zone", [
-    "undefined",
-    None,
-])
+
+@pytest.mark.parametrize(
+    "zone",
+    [
+        "undefined",
+        None,
+    ],
+)
 def test_incorrect_zonetype(zone: Any) -> None:
     with pytest.raises(ValidationError):
         Hub(
@@ -17,10 +22,13 @@ def test_incorrect_zonetype(zone: Any) -> None:
         )
 
 
-@pytest.mark.parametrize("hub_type", [
-    "undefined",
-    None,
-])
+@pytest.mark.parametrize(
+    "hub_type",
+    [
+        "undefined",
+        None,
+    ],
+)
 def test_incorrect_hubtype(hub_type: Any) -> None:
     with pytest.raises(ValidationError):
         Hub(
@@ -30,13 +38,16 @@ def test_incorrect_hubtype(hub_type: Any) -> None:
         )
 
 
-@pytest.mark.parametrize("coordinate", [
-    "aaa",
-    "1000, 2000",
-    "100, 200",
-    (100, 200, 300),
-    (),
-])
+@pytest.mark.parametrize(
+    "coordinate",
+    [
+        "aaa",
+        "1000, 2000",
+        "100, 200",
+        (100, 200, 300),
+        (),
+    ],
+)
 def test_incorrect_coordinate(coordinate: Any) -> None:
     with pytest.raises(ValidationError):
         Hub(
@@ -45,21 +56,24 @@ def test_incorrect_coordinate(coordinate: Any) -> None:
         )
 
 
-@pytest.mark.parametrize("name", [
-    32482094,
-    None,
-    123.43,
-    "",
-    "aaaa aaaa",
-    "aaaa-aaaa",
-    "       ",
-    "a\ta",
-    "\t",
-    "\t\t\t \t",
-    "a\t\t\t \t",
-    "aaa-aaa",
-    "aaa aaa",
-])
+@pytest.mark.parametrize(
+    "name",
+    [
+        32482094,
+        None,
+        123.43,
+        "",
+        "aaaa aaaa",
+        "aaaa-aaaa",
+        "       ",
+        "a\ta",
+        "\t",
+        "\t\t\t \t",
+        "a\t\t\t \t",
+        "aaa-aaa",
+        "aaa aaa",
+    ],
+)
 def test_incorrect_name(name: str) -> None:
     with pytest.raises(ValidationError):
         Hub(
@@ -68,16 +82,19 @@ def test_incorrect_name(name: str) -> None:
         )
 
 
-@pytest.mark.parametrize("color", [
-    4932,
-    123.43,
-    "red=",
-    "red ",
-    "red\t",
-    "    \t",
-    "[=]"
-    "aaa=aaaaa"
-])
+@pytest.mark.parametrize(
+    "color",
+    [
+        4932,
+        123.43,
+        "red=",
+        "red ",
+        "red\t",
+        "    \t",
+        "[=]",
+        "aaa=aaaaa",
+    ],
+)
 def test_incorrect_color(color: Any) -> None:
     with pytest.raises(ValidationError):
         Hub(
@@ -95,7 +112,7 @@ def test_other_attributes() -> None:
             color="white",
             coordinate=(0, 0),
             max_drones=0,
-            hub_type=HubType.START_HUB
+            hub_type=HubType.START_HUB,
         )
 
     with pytest.raises(ValidationError):
@@ -105,5 +122,5 @@ def test_other_attributes() -> None:
             color="white",
             coordinate=(0, 0),
             max_drones=0,
-            hub_type=HubType.START_HUB
+            hub_type=HubType.START_HUB,
         )

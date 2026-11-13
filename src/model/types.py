@@ -22,6 +22,7 @@ class ZoneType(str, Enum):
     - restricted: ドローンが2ターンを通過に要するゾーン
     - priority: 経路探索において優先されるゾーン、1ターンを通過に要する
     """
+
     NORMAL = "normal"
     BLOCKED = "blocked"
     RESTRICTED = "restricted"

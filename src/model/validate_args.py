@@ -11,11 +11,13 @@ def validate_hub_name(name: str) -> str:
     if "-" in name:
         raise ValueError(
             "Hub name cannot contain '-' character. "
-            "It uses '-' as a separator for hub names in connections.")
+            "It uses '-' as a separator for hub names in connections."
+        )
     elif any(c.isspace() for c in name):
         raise ValueError(
             "Hub name cannot contain spaces. "
-            "It uses spaces as a separator for hub names in connections.")
+            "It uses spaces as a separator for hub names in connections."
+        )
     return name
 
 
@@ -26,7 +28,5 @@ def validate_metadata(name: str, value: str) -> str:
     空白についてはPydantic側で検証されるため不要
     """
     if "=" in value or any(c.isspace() for c in value):
-        raise ValueError(
-            f"{name} must not contain spaces or equal signs."
-        )
+        raise ValueError(f"{name} must not contain spaces or equal signs.")
     return value

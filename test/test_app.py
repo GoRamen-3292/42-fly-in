@@ -1,8 +1,10 @@
-from src import FileParser
-from src.model import SimulationConfig
-import pytest
 import subprocess
 import warnings
+
+import pytest
+
+from src import FileParser
+from src.model import SimulationConfig
 
 type FileAndOptimalTurns = tuple[str, int]
 
@@ -29,21 +31,33 @@ def test_parse_file(file: FileAndOptimalTurns) -> None:
 @pytest.mark.parametrize("file", FILES)
 def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
     result = subprocess.run(
-        ["uv", "run", "python3", "main.py", file[0]], check=True, text=True, capture_output=True)
+        ["uv", "run", "python3", "main.py", file[0]],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
     lines = len(str(result.stdout).splitlines())
     if lines != file[1]:
         warnings.warn(
-            f"File: {file[0]} | Optimal turns: {file[1]} | Actual turns: {lines}")
+            f"File: {file[0]} | Optimal turns: {file[1]} | Actual turns: {lines}"
+        )
     assert file[1] <= lines <= file[1] * 1.25
 
 
-@pytest.mark.parametrize("file", [
-    "test/maps/no_path_b/01_simple_fork_priority.txt",
-    "test/maps/no_path_b/02_simple_fork_priority.txt",
-])
+@pytest.mark.parametrize(
+    "file",
+    [
+        "test/maps/no_path_b/01_simple_fork_priority.txt",
+        "test/maps/no_path_b/02_simple_fork_priority.txt",
+    ],
+)
 def test_priority_hub_preference(file: str) -> None:
     result = subprocess.run(
-        ["uv", "run", "python3", "main.py", file], check=True, text=True, capture_output=True)
+        ["uv", "run", "python3", "main.py", file],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
     lines = str(result.stdout).splitlines()
     # Check if the output contains the expected path that goes through the priority hub
     # Assuming HubB is the priority hub
@@ -52,14 +66,21 @@ def test_priority_hub_preference(file: str) -> None:
     assert any("goal" in line for line in lines)
 
 
-@pytest.mark.parametrize("file", [
-    "test/maps/restricted_max/01_simple_linear_all_restricted.txt",
-    "test/maps/restricted_max/02_simple_linear_all_restricted.txt",
-    "test/maps/restricted_max/03_simple_linear_all_restricted.txt",
-])
+@pytest.mark.parametrize(
+    "file",
+    [
+        "test/maps/restricted_max/01_simple_linear_all_restricted.txt",
+        "test/maps/restricted_max/02_simple_linear_all_restricted.txt",
+        "test/maps/restricted_max/03_simple_linear_all_restricted.txt",
+    ],
+)
 def test_restricted_max(file: str) -> None:
     result = subprocess.run(
-        ["uv", "run", "python3", "main.py", file], check=True, text=True, capture_output=True)
+        ["uv", "run", "python3", "main.py", file],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
     lines = str(result.stdout).splitlines()
     # Check if the output contains the expected path that respects the restricted max capacity
     assert any("D1-start" in line for line in lines)

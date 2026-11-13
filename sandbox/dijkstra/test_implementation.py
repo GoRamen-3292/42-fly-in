@@ -1,7 +1,8 @@
-from dataclasses import dataclass
-from src.model.types import HubType, ZoneType
-from src.model import Hub, Connection
 import heapq
+from dataclasses import dataclass
+
+from src.model import Connection, Hub
+from src.model.types import HubType, ZoneType
 
 
 @dataclass
@@ -16,8 +17,9 @@ class SolverHub:
     hub_type: HubType = HubType.NORMAL_HUB
 
 
-def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]
-                      ) -> tuple[list[str] | None, int | None]:
+def get_shortest_path(
+    hubs_arg: list[Hub], connections_arg: list[Connection]
+) -> tuple[list[str] | None, int | None]:
     hubs: dict[str, SolverHub] = convert_hubs(hubs_arg, connections_arg)
 
     queue: list[tuple[int, str]] = []
@@ -29,7 +31,9 @@ def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]
     if not queue:
         raise IndexError("No Start Hub found.")
     while queue:
-        _, current_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
+        _, current_name = heapq.heappop(
+            queue
+        )  # TODO: heapqの意義について調べる
         current_hub = hubs[current_name]
         # 来訪済みなら、return
         if current_hub.seen:
@@ -54,7 +58,8 @@ def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]
             if current_hub.min_cost is None:
                 raise Exception(
                     "min_cost is unset."
-                    + "Did you set when you push to the queue?")
+                    + "Did you set when you push to the queue?"
+                )
             new_min_cost = next_node.cost + current_hub.min_cost
             if prev_min_cost is None or new_min_cost < prev_min_cost:
                 next_node.min_cost = new_min_cost
@@ -67,16 +72,17 @@ def get_shortest_path(hubs_arg: list[Hub], connections_arg: list[Connection]
     return (None, None)
 
 
-def convert_hubs(hubs: list[Hub], connections: list[Connection]
-                 ) -> dict[str, SolverHub]:
+def convert_hubs(
+    hubs: list[Hub], connections: list[Connection]
+) -> dict[str, SolverHub]:
     result: dict[str, SolverHub] = {}
     for hub in hubs:
-        result[hub.name] = (SolverHub(
+        result[hub.name] = SolverHub(
             name=hub.name,
             connections=set(),
             zone=hub.zone,
-            hub_type=hub.hub_type
-        ))
+            hub_type=hub.hub_type,
+        )
     for connection in connections:
         hub_1, hub_2 = connection.hubs
         result[hub_1].connections.add(hub_2)
@@ -95,40 +101,17 @@ result = get_shortest_path(
             name="h4",
             coordinate=(0, 1),
         ),
-        Hub(
-            name="h2",
-            coordinate=(1, 0)
-        ),
-        Hub(
-            name="h3",
-            coordinate=(1, 1)
-        ),
-        Hub(
-            name="goal",
-            hub_type=HubType.END_HUB,
-            coordinate=(1, 2)
-        ),
-    ], [
-        Connection(
-            hubs=("start", "h4"),
-            max_link_capacity=1
-        ),
-        Connection(
-            hubs=("start", "h2"),
-            max_link_capacity=1
-        ),
-        Connection(
-            hubs=("h4", "goal"),
-            max_link_capacity=1
-        ),
-        Connection(
-            hubs=("h2", "h3"),
-            max_link_capacity=1
-        ),
-        Connection(
-            hubs=("h3", "goal"),
-            max_link_capacity=1
-        ),
-    ])
+        Hub(name="h2", coordinate=(1, 0)),
+        Hub(name="h3", coordinate=(1, 1)),
+        Hub(name="goal", hub_type=HubType.END_HUB, coordinate=(1, 2)),
+    ],
+    [
+        Connection(hubs=("start", "h4"), max_link_capacity=1),
+        Connection(hubs=("start", "h2"), max_link_capacity=1),
+        Connection(hubs=("h4", "goal"), max_link_capacity=1),
+        Connection(hubs=("h2", "h3"), max_link_capacity=1),
+        Connection(hubs=("h3", "goal"), max_link_capacity=1),
+    ],
+)
 
 print(result)

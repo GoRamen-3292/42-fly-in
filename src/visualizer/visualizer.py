@@ -1,6 +1,7 @@
+from collections import defaultdict
+
 from src.model import ConnectionKey
 from src.solver.types import SimulationResult
-from collections import defaultdict
 
 
 class Visualizer:

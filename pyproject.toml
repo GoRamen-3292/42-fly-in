@@ -8,8 +8,6 @@ authors = [
 ]
 requires-python = ">=3.14,<3.16"
 dependencies = [
-    "flake8>=7.5.0",
-    "mypy>=2.4.1",
     "pydantic>=2.14.3",
     "pytest>=9.2.0",
 ]
@@ -27,3 +25,13 @@ testpaths = [
 pythonpath = [
   "."
 ]
+
+[dependency-groups]
+dev = [
+    "flake8>=7.5.0",
+    "mypy>=2.4.1",
+    "ruff>=0.17.5",
+]
+
+[tool.ruff]
+line-length = 79
