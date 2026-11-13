@@ -1,8 +1,10 @@
-from src import FileParser
-from src.model import SimulationConfig
-import pytest
 import subprocess
 import warnings
+
+import pytest
+
+from src import FileParser
+from src.model import SimulationConfig
 
 type FileAndOptimalTurns = tuple[str, int]
 

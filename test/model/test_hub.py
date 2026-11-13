@@ -1,5 +1,6 @@
 import pytest
-from src.model import Hub, HubType, ZoneType, Coordinate
+
+from src.model import Coordinate, Hub, HubType, ZoneType
 
 
 def test_hub_type() -> None:

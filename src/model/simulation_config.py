@@ -1,7 +1,8 @@
 from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
-from .types import HubType
-from .hub import Hub
+
 from .connection import Connection
+from .hub import Hub
+from .types import HubType
 
 
 class SimulationConfig(BaseModel):

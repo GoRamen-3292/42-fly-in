@@ -1,4 +1,5 @@
 import pytest
+
 from src.model import Connection, normalize_connction_key
 
 

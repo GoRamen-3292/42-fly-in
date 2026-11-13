@@ -1,7 +1,7 @@
 import pytest
-from src.model import SimulationConfig, HubType, ZoneType
-from src.parser import FileParser
 
+from src.model import HubType, SimulationConfig, ZoneType
+from src.parser import FileParser
 
 parse_line = FileParser().parse_line
 

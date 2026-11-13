@@ -1,6 +1,7 @@
 import pytest
+
+from src.solver.types import Drone, PlanConnectionElement, PlanElement, SimulationResult
 from src.visualizer import Visualizer
-from src.solver.types import Drone, PlanElement, PlanConnectionElement, SimulationResult
 
 
 @pytest.mark.parametrize("data", [

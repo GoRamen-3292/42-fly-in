@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
-from src.model import ConnectionKey, ZoneType, HubType
+
+from src.model import ConnectionKey, HubType, ZoneType
 
 # type PlanElement = tuple[int, str | ConnectionKey]
 type PlanElement = tuple[int, str]

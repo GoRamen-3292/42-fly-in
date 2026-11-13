@@ -1,8 +1,8 @@
 import pytest
 from pydantic import ValidationError
+
 from src.model import SimulationConfig
 from src.parser import FileParser
-
 
 parser = FileParser()
 

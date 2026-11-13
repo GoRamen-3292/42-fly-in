@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
-from src.model import (Connection, Hub, HubType,
-                       SimulationConfig, ZoneType)
+
+from src.model import Connection, Hub, HubType, SimulationConfig, ZoneType
 
 
 def test_multiple_start_hubs() -> None:

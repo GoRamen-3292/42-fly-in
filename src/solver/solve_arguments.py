@@ -1,9 +1,23 @@
-from src.model import (Connection, Hub, HubType,
-                       SimulationConfig, ZoneType, normalize_connction_key)
-from .types import (Drone, PlanElement, PlanConnectionElement,
-                    ParentMap, SolverHub, SimulationResult)
-from typing import cast
 import heapq
+from typing import cast
+
+from src.model import (
+    Connection,
+    Hub,
+    HubType,
+    SimulationConfig,
+    ZoneType,
+    normalize_connction_key,
+)
+
+from .types import (
+    Drone,
+    ParentMap,
+    PlanConnectionElement,
+    PlanElement,
+    SimulationResult,
+    SolverHub,
+)
 
 
 class Simulation:

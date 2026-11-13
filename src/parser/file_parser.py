@@ -1,5 +1,6 @@
-from ..model import Connection, Hub, HubType, SimulationConfig
 from pydantic import ValidationError
+
+from ..model import Connection, Hub, HubType, SimulationConfig
 
 
 class FileParser:

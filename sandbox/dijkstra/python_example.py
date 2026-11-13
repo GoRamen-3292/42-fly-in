@@ -46,7 +46,7 @@ graph: Graph = {
 }
 
 # Create a list of all vertices
-vertices: list[str] = ['v' + str(i) for i in range(0, 5)]
+vertices: list[str] = ['v' + str(i) for i in range(5)]
 
 # Iterate over all pairs of vertices
 for start in vertices:

@@ -1,4 +1,5 @@
 import argparse
+
 from src import FileParser, Simulation, Visualizer
 
 

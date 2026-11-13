@@ -1,7 +1,8 @@
-from dataclasses import dataclass
-from src.model.types import HubType, ZoneType
-from src.model import Hub, Connection
 import heapq
+from dataclasses import dataclass
+
+from src.model import Connection, Hub
+from src.model.types import HubType, ZoneType
 
 
 @dataclass
