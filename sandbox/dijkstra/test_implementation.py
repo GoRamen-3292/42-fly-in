@@ -31,7 +31,9 @@ def get_shortest_path(
     if not queue:
         raise IndexError("No Start Hub found.")
     while queue:
-        _, current_name = heapq.heappop(queue)  # TODO: heapqの意義について調べる
+        _, current_name = heapq.heappop(
+            queue
+        )  # TODO: heapqの意義について調べる
         current_hub = hubs[current_name]
         # 来訪済みなら、return
         if current_hub.seen:
@@ -55,7 +57,8 @@ def get_shortest_path(
             prev_min_cost = next_node.min_cost
             if current_hub.min_cost is None:
                 raise Exception(
-                    "min_cost is unset." + "Did you set when you push to the queue?"
+                    "min_cost is unset."
+                    + "Did you set when you push to the queue?"
                 )
             new_min_cost = next_node.cost + current_hub.min_cost
             if prev_min_cost is None or new_min_cost < prev_min_cost:
@@ -75,7 +78,10 @@ def convert_hubs(
     result: dict[str, SolverHub] = {}
     for hub in hubs:
         result[hub.name] = SolverHub(
-            name=hub.name, connections=set(), zone=hub.zone, hub_type=hub.hub_type
+            name=hub.name,
+            connections=set(),
+            zone=hub.zone,
+            hub_type=hub.hub_type,
         )
     for connection in connections:
         hub_1, hub_2 = connection.hubs

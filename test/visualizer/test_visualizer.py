@@ -1,6 +1,11 @@
 import pytest
 
-from src.solver.types import Drone, PlanConnectionElement, PlanElement, SimulationResult
+from src.solver.types import (
+    Drone,
+    PlanConnectionElement,
+    PlanElement,
+    SimulationResult,
+)
 from src.visualizer import Visualizer
 
 
@@ -40,6 +45,7 @@ def test_visualizer_timeline(
     timeline: list[PlanElement | PlanConnectionElement],
 ) -> None:
     result = SimulationResult(
-        is_successful=True, drones=[Drone(id=0, start_pos="start", timeline=timeline)]
+        is_successful=True,
+        drones=[Drone(id=0, start_pos="start", timeline=timeline)],
     )
     Visualizer.show_result(result)

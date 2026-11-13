@@ -18,7 +18,8 @@ type PlanConnectionElement = tuple[int, ConnectionKey]
 """
 
 type ParentMap = dict[
-    PlanElement | PlanConnectionElement, PlanElement | PlanConnectionElement | None
+    PlanElement | PlanConnectionElement,
+    PlanElement | PlanConnectionElement | None,
 ]
 """
 直前にいたハブを記録し、最後に経路を復元するための辞書型
@@ -57,7 +58,9 @@ class Drone:
 
     id: int
     start_pos: str
-    timeline: list[PlanElement | PlanConnectionElement] = field(default_factory=list)
+    timeline: list[PlanElement | PlanConnectionElement] = field(
+        default_factory=list
+    )
 
 
 @dataclass(frozen=True)

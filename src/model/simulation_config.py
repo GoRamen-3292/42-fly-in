@@ -21,10 +21,14 @@ class SimulationConfig(BaseModel):
         if len(hub_names) != len(set(hub_names)):
             raise ValueError("Duplicate hub names are not allowed")
 
-        start_hubs = [hub for hub in value if (hub.hub_type == HubType.START_HUB)]
+        start_hubs = [
+            hub for hub in value if (hub.hub_type == HubType.START_HUB)
+        ]
         end_hubs = [hub for hub in value if hub.hub_type == HubType.END_HUB]
         if len(start_hubs) != 1 or len(end_hubs) != 1:
-            raise ValueError("There must be exactly one start hub and one end hub")
+            raise ValueError(
+                "There must be exactly one start hub and one end hub"
+            )
 
         return value
 
@@ -40,6 +44,7 @@ class SimulationConfig(BaseModel):
                     or connection.hubs == value[j].hubs[::-1]
                 ):
                     raise ValueError(
-                        "Duplicate connections are not allowed: " + str(connection.hubs)
+                        "Duplicate connections are not allowed: "
+                        + str(connection.hubs)
                     )
         return value

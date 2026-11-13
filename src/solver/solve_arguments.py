@@ -39,14 +39,19 @@ class Simulation:
         self._max_turns = (len(self._hubs) - 1) * 2 + config.nb_drones - 1
 
         start_hub: SolverHub | None = next(
-            (hub for hub in self._hubs.values() if hub.hub_type == HubType.START_HUB),
+            (
+                hub
+                for hub in self._hubs.values()
+                if hub.hub_type == HubType.START_HUB
+            ),
             None,
         )
         if start_hub is None:
             raise ValueError("シミュレーションの開始ハブが見つかりません。")
 
         self._drones = [
-            Drone(id=i + 1, start_pos=start_hub.name) for i in range(config.nb_drones)
+            Drone(id=i + 1, start_pos=start_hub.name)
+            for i in range(config.nb_drones)
         ]
 
         self._scheduler: dict[PlanElement, int] = {}
@@ -210,7 +215,9 @@ class Simulation:
 
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
-                return self.trace_back_path(parent, (current_turns, current_pos))
+                return self.trace_back_path(
+                    parent, (current_turns, current_pos)
+                )
 
             # そのまま待機する場合も探索の候補に追加
             values = [(queue, current, current_pos, parent)]
@@ -251,7 +258,9 @@ class Simulation:
             result[hub_2].connections.add(hub_1)
         return result
 
-    def convert_connections(self, connections: list[Connection]) -> list[Connection]:
+    def convert_connections(
+        self, connections: list[Connection]
+    ) -> list[Connection]:
         result: list[Connection] = []
         for conn in connections:
             result.append(

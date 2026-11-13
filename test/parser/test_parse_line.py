@@ -14,7 +14,7 @@ parse_line = FileParser().parse_line
         "     hub     : hub1 10\t20",
         "hub: hub1 10 20     ",
         "      hub   : hub1 10 20     ",
-        "      hub   : hub1 10 20     ",
+        "hub:hub1 10 20     ",
         "hub :hub1  10    20",
     ],
 )

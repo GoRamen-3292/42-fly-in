@@ -24,7 +24,7 @@ def main() -> None:
         fly_in = Simulation(config)
         result = fly_in.simulate()
         Visualizer.show_result(result)
-    except BaseException:
+    except BaseException:  # noqa: TRY203
         raise
     # except FileNotFoundError:
     #     print("File not found")
