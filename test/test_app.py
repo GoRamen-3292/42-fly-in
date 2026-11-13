@@ -50,3 +50,17 @@ def test_priority_hub_preference(file: str) -> None:
     assert any("path_a" in line for line in lines)
     assert not any("path_b" in line for line in lines)
     assert any("goal" in line for line in lines)
+
+
+@pytest.mark.parametrize("file", [
+    "test/maps/restricted_max/01_simple_linear_all_restricted.txt",
+    "test/maps/restricted_max/02_simple_linear_all_restricted.txt",
+    "test/maps/restricted_max/03_simple_linear_all_restricted.txt",
+])
+def test_restricted_max(file: str) -> None:
+    result = subprocess.run(
+        ["uv", "run", "python3", "main.py", file], check=True, text=True, capture_output=True)
+    lines = str(result.stdout).splitlines()
+    # Check if the output contains the expected path that respects the restricted max capacity
+    assert any("D1-start" in line for line in lines)
+    assert any("D1-goal" in line for line in lines)

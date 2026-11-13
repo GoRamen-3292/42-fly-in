@@ -24,4 +24,5 @@ en.subject.pdf
 /maps/
 maps.tar.gz
 *.txt
-!test/maps/no_path_b/*.txt
+!test/maps/*/*.txt
+!test/maps/*.txt
