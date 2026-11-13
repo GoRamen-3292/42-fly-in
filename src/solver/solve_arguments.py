@@ -17,10 +17,10 @@ class Simulation:
             config.connections)
 
         # 最大ターンの設定
-        # どれだけかかっても、すべてのハブの数 + ドローンの数の2倍以内で終わるはず
-        # 理由は、すべてのハブが同じ経路ですべてrestrictedだった場合であるため
-        # TODO: この場合についてのテストケースを作る
-        self._max_turns = (len(self._hubs) + config.nb_drones) * 3
+        # ハブの数 * 2 + ドローンの数 - 1
+        # 理由は、直線上のハブで、すべてがrestrictedで一度に1台しか通れない場合の手数が最多となるため
+        # 上限をギリギリにすることで不要な計算を減らすことができる
+        self._max_turns = (len(self._hubs) - 1) * 2 + config.nb_drones - 1
 
         start_hub: SolverHub | None = next(
             (hub for hub in self._hubs.values()
