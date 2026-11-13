@@ -17,10 +17,10 @@ class Simulation:
             config.connections)
 
         # 最大ターンの設定
-        # どれだけかかっても、すべてのハブの数 + ドローンの数の2倍以内で終わるはず
-        # 理由は、すべてのハブが同じ経路ですべてrestrictedだった場合であるため
-        # TODO: この場合についてのテストケースを作る
-        self._max_turns = (len(self._hubs) + config.nb_drones) * 3
+        # ハブの数 * 2 + ドローンの数 - 1
+        # 理由は、直線上のハブで、すべてがrestrictedで一度に1台しか通れない場合の手数が最多となるため
+        # 上限をギリギリにすることで不要な計算を減らすことができる
+        self._max_turns = (len(self._hubs) - 1) * 2 + config.nb_drones - 1
 
         start_hub: SolverHub | None = next(
             (hub for hub in self._hubs.values()
@@ -50,7 +50,6 @@ class Simulation:
         if self._result is not None:
             raise RuntimeError("シミュレーションはすでに実行されています。")
         self._plan()
-        # self._show_result()
         self._result = SimulationResult(
             is_successful=True,
             drones=self._drones,
@@ -73,13 +72,15 @@ class Simulation:
                         el[0], normalize_connction_key((prev_hub, el[1])))
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
+                    prev_hub = el[1]
                 else:
                     pc_el = (el[0], normalize_connction_key(el[1]))
                     self._connection_scheduler[pc_el] = \
                         self._connection_scheduler.get(pc_el, 0) + 1
-                prev_hub = el[1] if isinstance(el[1], str) else el[1][1]
+                    prev_hub = el[1][1]
 
     def _is_full_connection(self, plan: PlanConnectionElement) -> bool:
+        plan = plan[0], normalize_connction_key(plan[1])
         connection: Connection = next(
             el for el in self._connections if el.hubs == plan[1]
         )
@@ -126,8 +127,7 @@ class Simulation:
             new_turns = prev_turns + 2
 
         if prev_hub != next_hub.name:
-            connection = normalize_connction_key((prev_hub, next_name))
-            conn_turn = (prev_turns + 1, connection)
+            conn_turn = (prev_turns + 1, (prev_hub, next_name))
             if self._is_full_connection(conn_turn):
                 return  # Connectionはいっぱいである
         new_el: PlanElement = (new_turns, next_name)
@@ -185,13 +185,21 @@ class Simulation:
                     parent, (current_turns, current_pos))
 
             # そのまま待機する場合も探索の候補に追加
-            self.heappush_next_hubs(queue, current, current_pos, parent)
+            values = [(queue, current, current_pos, parent)]
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
                 next_node: SolverHub = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
+                values.append((queue, current, next_name, parent))
+
+            # 優先度の高いハブを先に探索する
+            values = sorted(
+                values,
+                key=lambda x: self._hubs[x[2]].zone is ZoneType.PRIORITY,
+                reverse=True)
+            for queue, current, next_name, parent in values:
                 self.heappush_next_hubs(queue, current, next_name, parent)
 
         return None

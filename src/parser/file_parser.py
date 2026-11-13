@@ -36,10 +36,10 @@ class FileParser:
 
             if key in HubType.__members__.values():
                 config.hubs.append(cls._parse_hub_line(
-                    HubType(key), value, config))
+                    HubType(key), value))
             elif key == "connection":
                 config.connections.append(
-                    cls._parse_connection_line(value, config))
+                    cls._parse_connection_line(value))
             elif key == "nb_drones":
                 if config.nb_drones is not None:
                     raise ValueError("nb_drones is already set")
@@ -50,8 +50,7 @@ class FileParser:
             raise ValueError(f"Invalid line format: {line}" + "\n" + str(e))
 
     @classmethod
-    def _parse_hub_line(cls, hub_type: HubType, value: str,
-                        config: SimulationConfig) -> Hub:
+    def _parse_hub_line(cls, hub_type: HubType, value: str) -> Hub:
         """hubの行をパースする関数"""
         values = value.split()
 
@@ -85,10 +84,8 @@ class FileParser:
         return result
 
     @classmethod
-    def _parse_connection_line(cls, value: str,
-                               config: SimulationConfig) -> Connection:
+    def _parse_connection_line(cls, value: str) -> Connection:
         """connectionの行をパースする関数"""
-        # ここでvalueを解析してConnectionを作成し、configに追加する処理を書く
         options = value.split()
         hub1, hub2 = options[0].split("-")
         if len(options) == 1:
