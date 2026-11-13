@@ -26,9 +26,11 @@ class Simulation:
         self._result: SimulationResult | None = None
         self._drones: list[Drone] = []
         self._hubs: dict[str, SolverHub] = self.convert_hubs(
-            config.hubs, config.connections)
+            config.hubs, config.connections
+        )
         self._connections: list[Connection] = self.convert_connections(
-            config.connections)
+            config.connections
+        )
 
         # 最大ターンの設定
         # ハブの数 * 2 + ドローンの数 - 1
@@ -37,13 +39,15 @@ class Simulation:
         self._max_turns = (len(self._hubs) - 1) * 2 + config.nb_drones - 1
 
         start_hub: SolverHub | None = next(
-            (hub for hub in self._hubs.values()
-             if hub.hub_type == HubType.START_HUB), None)
+            (hub for hub in self._hubs.values() if hub.hub_type == HubType.START_HUB),
+            None,
+        )
         if start_hub is None:
             raise ValueError("シミュレーションの開始ハブが見つかりません。")
 
-        self._drones = [Drone(id=i + 1, start_pos=start_hub.name)
-                        for i in range(config.nb_drones)]
+        self._drones = [
+            Drone(id=i + 1, start_pos=start_hub.name) for i in range(config.nb_drones)
+        ]
 
         self._scheduler: dict[PlanElement, int] = {}
         self._connection_scheduler: dict[PlanConnectionElement, int] = {}
@@ -72,8 +76,9 @@ class Simulation:
 
     def _plan(self) -> None:
         for drone in self._drones:
-            path: list[PlanElement | PlanConnectionElement] | None = \
+            path: list[PlanElement | PlanConnectionElement] | None = (
                 self.get_shortest_path(drone.start_pos)
+            )
             if not path:
                 raise Exception("合理的な手数の範囲内で経路が見つかりません")
             prev_hub: str = drone.start_pos
@@ -83,14 +88,18 @@ class Simulation:
                     p_el: PlanElement = el[0], el[1]
                     self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
                     pc_el: PlanConnectionElement = (
-                        el[0], normalize_connction_key((prev_hub, el[1])))
-                    self._connection_scheduler[pc_el] = \
+                        el[0],
+                        normalize_connction_key((prev_hub, el[1])),
+                    )
+                    self._connection_scheduler[pc_el] = (
                         self._connection_scheduler.get(pc_el, 0) + 1
+                    )
                     prev_hub = el[1]
                 else:
                     pc_el = (el[0], normalize_connction_key(el[1]))
-                    self._connection_scheduler[pc_el] = \
+                    self._connection_scheduler[pc_el] = (
                         self._connection_scheduler.get(pc_el, 0) + 1
+                    )
                     prev_hub = el[1][1]
 
     def _is_full_connection(self, plan: PlanConnectionElement) -> bool:
@@ -114,8 +123,9 @@ class Simulation:
         cur_drones: int = self._scheduler.get(plan, 0)
         return cur_drones >= hub.max_drones
 
-    def trace_back_path(self, parent: ParentMap, end_hub: PlanElement) \
-            -> list[PlanElement | PlanConnectionElement]:
+    def trace_back_path(
+        self, parent: ParentMap, end_hub: PlanElement
+    ) -> list[PlanElement | PlanConnectionElement]:
         """最短経路を復元するメソッド"""
         current_hub: PlanElement | PlanConnectionElement | None = end_hub
         path: list[PlanElement | PlanConnectionElement] = []
@@ -125,9 +135,13 @@ class Simulation:
         path.reverse()
         return path
 
-    def heappush_next_hubs(self, queue: list[PlanElement],
-                           current: PlanElement, next_name: str,
-                           parent: ParentMap) -> None:
+    def heappush_next_hubs(
+        self,
+        queue: list[PlanElement],
+        current: PlanElement,
+        next_name: str,
+        parent: ParentMap,
+    ) -> None:
         """次のハブをヒープに追加するメソッド"""
         new_turns = current[0] + 1
 
@@ -161,8 +175,9 @@ class Simulation:
             parent[new_el] = current
         heapq.heappush(queue, new_el)
 
-    def get_shortest_path(self, start_hub: str) \
-            -> list[PlanElement | PlanConnectionElement] | None:
+    def get_shortest_path(
+        self, start_hub: str
+    ) -> list[PlanElement | PlanConnectionElement] | None:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
 
@@ -195,8 +210,7 @@ class Simulation:
 
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
-                return self.trace_back_path(
-                    parent, (current_turns, current_pos))
+                return self.trace_back_path(parent, (current_turns, current_pos))
 
             # そのまま待機する場合も探索の候補に追加
             values = [(queue, current, current_pos, parent)]
@@ -212,14 +226,16 @@ class Simulation:
             values = sorted(
                 values,
                 key=lambda x: self._hubs[x[2]].zone is ZoneType.PRIORITY,
-                reverse=True)
+                reverse=True,
+            )
             for queue, current, next_name, parent in values:
                 self.heappush_next_hubs(queue, current, next_name, parent)
 
         return None
 
-    def convert_hubs(self, hubs: list[Hub],
-                     connections: list[Connection]) -> dict[str, SolverHub]:
+    def convert_hubs(
+        self, hubs: list[Hub], connections: list[Connection]
+    ) -> dict[str, SolverHub]:
         result: dict[str, SolverHub] = {}
         for hub in hubs:
             result[hub.name] = SolverHub(
@@ -235,8 +251,7 @@ class Simulation:
             result[hub_2].connections.add(hub_1)
         return result
 
-    def convert_connections(self,
-                            connections: list[Connection]) -> list[Connection]:
+    def convert_connections(self, connections: list[Connection]) -> list[Connection]:
         result: list[Connection] = []
         for conn in connections:
             result.append(
@@ -245,5 +260,6 @@ class Simulation:
                         "hubs": normalize_connction_key(conn.hubs),
                         "max_link_capacity": conn.max_link_capacity,
                     }
-                ))
+                )
+            )
         return result

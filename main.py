@@ -9,10 +9,16 @@ def main() -> None:
         parser = argparse.ArgumentParser(
             prog="fly-in",
             description="A drone simulation program."
-            + " Created as a part of the 42 curriculum.")
+            + " Created as a part of the 42 curriculum.",
+        )
         parser.add_argument("filename", help="The name of the file to parse")
-        parser.add_argument("-c", "--color", action="store_true",
-                            default=False, help="Enable color output")
+        parser.add_argument(
+            "-c",
+            "--color",
+            action="store_true",
+            default=False,
+            help="Enable color output",
+        )
         args = parser.parse_args()
         config = FileParser.parse_file(args.filename)
         fly_in = Simulation(config)

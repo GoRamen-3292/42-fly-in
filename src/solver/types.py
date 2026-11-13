@@ -17,8 +17,9 @@ type PlanConnectionElement = tuple[int, ConnectionKey]
 スケジュールと出力に利用する
 """
 
-type ParentMap = dict[PlanElement | PlanConnectionElement,
-                      PlanElement | PlanConnectionElement | None]
+type ParentMap = dict[
+    PlanElement | PlanConnectionElement, PlanElement | PlanConnectionElement | None
+]
 """
 直前にいたハブを記録し、最後に経路を復元するための辞書型
 """
@@ -36,6 +37,7 @@ class SolverHub:
         zone (ZoneType): ハブのゾーンタイプ
         hub_type (HubType): ハブの種類
     """
+
     name: str
     connections: set[str]
     max_drones: int
@@ -52,14 +54,15 @@ class Drone:
         position: ドローンの現在位置
         timeline: ドローンのTurnごとの位置の履歴、[0]に初期位置
     """
+
     id: int
     start_pos: str
-    timeline: list[PlanElement | PlanConnectionElement] = field(
-        default_factory=list)
+    timeline: list[PlanElement | PlanConnectionElement] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
 class SimulationResult:
     """シミュレーションの結果を表すデータクラス"""
+
     is_successful: bool
     drones: list[Drone]

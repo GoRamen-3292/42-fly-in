@@ -36,11 +36,9 @@ class FileParser:
             key, value = (x.strip() for x in (splits[i] for i in (0, 2)))
 
             if key in HubType.__members__.values():
-                config.hubs.append(cls._parse_hub_line(
-                    HubType(key), value))
+                config.hubs.append(cls._parse_hub_line(HubType(key), value))
             elif key == "connection":
-                config.connections.append(
-                    cls._parse_connection_line(value))
+                config.connections.append(cls._parse_connection_line(value))
             elif key == "nb_drones":
                 if config.nb_drones is not None:
                     raise ValueError("nb_drones is already set")
