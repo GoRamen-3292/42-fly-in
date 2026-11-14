@@ -70,9 +70,13 @@ class FileParser:
             key, value = (x.strip() for x in (splits[i] for i in (0, 2)))
 
             if key in HubType.__members__.values():
-                config.hubs.append(cls._parse_hub_line(HubType(key), value))
+                config.hubs.append(
+                    cls._parse_hub_line(HubType(key), value, lineno)
+                )
             elif key == "connection":
-                config.connections.append(cls._parse_connection_line(value))
+                config.connections.append(
+                    cls._parse_connection_line(value, lineno)
+                )
             elif key == "nb_drones":
                 if config.nb_drones is not None:
                     raise InvalidConfigError("nb_drones is already set")
@@ -89,7 +93,9 @@ class FileParser:
             raise InvalidConfigError(str(e)) from e
 
     @classmethod
-    def _parse_hub_line(cls, hub_type: HubType, value: str) -> Hub:
+    def _parse_hub_line(
+        cls, hub_type: HubType, value: str, lineno: int
+    ) -> Hub:
         """hubの行をパースする関数
 
         Raises:
@@ -111,7 +117,7 @@ class FileParser:
                 "hub_type": hub_type,
                 "name": name,
                 "coordinate": (x, y),
-                "color": d.get("color"),
+                "line_no": lineno,
             }
         )
 
@@ -135,7 +141,7 @@ class FileParser:
         return result
 
     @classmethod
-    def _parse_connection_line(cls, value: str) -> Connection:
+    def _parse_connection_line(cls, value: str, lineno: int) -> Connection:
         """connectionの行をパースする関数"""
         options: list[str] = value.split()
 
@@ -150,6 +156,7 @@ class FileParser:
         if len(options) == 1:
             return Connection(
                 hubs=(hub1, hub2),
+                line_no=lineno,
             )
         else:
             options = options[1:]
@@ -159,6 +166,7 @@ class FileParser:
                 {
                     **d,
                     "hubs": (hub1, hub2),
+                    "line_no": lineno,
                 }
             )
 
