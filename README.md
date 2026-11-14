@@ -59,6 +59,12 @@ find: コマンド
 -exec rm -rf {} +: ファイル削除、 {} はファイル名、 +は複数ファイルをまとめてrmで削除するオプション
 ```
 
+### argparse
+
+すごく例外的なケースを除いて例外を発生させない
+
+- TODO: 検証
+
 ### Others
 
 - [ ] A detailed description of your algorithm choices and implementation strategy must
