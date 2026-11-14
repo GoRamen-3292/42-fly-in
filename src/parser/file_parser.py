@@ -14,7 +14,9 @@ class InvalidConfigError(ValueError):
 
 class FileParser:
     @classmethod
-    def parse_file(cls, file_path: str) -> SimulationConfig:
+    def parse_file(
+        cls, file_path: str, max_size: int = 100_000_000
+    ) -> SimulationConfig:
         """ファイルをパースする関数
 
         Args:
@@ -31,7 +33,9 @@ class FileParser:
         lineno = 0
         try:
             with open(file_path, "r", encoding="utf-8") as f:
-                for lineno, line in enumerate(f, start=1):
+                for lineno, line in enumerate(
+                    f.read(max_size).splitlines(), start=1
+                ):
                     cls.parse_line(line.strip(), config, lineno)
             return SimulationConfig.model_validate(config)
         except OSError as e:
