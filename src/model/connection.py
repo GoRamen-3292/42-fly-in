@@ -7,7 +7,7 @@ from .validate_args import validate_hub_name
 
 
 def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
-    if conn[0] < conn[1]:
+    if conn[0] <= conn[1]:
         return conn
     else:
         return conn[1], conn[0]
