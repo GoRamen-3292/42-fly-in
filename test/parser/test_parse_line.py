@@ -24,7 +24,7 @@ def test_parse_line_with_values(line: str) -> None:
         hubs=[],
         connections=[],
     )
-    parse_line(line, config)
+    parse_line(line, config, 42)
     assert len(config.hubs) == 1
     assert config.hubs[0].name == "hub1"
     assert config.hubs[0].coordinate == (10, 20)
@@ -49,7 +49,7 @@ def test_parse_line(line: str) -> None:
         hubs=[],
         connections=[],
     )
-    parse_line(line, config)
+    parse_line(line, config, 42)
 
 
 @pytest.mark.parametrize(
@@ -74,7 +74,7 @@ def test_parse_line_with_options_with_values(line: str) -> None:
         hubs=[],
         connections=[],
     )
-    parse_line(line, config)
+    parse_line(line, config, 42)
     assert len(config.hubs) == 1
     assert config.hubs[0].name == "hub1"
     assert config.hubs[0].coordinate == (10, 20)
@@ -104,5 +104,5 @@ def test_parse_line_with_options(line: str) -> None:
         hubs=[],
         connections=[],
     )
-    parse_line(line, config)
+    parse_line(line, config, 42)
     assert len(config.hubs) == 1

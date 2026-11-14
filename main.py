@@ -31,8 +31,6 @@ def main() -> None:
         Visualizer(result, args.color, config.hubs).show_result()
     except Exception:  # noqa: TRY203
         raise
-    # except FileNotFoundError:
-    #     print("File not found")
     # except ValueError as e:
     #     print(f"ValueError: {e}")
     # except OSError as e:
