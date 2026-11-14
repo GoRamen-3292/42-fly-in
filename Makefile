@@ -1,6 +1,7 @@
 # ディレクトリ
 CHECK_PATHS = src sandbox main.py
 TEST_PATHS = test
+CACHE_DIRS = .mypy_cache .pytest_cache
 MAP = test.txt
 
 install:
@@ -14,8 +15,9 @@ debug:
 
 # DOCS:
 clean:
-	find . -type d \( -name "__pycache__" -o -name ".mypy_cache" \) -exec rm -rf {} +
-	rm -rf .pytest_cache
+	-uv run ruff clean
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	rm -rf $(CACHE_DIRS)
 
 fclean: clean
 	rm -rf .venv
@@ -43,4 +45,4 @@ check: lint-strict test
 test:
 	uv run pytest
 
-.PHONY: install run debug clean lint lint-strict test
+.PHONY: install run debug clean lint lint-strict lint-fix check test
