@@ -15,6 +15,7 @@ from .types import (
     ParentMap,
     PlanConnectionElement,
     PlanElement,
+    RouteNotFoundError,
     SimulationResult,
     SolverHub,
 )
@@ -47,7 +48,9 @@ class Simulation:
             None,
         )
         if start_hub is None:
-            raise ValueError("シミュレーションの開始ハブが見つかりません。")
+            raise RouteNotFoundError(
+                "Cannot find a start hub in the configuration."
+            )
 
         self._drones = [
             Drone(id=i + 1, start_pos=start_hub.name)
@@ -62,16 +65,19 @@ class Simulation:
         キーはPlanElement型で、値はドローンの数
         """
 
-    def get_result(self) -> SimulationResult:
+    def get_result(self) -> SimulationResult | None:
         """シミュレーションの結果を取得するメソッド"""
-        if self._result is None:
-            raise RuntimeError("シミュレーションがまだ実行されていません。")
         return self._result
 
     def simulate(self) -> SimulationResult:
-        """シミュレーションを実行するメソッド"""
-        if self._result is not None:
-            raise RuntimeError("シミュレーションはすでに実行されています。")
+        """シミュレーションを実行するメソッド
+
+        Raises:
+            RouteNotFoundError: 経路が見つからなかった場合に発生
+            ValueError: 入力のconfigが不正な場合に発生
+        Returns:
+            SimulationResult: シミュレーションの結果
+        """
         self._plan()
         self._result = SimulationResult(
             is_successful=True,
@@ -80,12 +86,15 @@ class Simulation:
         return self._result
 
     def _plan(self) -> None:
+        # TODO: _plan_one_drone() 関数を作る
         for drone in self._drones:
             path: list[PlanElement | PlanConnectionElement] | None = (
                 self.get_shortest_path(drone.start_pos)
             )
             if not path:
-                raise Exception("合理的な手数の範囲内で経路が見つかりません")
+                raise RouteNotFoundError(
+                    f"Cannot find a valid path for drone with ID: {drone.id}"
+                )
             prev_hub: str = drone.start_pos
             for el in path:
                 drone.timeline.append(el)
@@ -121,7 +130,7 @@ class Simulation:
         hub_name: str = plan[1]
         hub: SolverHub | None = self._hubs.get(hub_name)
         if not hub:
-            raise Exception("Cannot find hub")
+            raise ValueError(f"Cannot find hub with name: {hub_name}")
         elif hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
             return False
 
