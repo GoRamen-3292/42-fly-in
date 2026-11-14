@@ -5,6 +5,12 @@ from .validate_args import validate_hub_name, validate_metadata
 
 
 class Hub(BaseModel):
+    """
+    ハブを表すモデル
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
     hub_type: HubType = HubType.NORMAL_HUB
     name: str = Field(min_length=1)
     coordinate: Coordinate

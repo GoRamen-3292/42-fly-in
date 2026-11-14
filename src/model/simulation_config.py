@@ -8,10 +8,11 @@ from .types import HubType
 class SimulationConfig(BaseModel):
     """シミュレーションの設定を表すモデル"""
 
+    model_config = ConfigDict(extra="forbid", revalidate_instances="always")
+
     nb_drones: PositiveInt
     hubs: list[Hub]
     connections: list[Connection]
-    model_config = ConfigDict(extra="forbid", revalidate_instances="always")
 
     @field_validator("hubs", mode="after")
     @classmethod

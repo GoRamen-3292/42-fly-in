@@ -18,6 +18,8 @@ class Connection(BaseModel):
     2つのハブ間の接続を表すモデル
     """
 
+    model_config = ConfigDict(extra="forbid")
+
     hubs: tuple[str, str]
     max_link_capacity: PositiveInt = 1
     model_config = ConfigDict(extra="forbid")
