@@ -62,7 +62,7 @@ class Visualizer:
     def __init__(
         self,
         result: SimulationResult,
-        color: bool = True,
+        color: bool = False,
         hubs: list[Hub] | None = None,
     ) -> None:
         self.result = result
