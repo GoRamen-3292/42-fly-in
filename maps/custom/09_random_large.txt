@@ -1,0 +1,84 @@
+# Custom 09 (large): random map, seed=42
+nb_drones: 7
+
+start_hub: start 1 1 [color=green]
+hub: hub_0 4 0 [color=blue]
+hub: hub_1 11 0 [zone=priority color=purple max_drones=3]
+hub: hub_2 7 8 [zone=restricted color=purple]
+hub: hub_3 10 7 [zone=priority color=blue]
+hub: hub_4 9 5 [zone=restricted color=blue]
+hub: hub_5 11 11 [zone=restricted color=blue]
+hub: hub_6 4 4 [zone=priority color=purple max_drones=3]
+hub: hub_7 5 8 [zone=priority color=gray]
+hub: hub_8 2 9 [color=purple max_drones=2]
+hub: hub_9 6 1 [zone=priority color=purple]
+hub: hub_10 9 4 [zone=priority color=blue]
+hub: hub_11 10 4 [color=cyan max_drones=2]
+hub: hub_12 2 7 [zone=restricted color=purple max_drones=3]
+hub: hub_13 0 7 [color=red]
+hub: hub_14 5 1 [zone=blocked color=purple]
+hub: hub_15 3 4 [zone=priority color=gray]
+hub: hub_16 3 3 [color=red]
+hub: hub_17 5 10 [color=orange max_drones=3]
+hub: hub_18 0 1 [zone=restricted color=gray max_drones=3]
+hub: hub_19 10 5 [zone=restricted color=gray]
+hub: hub_20 11 4 [zone=restricted color=purple]
+hub: hub_21 0 11 [zone=priority color=gray]
+hub: hub_22 2 4 [zone=restricted color=purple]
+hub: hub_23 8 11 [color=red]
+hub: hub_24 9 8 [zone=restricted color=blue]
+hub: hub_25 1 2 [zone=restricted color=orange]
+hub: hub_26 4 11 [zone=blocked color=gray]
+hub: hub_27 1 3 [zone=blocked color=red]
+hub: hub_28 6 10 [zone=priority color=purple]
+end_hub: goal 8 10 [color=red]
+
+connection: hub_11-goal [max_link_capacity=2]
+connection: hub_25-goal
+connection: hub_0-hub_12 [max_link_capacity=3]
+connection: hub_0-hub_19
+connection: hub_0-hub_22
+connection: hub_0-hub_28
+connection: start-hub_0
+connection: hub_1-hub_17
+connection: hub_1-hub_24 [max_link_capacity=2]
+connection: hub_1-hub_9
+connection: hub_10-hub_19
+connection: hub_10-hub_24
+connection: hub_3-hub_10 [max_link_capacity=3]
+connection: hub_11-hub_20
+connection: hub_13-hub_28 [max_link_capacity=3]
+connection: hub_14-hub_22 [max_link_capacity=3]
+connection: hub_15-hub_23
+connection: hub_9-hub_15
+connection: hub_5-hub_16
+connection: hub_17-hub_26 [max_link_capacity=2]
+connection: hub_8-hub_17
+connection: hub_18-hub_28
+connection: hub_5-hub_18
+connection: hub_6-hub_18 [max_link_capacity=2]
+connection: hub_2-hub_19
+connection: hub_3-hub_19
+connection: hub_6-hub_19
+connection: hub_2-hub_27 [max_link_capacity=2]
+connection: hub_20-hub_23 [max_link_capacity=3]
+connection: hub_20-hub_25
+connection: hub_20-hub_28
+connection: hub_7-hub_20 [max_link_capacity=2]
+connection: hub_21-hub_22
+connection: hub_3-hub_21
+connection: hub_5-hub_21 [max_link_capacity=3]
+connection: hub_8-hub_21
+connection: start-hub_21 [max_link_capacity=2]
+connection: hub_22-hub_23
+connection: hub_8-hub_22
+connection: hub_23-hub_24 [max_link_capacity=3]
+connection: hub_23-hub_25 [max_link_capacity=2]
+connection: hub_7-hub_23
+connection: hub_8-hub_24
+connection: hub_25-hub_27
+connection: start-hub_25 [max_link_capacity=2]
+connection: hub_8-hub_27
+connection: hub_4-hub_9 [max_link_capacity=3]
+connection: hub_6-hub_9 [max_link_capacity=3]
+connection: start-hub_7

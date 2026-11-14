@@ -1,0 +1,44 @@
+# Custom 04 (medium): random map, seed=42
+nb_drones: 8
+
+start_hub: start 11 3 [color=green]
+hub: hub_0 5 4 [zone=priority color=red]
+hub: hub_1 11 9 [color=purple max_drones=3]
+hub: hub_2 0 2 [zone=priority color=orange max_drones=2]
+hub: hub_3 2 5 [color=cyan]
+hub: hub_4 11 5 [zone=restricted color=red]
+hub: hub_5 5 8 [zone=priority color=red]
+hub: hub_6 7 3 [zone=blocked color=cyan]
+hub: hub_7 2 4 [color=blue max_drones=3]
+hub: hub_8 6 3 [color=cyan max_drones=3]
+hub: hub_9 9 3 [zone=restricted color=blue]
+hub: hub_10 3 4 [color=gray]
+hub: hub_11 9 8 [zone=priority color=gray max_drones=3]
+hub: hub_12 0 0 [zone=priority color=purple]
+end_hub: goal 5 7 [color=red]
+
+connection: hub_0-goal
+connection: hub_11-goal
+connection: hub_9-goal
+connection: hub_0-hub_9
+connection: start-hub_0 [max_link_capacity=3]
+connection: hub_1-hub_10 [max_link_capacity=2]
+connection: hub_1-hub_5
+connection: start-hub_1 [max_link_capacity=2]
+connection: hub_10-hub_12
+connection: hub_5-hub_10
+connection: hub_2-hub_11 [max_link_capacity=2]
+connection: hub_4-hub_11
+connection: hub_6-hub_11
+connection: start-hub_11 [max_link_capacity=2]
+connection: start-hub_12 [max_link_capacity=3]
+connection: hub_2-hub_3
+connection: hub_2-hub_5
+connection: hub_3-hub_4 [max_link_capacity=3]
+connection: start-hub_3
+connection: hub_4-hub_5
+connection: hub_4-hub_7
+connection: hub_5-hub_6
+connection: hub_5-hub_9 [max_link_capacity=2]
+connection: start-hub_8 [max_link_capacity=2]
+connection: start-hub_9 [max_link_capacity=2]
