@@ -1,7 +1,7 @@
 import pytest
 
-from src.model import SimulationConfig
-from src.parser import FileParser, InvalidConfigError
+from src.model import InvalidConfigError, SimulationConfig
+from src.parser import FileParser
 
 parser = FileParser()
 

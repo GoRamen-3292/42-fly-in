@@ -1,15 +1,7 @@
 from pydantic import ValidationError
 
 from ..model import Connection, Hub, HubType, SimulationConfig
-
-
-class InvalidConfigError(ValueError):
-    """無効な設定ファイルのエラーを表す例外クラス"""
-
-    def __init__(self, message: str, line_number: int | None = None) -> None:
-        if line_number is not None:
-            message = f"Line {line_number}: {message}"
-        super().__init__(message)
+from ..model.types import InvalidConfigError
 
 
 class FileParser:

@@ -1,7 +1,13 @@
 from .connection import Connection, normalize_connction_key
 from .hub import Hub
 from .simulation_config import SimulationConfig
-from .types import ConnectionKey, Coordinate, HubType, ZoneType
+from .types import (
+    ConnectionKey,
+    Coordinate,
+    HubType,
+    InvalidConfigError,
+    ZoneType,
+)
 
 __all__ = [
     "Connection",
@@ -9,6 +15,7 @@ __all__ = [
     "Coordinate",
     "Hub",
     "HubType",
+    "InvalidConfigError",
     "SimulationConfig",
     "ZoneType",
     "normalize_connction_key",

@@ -1,3 +1,3 @@
-from .file_parser import FileParser, InvalidConfigError
+from .file_parser import FileParser
 
-__all__ = ["FileParser", "InvalidConfigError"]
+__all__ = ["FileParser"]
