@@ -36,6 +36,26 @@ def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
         text=True,
         capture_output=True,
     )
+    print(result.stdout)
+    lines = len(str(result.stdout).splitlines())
+    if lines != file[1]:
+        warnings.warn(
+            f"File: {file[0]} | Optimal turns: {file[1]} | Actual turns: {lines}"
+        )
+    assert file[1] <= lines <= file[1] * 1.25
+
+
+@pytest.mark.parametrize("file", FILES)
+def test_main_program_with_colors_and_optimal_turns(
+    file: FileAndOptimalTurns,
+) -> None:
+    result = subprocess.run(
+        ["uv", "run", "python3", "main.py", "-c", file[0]],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    print(result.stdout)
     lines = len(str(result.stdout).splitlines())
     if lines != file[1]:
         warnings.warn(
@@ -58,6 +78,7 @@ def test_priority_hub_preference(file: str) -> None:
         text=True,
         capture_output=True,
     )
+    print(result.stdout)
     lines = str(result.stdout).splitlines()
     # Check if the output contains the expected path that goes through the priority hub
     # Assuming HubB is the priority hub
