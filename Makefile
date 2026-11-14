@@ -4,16 +4,20 @@ TEST_PATHS = test
 CACHE_DIRS = .mypy_cache .pytest_cache
 MAP = test.txt
 
+all: color
+
 install:
 	uv sync
 
 run:
 	@uv run main.py $(MAP)
 
+color:
+	@uv run main.py $(MAP) --color
+
 debug:
 	echo "Not implemented yet (debug mode)"
 
-# DOCS:
 clean:
 	-uv run ruff clean
 	find . -type d -name "__pycache__" -exec rm -rf {} +
