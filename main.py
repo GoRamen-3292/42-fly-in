@@ -23,8 +23,8 @@ def main() -> None:
         config = FileParser.parse_file(args.filename)
         fly_in = Simulation(config)
         result = fly_in.simulate()
-        Visualizer.show_result(result)
-    except BaseException:  # noqa: TRY203
+        Visualizer(result, args.color, config.hubs).show_result()
+    except Exception:  # noqa: TRY203
         raise
     # except FileNotFoundError:
     #     print("File not found")

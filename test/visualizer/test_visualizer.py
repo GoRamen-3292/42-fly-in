@@ -25,7 +25,7 @@ from src.visualizer import Visualizer
     ],
 )
 def test_visualizer(data: SimulationResult) -> None:
-    Visualizer.show_result(data)
+    Visualizer(data).show_result()
 
 
 @pytest.mark.parametrize(
@@ -48,4 +48,4 @@ def test_visualizer_timeline(
         is_successful=True,
         drones=[Drone(id=0, start_pos="start", timeline=timeline)],
     )
-    Visualizer.show_result(result)
+    Visualizer(result).show_result()
