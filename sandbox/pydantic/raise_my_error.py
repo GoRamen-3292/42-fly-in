@@ -39,9 +39,10 @@ if __name__ == "__main__":
 
             if not ctx:
                 continue
-            print(f"{ctx}",
-                  "",
-                  f"Error: {error}",
-                  )
+            print(
+                f"{ctx}",
+                "",
+                f"Error: {error}",
+            )
 
             print()
