@@ -38,14 +38,18 @@ class FileParser:
             if lineno == 0:
                 err_str = f"Unexpected error in the file: {file_path}\n{e}"
             else:
-                err_str = (
-                    f"Invalid configuration at line {lineno}: {file_path}\n{e}"
-                )
+                err_str = f"Invalid configuration at line {lineno}:\n{e}"
             raise InvalidConfigError(err_str) from e
         except ValidationError as e:
-            # TODO: Pydanticのエラーメッセージの抽出を行う
+            err_list: list[str] = []
+            for err in e.errors():
+                ctx = err.get("ctx", {}).get("error")
+                if not ctx:
+                    break
+                err_list.append(str(ctx))
+
             raise InvalidConfigError(
-                f"Validation error in the file: {file_path}\n{e}"
+                "\n".join(err_list)
             ) from e
 
     @classmethod

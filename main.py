@@ -1,6 +1,6 @@
 import argparse
 
-from src import FileParser, Simulation, Visualizer
+from src import FileParser, InvalidConfigError, Simulation, Visualizer
 
 
 def parse_args() -> argparse.Namespace:
@@ -29,14 +29,14 @@ def main() -> None:
         fly_in = Simulation(config)
         result = fly_in.simulate()
         Visualizer(result, args.color, config.hubs).show_result()
-    except Exception:  # noqa: TRY203
-        raise
-    # except ValueError as e:
-    #     print(f"ValueError: {e}")
-    # except OSError as e:
-    #     print(f"Unintended: {e}")
-    # except Exception as e:
-    #     print(f"Unexpected error: {e}")
+    except InvalidConfigError as e:
+        print(str(e))
+    except ValueError as e:
+        print(f"ValueError: {e}")
+    except OSError as e:
+        print(f"Unintended: {e}")
+    except Exception as e:  # noqa: BLE001
+        print(f"Unexpected error: {e}")
 
 
 if __name__ == "__main__":

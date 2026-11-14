@@ -20,7 +20,14 @@ class SimulationConfig(BaseModel):
         """ハブの重複を検証するバリデータ"""
         hub_names = [hub.name for hub in value]
         if len(hub_names) != len(set(hub_names)):
-            raise InvalidConfigError("Duplicate hub names are not allowed")
+            lines = tuple(
+                hub.line_no for hub in value if hub_names.count(hub.name) > 1
+            )
+
+            raise InvalidConfigError(
+                f"Invalid configuration at line {lines[0]} and {lines[1]}:\n" +
+                "Duplicate hub names are not allowed"
+            )
 
         start_hubs = [
             hub for hub in value if (hub.hub_type == HubType.START_HUB)
@@ -28,7 +35,8 @@ class SimulationConfig(BaseModel):
         end_hubs = [hub for hub in value if hub.hub_type == HubType.END_HUB]
         if len(start_hubs) != 1 or len(end_hubs) != 1:
             raise InvalidConfigError(
-                "There must be exactly one start hub and one end hub"
+                "Invalid configuration:\n"
+                + "There must be exactly one start hub and one end hub"
             )
 
         return value
@@ -43,7 +51,11 @@ class SimulationConfig(BaseModel):
                     connection.hubs == value[j].hubs
                     or connection.hubs == value[j].hubs[::-1]
                 ):
+                    line_1 = connection.line_no
+                    line_2 = value[j].line_no
+
                     raise InvalidConfigError(
+                        f"Invalid configuration at line {line_1} and {line_2}:\n"
                         "Duplicate connections are not allowed: "
                         + str(connection.hubs)
                     )
