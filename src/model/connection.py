@@ -22,7 +22,7 @@ class Connection(BaseModel):
 
     hubs: tuple[str, str]
     max_link_capacity: PositiveInt = 1
-    model_config = ConfigDict(extra="forbid")
+    line_no: int | None = None
 
     @field_validator("hubs", mode="after")
     @classmethod
