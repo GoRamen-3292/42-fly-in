@@ -31,7 +31,7 @@ class FileParser:
                     cls.parse_line(line.strip(), config, lineno)
             lineno = None
             return SimulationConfig.model_validate(config)
-        except OSError as e:
+        except (OSError, UnicodeDecodeError) as e:
             raise OSError(
                 f"Error occurred while reading the file: {file_path}\n{e}"
             ) from e
