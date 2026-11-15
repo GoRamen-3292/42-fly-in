@@ -1,6 +1,6 @@
 import subprocess
-import warnings
 import sys
+import warnings
 
 import pytest
 
@@ -37,8 +37,8 @@ def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
         text=True,
         capture_output=True,
     )
-    print(result.stdout)
-    lines = len(str(result.stdout).splitlines())
+    print(result.stderr)
+    lines = len(str(result.stderr).splitlines())
     if lines != file[1]:
         warnings.warn(
             f"File: {file[0]} | Optimal turns: {file[1]} | Actual turns: {lines}"
@@ -62,10 +62,9 @@ def test_priority_hub_preference(file: str, color: bool) -> None:
         text=True,
         capture_output=True,
     )
-    print(result.stdout)
-    lines = str(result.stdout).splitlines()
-    # Check if the output contains the expected path that goes through the priority hub
-    # Assuming HubB is the priority hub
+    print(result.stderr)
+    lines = str(result.stderr).splitlines()
+    # path_aが優先されることを確認する
     assert any("path_a" in line for line in lines)
     assert not any("path_b" in line for line in lines)
     assert any("goal" in line for line in lines)
@@ -86,7 +85,7 @@ def test_restricted_max(file: str) -> None:
         text=True,
         capture_output=True,
     )
-    lines = str(result.stdout).splitlines()
-    # Check if the output contains the expected path that respects the restricted max capacity
+    lines = str(result.stderr).splitlines()
+    # クラッシュやエラーなく実行できるかを確認する
     assert any("D1-start" in line for line in lines)
     assert any("D1-goal" in line for line in lines)

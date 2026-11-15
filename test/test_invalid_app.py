@@ -48,14 +48,12 @@ def test_invalid_main_program(
 ) -> None:
     opts = ["--color"] if color else []
     args = [sys.executable, "main.py", *opts, file]
-    result = subprocess.run(
-        args, check=False, text=True, capture_output=True
-    )
-    print(result.stdout)
+    result = subprocess.run(args, check=False, text=True, capture_output=True)
+    print(result.stderr)
 
-    assert "Invalid configuration" in result.stdout
+    assert "Invalid configuration" in result.stderr
     if lines:
         expected = ", ".join(str(n) for n in lines)
-        assert f"at line {expected}:" in result.stdout
+        assert f"at line {expected}:" in result.stderr
     else:
-        assert "at line" not in result.stdout
+        assert "at line" not in result.stderr
