@@ -55,6 +55,10 @@ def main() -> int:
     except (InvalidConfigError, RouteNotFoundError) as e:
         print_colored_error(str(e), args.color)
         return 1
+    except MemoryError as e:
+        print_colored_error(
+            f"Out of memory\nPlease check your computer. {e}", args.color)
+        return 2
     except OSError as e:
         print_colored_error(f"Error while processing:\n{e}", args.color)
         return 2
