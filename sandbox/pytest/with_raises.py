@@ -3,7 +3,7 @@
 import pytest
 
 
-def test_with_raises():
+def test_with_raises() -> None:
     with pytest.raises(ValueError) as exc_info:
         int("not_a_number")
 

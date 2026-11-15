@@ -79,7 +79,8 @@ class SimulationConfig(BaseModel):
             for hub in connection.hubs:
                 if hub not in hub_names:
                     raise InvalidConfigError(
-                        f"connection: Connection {connection.hubs} references a hub that is not defined: {hub}",
+                        f"connection: Connection {connection.hubs}"
+                        + " references a hub that is not defined: {hub}",
                         [connection.line_no] if connection.line_no else None,
                     )
             for j in range(i + 1, len(self.connections)):

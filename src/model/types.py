@@ -41,7 +41,10 @@ class InvalidConfigError(ValueError):
     def __str__(self) -> str:
         if self.line_numbers:
             lines_str = ", ".join(str(line) for line in self.line_numbers)
-            return f"Invalid configuration at line {lines_str}:\n{super().__str__()}"
+            return (
+                f"Invalid configuration at line {lines_str}:\n"
+                + super().__str__()
+            )
         else:
             return "Invalid configuration:\n" + super().__str__()
 
