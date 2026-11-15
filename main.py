@@ -1,6 +1,7 @@
 import argparse
 
 from src import FileParser, InvalidConfigError, Simulation, Visualizer
+from src.solver.types import RouteNotFoundError
 
 
 def parse_args() -> argparse.Namespace:
@@ -29,12 +30,10 @@ def main() -> None:
         fly_in = Simulation(config)
         result = fly_in.simulate()
         Visualizer(result, args.color, config.hubs).show_result()
-    except InvalidConfigError as e:
+    except (InvalidConfigError, RouteNotFoundError) as e:
         print(str(e))
-    except ValueError as e:
-        print(f"ValueError: {e}")
     except OSError as e:
-        print(f"Unintended: {e}")
+        print(f"OSError: {e}")
     except Exception as e:  # noqa: BLE001
         print(f"Unexpected error: {e}")
 

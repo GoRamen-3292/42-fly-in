@@ -22,36 +22,38 @@ class SimulationConfig(BaseModel):
     hubs: list[Hub]
     connections: list[Connection]
 
-    @field_validator("nb_drones", mode="after")
+    @field_validator("nb_drones", mode="before")
     @classmethod
-    def validate_nb_drones(cls, value: int) -> int:
+    def validate_nb_drones(cls, value: Any) -> Any:
         """ドローンの数を検証するバリデータ"""
         if value is None:
             raise InvalidConfigError(
-                "Invalid configuration:\n" + "The number of drones is unset"
-            )
-        elif value == 0:
-            raise InvalidConfigError(
-                "Invalid configuration:\n"
-                + "The number of drones must be a positive integer"
+                "nb_drones: The number of drones is unset",
             )
         return value
 
     @model_validator(mode="after")
     def validate_hubs(self) -> Self:
         """ハブの重複を検証するバリデータ"""
-        hub_names = [hub.name for hub in self.hubs]
-        if len(hub_names) != len(set(hub_names)):
-            lines = tuple(
-                hub.line_no
-                for hub in self.hubs
-                if hub_names.count(hub.name) > 1
-            )
+        self._validate_hubs()
+        self._validate_connections()
+        return self
 
-            raise InvalidConfigError(
-                f"Invalid configuration at line {lines[0]} and {lines[1]}:\n"
-                + "Duplicate hub names are not allowed"
-            )
+    def _validate_hubs(self) -> None:
+        hub_names = [hub.name for hub in self.hubs]
+
+        if len(hub_names) != len(set(hub_names)):
+            for hub in self.hubs:
+                if hub_names.count(hub.name) > 1:
+                    lines: list[int] = [
+                        h.line_no
+                        for h in self.hubs
+                        if h.name == hub.name and h.line_no is not None
+                    ]
+                    raise InvalidConfigError(
+                        f"Duplicate hub name: {hub.name}",
+                        lines if lines else None,
+                    )
 
         start_hubs = [
             hub for hub in self.hubs if (hub.hub_type == HubType.START_HUB)
@@ -59,18 +61,26 @@ class SimulationConfig(BaseModel):
         end_hubs = [
             hub for hub in self.hubs if hub.hub_type == HubType.END_HUB
         ]
-        if len(start_hubs) != 1 or len(end_hubs) != 1:
+        if len(start_hubs) != 1:
             raise InvalidConfigError(
-                "Invalid configuration:\n"
-                + "There must be exactly one start hub and one end hub"
+                "hubs: There must be exactly one start hub",
+                [hub.line_no for hub in start_hubs if hub.line_no is not None],
             )
+        if len(end_hubs) != 1:
+            raise InvalidConfigError(
+                "hubs: There must be exactly one start hub and one end hub",
+                [hub.line_no for hub in end_hubs if hub.line_no is not None],
+            )
+
+    def _validate_connections(self) -> None:
+        hub_names = [hub.name for hub in self.hubs]
 
         for i, connection in enumerate(self.connections):
             for hub in connection.hubs:
                 if hub not in hub_names:
                     raise InvalidConfigError(
-                        f"Invalid configuration at line {connection.line_no}:\n"
-                        + f"Connection {connection.hubs} references a hub that is not defined: {hub}"
+                        f"connection: Connection {connection.hubs} references a hub that is not defined: {hub}",
+                        [connection.line_no] if connection.line_no else None,
                     )
             for j in range(i + 1, len(self.connections)):
                 if (
@@ -79,10 +89,12 @@ class SimulationConfig(BaseModel):
                 ):
                     line_1 = connection.line_no
                     line_2 = self.connections[j].line_no
+                    lines: list[int] | None = (
+                        [line_1, line_2] if line_1 and line_2 else None
+                    )
 
                     raise InvalidConfigError(
-                        f"Invalid configuration at line {line_1} and {line_2}:\n"
-                        "Duplicate connections are not allowed: "
-                        + str(connection.hubs)
+                        "connection: Duplicate connections are not allowed: "
+                        + str(connection.hubs),
+                        lines,
                     )
-        return self
