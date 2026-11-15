@@ -56,7 +56,7 @@ def get_shortest_path(
             next_node = hubs[next_name]
             prev_min_cost = next_node.min_cost
             if current_hub.min_cost is None:
-                raise Exception(
+                raise RuntimeError(
                     "min_cost is unset."
                     + "Did you set when you push to the queue?"
                 )

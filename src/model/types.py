@@ -33,3 +33,23 @@ class HubType(str, Enum):
     NORMAL_HUB = "hub"
     START_HUB = "start_hub"
     END_HUB = "end_hub"
+
+
+class InvalidConfigError(ValueError):
+    """無効な設定ファイルのエラーを表す例外クラス"""
+
+    def __str__(self) -> str:
+        if self.line_numbers:
+            lines_str = ", ".join(str(line) for line in self.line_numbers)
+            return (
+                f"Invalid configuration at line {lines_str}:\n"
+                + super().__str__()
+            )
+        else:
+            return "Invalid configuration:\n" + super().__str__()
+
+    def __init__(
+        self, message: str, line_numbers: list[int] | None = None
+    ) -> None:
+        super().__init__(message)
+        self.line_numbers = line_numbers

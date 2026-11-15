@@ -69,3 +69,7 @@ class SimulationResult:
 
     is_successful: bool
     drones: list[Drone]
+
+
+class RouteNotFoundError(Exception):
+    """経路が見つからなかった場合に発生する例外クラス"""

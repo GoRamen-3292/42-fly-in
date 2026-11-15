@@ -1,4 +1,5 @@
 import subprocess
+import sys
 import warnings
 
 import pytest
@@ -8,7 +9,7 @@ from src.model import SimulationConfig
 
 type FileAndOptimalTurns = tuple[str, int]
 
-FILES: list[FileAndOptimalTurns] = [
+CASES: list[FileAndOptimalTurns] = [
     ("maps/easy/01_linear_path.txt", 4),
     ("maps/easy/02_simple_fork.txt", 4),
     ("maps/easy/03_basic_capacity.txt", 4),
@@ -22,21 +23,22 @@ FILES: list[FileAndOptimalTurns] = [
 ]
 
 
-@pytest.mark.parametrize("file", FILES)
+@pytest.mark.parametrize("file", CASES)
 def test_parse_file(file: FileAndOptimalTurns) -> None:
     config: SimulationConfig = FileParser.parse_file(file[0])
     assert config is not None
 
 
-@pytest.mark.parametrize("file", FILES)
+@pytest.mark.parametrize("file", CASES)
 def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
     result = subprocess.run(
-        ["uv", "run", "python3", "main.py", file[0]],
+        [sys.executable, "main.py", file[0]],
         check=True,
         text=True,
         capture_output=True,
     )
-    lines = len(str(result.stdout).splitlines())
+    print(result.stderr)
+    lines = len(str(result.stderr).splitlines())
     if lines != file[1]:
         warnings.warn(
             f"File: {file[0]} | Optimal turns: {file[1]} | Actual turns: {lines}"
@@ -51,16 +53,18 @@ def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
         "test/maps/no_path_b/02_simple_fork_priority.txt",
     ],
 )
-def test_priority_hub_preference(file: str) -> None:
+@pytest.mark.parametrize("color", [True, False])
+def test_priority_hub_preference(file: str, color: bool) -> None:
+    opts = ["--color"] if color else []
     result = subprocess.run(
-        ["uv", "run", "python3", "main.py", file],
+        [sys.executable, "main.py", *opts, file],
         check=True,
         text=True,
         capture_output=True,
     )
-    lines = str(result.stdout).splitlines()
-    # Check if the output contains the expected path that goes through the priority hub
-    # Assuming HubB is the priority hub
+    print(result.stderr)
+    lines = str(result.stderr).splitlines()
+    # path_aが優先されることを確認する
     assert any("path_a" in line for line in lines)
     assert not any("path_b" in line for line in lines)
     assert any("goal" in line for line in lines)
@@ -76,12 +80,12 @@ def test_priority_hub_preference(file: str) -> None:
 )
 def test_restricted_max(file: str) -> None:
     result = subprocess.run(
-        ["uv", "run", "python3", "main.py", file],
+        [sys.executable, "main.py", file],
         check=True,
         text=True,
         capture_output=True,
     )
-    lines = str(result.stdout).splitlines()
-    # Check if the output contains the expected path that respects the restricted max capacity
+    lines = str(result.stderr).splitlines()
+    # クラッシュやエラーなく実行できるかを確認する
     assert any("D1-start" in line for line in lines)
     assert any("D1-goal" in line for line in lines)

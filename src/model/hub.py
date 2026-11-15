@@ -5,13 +5,19 @@ from .validate_args import validate_hub_name, validate_metadata
 
 
 class Hub(BaseModel):
+    """
+    ハブを表すモデル
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
     hub_type: HubType = HubType.NORMAL_HUB
     name: str = Field(min_length=1)
     coordinate: Coordinate
     zone: ZoneType = ZoneType.NORMAL
     color: str | None = Field(default=None)
     max_drones: PositiveInt = 1
-    model_config = ConfigDict(extra="forbid")
+    line_no: int | None = None
 
     @field_validator("name", mode="after")
     @classmethod

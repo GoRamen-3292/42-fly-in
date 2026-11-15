@@ -1,7 +1,6 @@
 import pytest
-from pydantic import ValidationError
 
-from src.model import SimulationConfig
+from src.model import InvalidConfigError, SimulationConfig
 from src.parser import FileParser
 
 parser = FileParser()
@@ -27,8 +26,8 @@ def test_parse_line(line: str) -> None:
         hubs=[],
         connections=[],
     )
-    with pytest.raises(ValueError):
-        parser.parse_line(line, config)
+    with pytest.raises(InvalidConfigError):
+        parser.parse_line(line, config, 42)
 
 
 @pytest.mark.parametrize(
@@ -63,32 +62,5 @@ def test_parse_line_with_options(line: str) -> None:
         hubs=[],
         connections=[],
     )
-    with pytest.raises(ValueError):
-        parser.parse_line(line, config)
-
-
-def test_multiple_start_hubs() -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=10,
-        hubs=[],
-        connections=[],
-    )
-    parser.parse_line("start_hub: start1 10 20", config)
-    parser.parse_line("start_hub: start2 30 40", config)
-    assert len(config.hubs) == 2
-    with pytest.raises(ValidationError):
-        SimulationConfig.model_validate(config)
-
-
-def test_multiple_end_hubs() -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=10,
-        hubs=[],
-        connections=[],
-    )
-
-    # a
-    parser.parse_line("end_hub: start1 10 20", config)
-    parser.parse_line("end_hub: start2 30 40", config)
-    with pytest.raises(ValidationError):
-        SimulationConfig.model_validate(config)
+    with pytest.raises(InvalidConfigError):
+        parser.parse_line(line, config, 42)

@@ -1,58 +1,109 @@
 from pydantic import ValidationError
 
 from ..model import Connection, Hub, HubType, SimulationConfig
+from ..model.types import InvalidConfigError
 
 
 class FileParser:
     @classmethod
-    def parse_file(cls, file_path: str) -> SimulationConfig:
+    def parse_file(
+        cls, file_path: str, max_size: int = 100_000_000
+    ) -> SimulationConfig:
         """ファイルをパースする関数
 
         Args:
             file_path (str): パースするファイルのパス
         Raises:
-            ValueError: ファイルのパースに失敗した場合
-            FileNotFoundError: ファイルが存在しない場合
+            InvalidConfigError: 無効な設定ファイルの場合
+            OSError: 各種ファイル操作に失敗した場合
         """
         config = SimulationConfig.model_construct(
             nb_drones=None,
             hubs=[],
             connections=[],
         )
-        with open(file_path, "r", encoding="utf-8") as f:
-            for line in f:
-                cls.parse_line(line.strip(), config)
-        return SimulationConfig.model_validate(config)
+        lineno: int | None = None
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                for lineno, line in enumerate(
+                    f.read(max_size).splitlines(), start=1
+                ):
+                    cls.parse_line(line.strip(), config, lineno)
+            lineno = None
+            return SimulationConfig.model_validate(config)
+        except (OSError, UnicodeDecodeError) as e:
+            raise OSError(
+                f"Error occurred while reading the file: {file_path}\n{e}"
+            ) from e
+        except ValidationError as e:
+            raise find_config_error(e) or InvalidConfigError(
+                parse_validation_error(e),
+                [lineno] if lineno else None,
+            ) from e
 
     @classmethod
-    def parse_line(cls, line: str, config: SimulationConfig) -> None:
+    def parse_line(
+        cls, line: str, config: SimulationConfig, lineno: int
+    ) -> None:
         """1行のパースをする関数"""
         if line.startswith("#") or not line:
             return
+        splits = line.partition(":")
+        if splits[1] != ":":
+            raise InvalidConfigError(
+                "Line must contain a ':' separator", [lineno]
+            )
+        key, value = (x.strip() for x in (splits[i] for i in (0, 2)))
         try:
-            splits = line.partition(":")
-            if splits[1] != ":":
-                raise ValueError("Line must contain a ':' separator")
-            key, value = (x.strip() for x in (splits[i] for i in (0, 2)))
-
             if key in HubType.__members__.values():
-                config.hubs.append(cls._parse_hub_line(HubType(key), value))
+                config.hubs.append(
+                    cls._parse_hub_line(HubType(key), value, lineno)
+                )
             elif key == "connection":
-                config.connections.append(cls._parse_connection_line(value))
+                config.connections.append(
+                    cls._parse_connection_line(value, lineno)
+                )
             elif key == "nb_drones":
                 if config.nb_drones is not None:
-                    raise ValueError("nb_drones is already set")
-                config.nb_drones = int(value)
+                    raise InvalidConfigError(
+                        "Cannot set the number of drones multiple times",
+                    )
+                # validation前につき、config.nb_dronesの型はNoneである可能性がある
+                try:
+                    value = int(value)
+                    if value <= 0:
+                        raise ValueError()
+                    config.nb_drones = value
+                except ValueError:
+                    raise InvalidConfigError(
+                        "The number of drones must be an integer",
+                    )
             else:
-                raise ValueError(f"Unknown key: {key}")
-        except (ValueError, ValidationError, IndexError) as e:
-            raise ValueError(f"Invalid line format: {line}" + "\n" + str(e))
+                raise InvalidConfigError(f"Unknown key: {key}")
+        except InvalidConfigError as e:
+            e.args = (f"{key}: {e.args[0]}",)
+            if e.line_numbers is None:
+                e.line_numbers = [lineno]
+            raise
+        except ValidationError as e:
+            raise find_config_error(e, lineno) or InvalidConfigError(
+                key + ": " + parse_validation_error(e), [lineno]
+            ) from e
 
     @classmethod
-    def _parse_hub_line(cls, hub_type: HubType, value: str) -> Hub:
-        """hubの行をパースする関数"""
-        values = value.split()
+    def _parse_hub_line(
+        cls, hub_type: HubType, value: str, lineno: int
+    ) -> Hub:
+        """hubの行をパースする関数
 
+        Raises:
+            InvalidConfigError: 無効なhubの行の場合
+        """
+        values = value.split()
+        if len(values) < 3:
+            raise InvalidConfigError(
+                "Hub line must contain at least 3 values: name, x, y"
+            )
         name, x, y = values[:3]
         options = values[3:] if len(values) > 3 else []
 
@@ -63,49 +114,85 @@ class FileParser:
                 **d,
                 "hub_type": hub_type,
                 "name": name,
-                "coordinate": (int(x), int(y)),
-                "color": d.get("color"),
+                "coordinate": (x, y),
+                "line_no": lineno,
             }
         )
 
-    @classmethod
-    def _parse_options(cls, options: str) -> dict[str, str]:
+    @staticmethod
+    def _parse_options(options: str) -> dict[str, str]:
         """オプションのパースをする関数"""
         options = options.strip()
         if not options:
             return {}
 
         result: dict[str, str] = {}
-        for option in cls.extract_brackets(options).split():
-            key, value = (x.strip() for x in option.split("="))
+        for option in extract_brackets(options).split():
+            items = [x.strip() for x in option.split("=")]
+            if len(items) != 2:
+                raise InvalidConfigError(
+                    f"Invalid option format: {option}. Expected: key=value"
+                )
+            key, value = items
             result[key] = value
 
         return result
 
     @classmethod
-    def _parse_connection_line(cls, value: str) -> Connection:
+    def _parse_connection_line(cls, value: str, lineno: int) -> Connection:
         """connectionの行をパースする関数"""
-        options = value.split()
-        hub1, hub2 = options[0].split("-")
+        options: list[str] = value.split()
+
+        connection: list[str] = options[0].split("-")
+        if len(connection) != 2:
+            raise InvalidConfigError(
+                "Connection line must contain "
+                + "exactly two hubs separated by '-'"
+            )
+        hub1, hub2 = connection
+
         if len(options) == 1:
             return Connection(
                 hubs=(hub1, hub2),
+                line_no=lineno,
             )
         else:
             options = options[1:]
-            d = cls._parse_options(" ".join(options))
+            d: dict[str, str] = cls._parse_options(" ".join(options))
 
             return Connection.model_validate(
                 {
                     **d,
                     "hubs": (hub1, hub2),
+                    "line_no": lineno,
                 }
             )
 
-    @staticmethod
-    def extract_brackets(s: str) -> str:
-        """文字列から角括弧で囲まれた部分を抽出する"""
-        s = s.strip()
-        if s[0] != "[" or s[-1] != "]":
-            raise ValueError("Options must be enclosed in brackets")
-        return s[1:-1]
+
+def extract_brackets(s: str) -> str:
+    """文字列から角括弧で囲まれた部分を抽出する"""
+    s = s.strip()
+    if s[0] != "[" or s[-1] != "]":
+        raise InvalidConfigError("Options must be enclosed in brackets")
+    return s[1:-1]
+
+
+def parse_validation_error(e: ValidationError) -> str:
+    """PydanticのValidationErrorをパースして、エラーメッセージを返す関数"""
+    err_list: list[str] = []
+    for err in e.errors():
+        if "loc" in err and "msg" in err:
+            err_list.append(f"{err.get('loc', ('unknown',))[0]}: {err['msg']}")
+    return "\n".join(err_list)
+
+
+def find_config_error(
+    e: ValidationError, lineno: int | None = None
+) -> InvalidConfigError | None:
+    for err in e.errors():
+        ctx = err.get("ctx", {}).get("error")
+        if isinstance(ctx, InvalidConfigError):
+            if ctx.line_numbers is None:
+                ctx.line_numbers = [lineno] if lineno else None
+            return ctx
+    return None
