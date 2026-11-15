@@ -22,8 +22,8 @@ class FileParser:
             hubs=[],
             connections=[],
         )
-        lineno = 0
         try:
+            lineno = 0
             with open(file_path, "r", encoding="utf-8") as f:
                 for lineno, line in enumerate(
                     f.read(max_size).splitlines(), start=1
@@ -35,21 +35,16 @@ class FileParser:
                 f"Error occurred while reading the file: {file_path}\n{e}"
             ) from e
         except InvalidConfigError as e:
-            if lineno == 0:
-                err_str = f"Unexpected error in the file: {file_path}\n{e}"
+            if e.line_number:
+                err_str = (
+                    f"Invalid configuration at line {e.line_number}:\n{e}"
+                )
             else:
-                err_str = f"Invalid configuration at line {lineno}:\n{e}"
+                err_str = f"Unexpected error in the file: {file_path}\n{e}"
             raise InvalidConfigError(err_str) from e
         except ValidationError as e:
-            err_list: list[str] = []
-            for err in e.errors():
-                ctx = err.get("ctx", {}).get("error")
-                if not ctx:
-                    break
-                err_list.append(str(ctx))
-
             raise InvalidConfigError(
-                "\n".join(err_list)
+                "Invalid configuraton:\n" + parse_validation_error(e)
             ) from e
 
     @classmethod
@@ -77,16 +72,13 @@ class FileParser:
                 if config.nb_drones is not None:
                     raise InvalidConfigError("nb_drones is already set")
                 # validation前につき、config.nb_dronesの型はNoneである可能性がある
-                config.nb_drones = int(value)
+                config.nb_drones = value
             else:
                 raise InvalidConfigError(f"Unknown key: {key}")
         except ValidationError as e:
-            # TODO: Pydanticのエラーメッセージの抽出を行う
-            raise InvalidConfigError(str(e)) from e
-        except InvalidConfigError as e:
-            raise InvalidConfigError(str(e)) from e
-        except ValueError as e:
-            raise InvalidConfigError(str(e)) from e
+            raise InvalidConfigError(parse_validation_error(e), lineno) from e
+        except InvalidConfigError:
+            raise
 
     @classmethod
     def _parse_hub_line(
@@ -173,3 +165,16 @@ class FileParser:
         if s[0] != "[" or s[-1] != "]":
             raise InvalidConfigError("Options must be enclosed in brackets")
         return s[1:-1]
+
+
+def parse_validation_error(e: ValidationError) -> str:
+    """PydanticのValidationErrorをパースして、エラーメッセージを返す関数"""
+    err_list: list[str] = []
+    for err in e.errors():
+        ctx = err.get("ctx", {}).get("error")
+        if ctx and isinstance(ctx, InvalidConfigError):
+            err_list.append(str(ctx))
+        elif "loc" in err and "msg" in err:
+            # print(err)
+            err_list.append(f"{err.get('loc', ('unknown',))[0]}: {err['msg']}")
+    return "\n".join(err_list)
