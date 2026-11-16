@@ -56,31 +56,33 @@ def print_colored_error(message: str, color: bool = False) -> None:
 
 def main() -> int:
     """メイン関数"""
-    # 予期せずExceptionクラスおよびその子クラスをraiseすることのない関数
-    args = parse_args()
+    color: bool = False
     try:
+        args = parse_args()
+        color = args.color
+
         config = FileParser.parse_file(args.filename)
         fly_in = Simulation(config)
         result = fly_in.simulate()
-        Visualizer(result, args.color, config.hubs).show_result()
+        Visualizer(result, color, config.hubs).show_result()
     except (InvalidConfigError, RouteNotFoundError) as e:
-        print_colored_error(str(e), args.color)
+        print_colored_error(str(e), color)
         return 1
     except MemoryError as e:
         print_colored_error(
-            f"Out of memory\nPlease check your computer. {e}", args.color
+            f"Out of memory\nPlease check your computer. {e}", color
         )
         return 2
     except OSError as e:
-        print_colored_error(f"Error while processing:\n{e}", args.color)
+        print_colored_error(f"Error while processing:\n{e}", color)
         return 2
     except KeyboardInterrupt:
-        print_colored_error("Interrupted", args.color)
+        print_colored_error("Interrupted", color)
         return 130
     except Exception as e:
         print_colored_error(
             f"UNEXPECTED ERROR: You should report this to the developer:\n{e}",
-            args.color,
+            color,
         )
         return 3
 
