@@ -1,12 +1,16 @@
+"""設定ファイルの値の形式を検証する関数を定義するモジュール"""
+
+
 def validate_hub_name(name: str) -> str:
     """hubの名前が正しい形式であることを検証する関数
 
     空白についてはPydantic側で検証されるため不要
+
     Args:
-        name (str): The name to verify.
+        name: 検証するハブ名
 
     Raises:
-        ValueError: If the name is invalid.
+        ValueError: ハブ名に'-'または空白文字が含まれる場合
     """
     if "-" in name:
         raise ValueError(

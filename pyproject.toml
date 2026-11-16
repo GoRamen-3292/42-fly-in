@@ -45,6 +45,7 @@ select = [
     "UP",      # pyupgrade
     "ANN",     # 型注釈
     "B",       # bugbear
+    "D",       # docstring
     "C4",      # comprehensions
     "SIM",     # simplify
     "RET",     # return
@@ -64,11 +65,9 @@ ignore = [
     "PLR2004",  # マジックナンバーでの比較を許容
     # 以降は仮
     "E501",  # 仮にline too longを無視
-    "D103",
-    "D100",
 ]
 pydocstyle.convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"test/**" = ["E501"]
+"test/**" = ["E501", "D"]
 "sandbox/**" = ["ALL"]

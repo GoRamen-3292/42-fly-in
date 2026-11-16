@@ -1,3 +1,5 @@
+"""ドローンの経路を計画するシミュレーションを定義するモジュール"""
+
 import heapq
 from typing import cast
 
@@ -21,7 +23,22 @@ from .types import (
 
 
 class Simulation:
+    """与えられた設定から、ドローンの経路を計画するシミュレーションを提供するクラス
+
+    ドローンを1台ずつ順番にダイクストラ法を用いて最短経路で計画し、
+    各ターンにおけるハブと接続の
+    使用状況を記録することで、後続のドローンが容量の制約を守れるようにする
+    """
+
     def __init__(self, config: SimulationConfig) -> None:
+        """シミュレーションを初期化するコンストラクタ
+
+        Args:
+            config: 検証済みのシミュレーションの設定
+
+        Raises:
+            RouteNotFoundError: 設定に開始ハブが存在しない場合
+        """
         self._config = config
         self._result: SimulationResult | None = None
         self._drones: list[Drone] = []
@@ -191,6 +208,21 @@ class Simulation:
     def get_shortest_path(
         self, start_hub: str
     ) -> list[PlanElement | PlanConnectionElement] | None:
+        """開始ハブから終了ハブまでの最短経路を探索するメソッド
+
+        ターン数をコストとし、計画済みのドローンによるハブと接続の
+        使用状況を考慮しながら、その場での待機も含めて経路を探索する
+
+        Args:
+            start_hub: 探索を開始するハブの名前
+
+        Returns:
+            開始位置を先頭とし、ターンごとの位置を時系列に並べたリスト、
+            経路が見つからない場合はNone
+
+        Raises:
+            ValueError: start_hubが存在しないハブの名前である場合
+        """
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
 
@@ -251,6 +283,13 @@ class Simulation:
     def convert_hubs(
         self, hubs: list[Hub], connections: list[Connection]
     ) -> dict[str, SolverHub]:
+        """HubのリストをSimulation内で利用するSolverHubに変換するメソッド
+
+        接続の情報をもとに、各ハブに隣接するハブの名前を設定する
+
+        Returns:
+            ハブ名をキーとするSolverHubの辞書
+        """
         result: dict[str, SolverHub] = {}
         for hub in hubs:
             result[hub.name] = SolverHub(
@@ -269,6 +308,10 @@ class Simulation:
     def convert_connections(
         self, connections: list[Connection]
     ) -> list[Connection]:
+        """接続のキーを正規化したConnectionのリストを作成するメソッド
+
+        経路の計画に不要な行番号などの情報は取り除かれる
+        """
         return [
             Connection.model_validate(
                 obj={

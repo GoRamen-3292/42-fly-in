@@ -1,3 +1,5 @@
+"""スケジューラで利用する型と例外を定義するモジュール"""
+
 from dataclasses import dataclass, field
 
 from ..model import ConnectionKey, HubType, ZoneType
@@ -30,11 +32,11 @@ class SolverHub:
     """Simulationクラス内でのHub
 
     Attributes:
-        name (str): ハブの名前
-        connections (set[str]): 接続されているハブの名前の集合
-        max_drones (int): ハブに存在できる最大ドローン数
-        zone (ZoneType): ハブのゾーンタイプ
-        hub_type (HubType): ハブの種類
+        name: ハブの名前
+        connections: 接続されているハブの名前の集合
+        max_drones: ハブに存在できる最大ドローン数
+        zone: ハブのゾーンタイプ
+        hub_type: ハブの種類
     """
 
     name: str
@@ -50,8 +52,8 @@ class Drone:
 
     Attributes:
         id: ドローンの識別子
-        position: ドローンの現在位置
-        timeline: ドローンのTurnごとの位置の履歴、[0]に初期位置
+        start_pos: ドローンの初期位置となるハブの名前
+        timeline: ドローンのターンごとの位置の履歴、[0]に初期位置
     """
 
     id: int

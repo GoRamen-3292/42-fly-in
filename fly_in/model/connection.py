@@ -1,3 +1,5 @@
+"""ハブ間の接続を表すモデルを定義するモジュール"""
+
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
@@ -7,9 +9,10 @@ from .validate_args import validate_hub_name
 
 
 def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
-    """Connectionの正規化を実行する関数
+    """Connectionのキーを正規化する関数
 
-    全てのモデルのインスタンス時や比較時に違うキーの組み合わせ
+    2つのハブ名を辞書順に並べ替えることで、(A, B)と(B, A)のように
+    順序だけが異なるキーを、モデルの生成時や比較時に同一のものとして扱えるようにする
     """
     if conn[0] <= conn[1]:
         return conn
@@ -42,9 +45,13 @@ class Connection(BaseModel):
         return value
 
     def model_post_init(self, context: Any) -> None:
-        """モデルの初期化と
+        """モデルの初期化後に接続のキーを正規化するメソッド
 
-        _
+        Args:
+            context: Pydanticから渡される検証時のコンテキスト、このメソッドでは使用しない
+
+        Raises:
+            ValueError: hubsが2つのハブ名からなるタプルでない場合
         """
         if isinstance(self.hubs, tuple) and len(self.hubs) == 2:
             self.hubs = normalize_connction_key(self.hubs)
