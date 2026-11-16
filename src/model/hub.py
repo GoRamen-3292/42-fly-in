@@ -5,9 +5,7 @@ from .validate_args import validate_hub_name, validate_metadata
 
 
 class Hub(BaseModel):
-    """
-    ハブを表すモデル
-    """
+    """ハブを表すモデル"""
 
     model_config = ConfigDict(extra="forbid")
 

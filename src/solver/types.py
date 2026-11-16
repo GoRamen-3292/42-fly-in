@@ -28,8 +28,7 @@ type ParentMap = dict[
 
 @dataclass
 class SolverHub:
-    """
-    Simulationクラス内でのHub
+    """Simulationクラス内でのHub
 
     Attributes:
         name (str): ハブの名前

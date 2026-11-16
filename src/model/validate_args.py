@@ -1,10 +1,10 @@
 def validate_hub_name(name: str) -> str:
-    """
-    hubの名前が正しい形式であることを検証する関数
+    """hubの名前が正しい形式であることを検証する関数
 
     空白についてはPydantic側で検証されるため不要
     Args:
         name (str): The name to verify.
+
     Raises:
         ValueError: If the name is invalid.
     """
@@ -22,8 +22,7 @@ def validate_hub_name(name: str) -> str:
 
 
 def validate_metadata(name: str, value: str) -> str:
-    """
-    メタデータの文字列の値が正しい形式であることを検証する関数
+    """メタデータの文字列の値が正しい形式であることを検証する関数
 
     空白についてはPydantic側で検証されるため不要
     """

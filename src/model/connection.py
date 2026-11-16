@@ -7,6 +7,10 @@ from .validate_args import validate_hub_name
 
 
 def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
+    """Connectionの正規化を実行する関数
+
+    全てのモデルのインスタンス時や比較時に違うキーの組み合わせ
+    """
     if conn[0] <= conn[1]:
         return conn
     else:
@@ -14,9 +18,7 @@ def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
 
 
 class Connection(BaseModel):
-    """
-    2つのハブ間の接続を表すモデル
-    """
+    """2つのハブ間の接続を表すクラス"""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -27,8 +29,7 @@ class Connection(BaseModel):
     @field_validator("hubs", mode="after")
     @classmethod
     def validate_hubs(cls, value: tuple[str, str]) -> tuple[str, str]:
-        """
-        ハブの接続を検証するバリデータ
+        """ハブの接続を検証するバリデータ
 
         - 2つのハブが同じでないことを確認する
         - ハブ名が空でないことを確認する
@@ -42,4 +43,11 @@ class Connection(BaseModel):
         return value
 
     def model_post_init(self, context: Any) -> None:
-        self.hubs = normalize_connction_key(self.hubs)
+        """モデルの初期化と
+
+        _
+        """
+        if isinstance(self.hubs, tuple) and len(self.hubs) == 2:
+            self.hubs = normalize_connction_key(self.hubs)
+        else:
+            raise ValueError("hubs must be a tuple of two hub names")

@@ -7,8 +7,7 @@ type OutputDict = defaultdict[int, list[str]]
 
 
 def _fg256(n: int) -> str:
-    """
-    256色のANSIエスケープシーケンスを生成する関数
+    """256色のANSIエスケープシーケンスを生成する関数
 
     0が
     """
