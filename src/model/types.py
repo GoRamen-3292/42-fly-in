@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import StrEnum
 
 type Coordinate = tuple[int, int]
 """座標を表す型
@@ -14,7 +14,7 @@ type ConnectionKey = tuple[str, str]
 """
 
 
-class ZoneType(str, Enum):
+class ZoneType(StrEnum):
     """ゾーンの種類を表す列挙型
 
     - normal: ドローンが1ターンで通行できる通常のゾーン
@@ -29,7 +29,7 @@ class ZoneType(str, Enum):
     PRIORITY = "priority"
 
 
-class HubType(str, Enum):
+class HubType(StrEnum):
     NORMAL_HUB = "hub"
     START_HUB = "start_hub"
     END_HUB = "end_hub"
