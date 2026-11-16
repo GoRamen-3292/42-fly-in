@@ -1,3 +1,5 @@
+"""シミュレーションの結果を標準出力に表示するモジュール"""
+
 from collections import defaultdict
 
 from .model import ConnectionKey, Hub
@@ -9,7 +11,8 @@ type OutputDict = defaultdict[int, list[str]]
 def _fg256(n: int) -> str:
     """256色のANSIエスケープシーケンスを生成する関数
 
-    0が
+    Args:
+        n: 256色のカラーパレットにおける0から255までの色番号
     """
     return f"\033[38;5;{n}m"
 
@@ -58,17 +61,40 @@ COLOR_CODES: dict[str, str] = {
 
 
 class Visualizer:
+    """シミュレーションの結果をターンごとに出力するクラス
+
+    Attributes:
+        result: 表示するシミュレーションの結果
+        color: ハブ名を色付きで出力するかどうか
+        hubs: ハブの色を参照するためのハブのリスト
+    """
+
     def __init__(
         self,
         result: SimulationResult,
         color: bool = False,
         hubs: list[Hub] | None = None,
     ) -> None:
+        """Visualizerを初期化するコンストラクタ
+
+        Args:
+            result: 表示するシミュレーションの結果
+            color: ハブ名を色付きで出力するかどうか
+            hubs: ハブの色を参照するためのハブのリスト、colorがTrueの場合は必須
+        """
         self.result = result
         self.color = color
         self.hubs = hubs
 
     def show_result(self) -> None:
+        """各ターンのドローンの移動を1行ずつ標準出力に表示するメソッド
+
+        各行は「D<ドローンID>-<位置>」を空白区切りで並べた形式で、
+        そのターンに移動しなかったドローンは出力しない
+
+        Raises:
+            ValueError: 色付きの出力が有効なのにハブの情報がない場合
+        """
         output_dict = self._pre_process_args()
         sorted_keys = sorted(output_dict.keys())
 

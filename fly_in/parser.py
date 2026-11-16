@@ -1,3 +1,5 @@
+"""設定ファイルからSimulationConfigを生成するパーサーを含むモジュール"""
+
 from pydantic import ValidationError
 
 from .model import Connection, Hub, HubType, SimulationConfig
@@ -5,6 +7,8 @@ from .model.types import InvalidConfigError
 
 
 class FileParser:
+    """設定ファイルを読み込み、SimulationConfigとして返すクラス"""
+
     @classmethod
     def parse_file(
         cls, file_path: str, max_size: int = 100_000_000
@@ -12,7 +16,12 @@ class FileParser:
         """ファイルをパースする関数
 
         Args:
-            file_path (str): パースするファイルのパス
+            file_path: パースするファイルのパス
+            max_size: ファイルから読み込む最大の文字数
+
+        Returns:
+            検証済みのシミュレーションの設定
+
         Raises:
             InvalidConfigError: 無効な設定ファイルの場合
             OSError: 各種ファイル操作に失敗した場合
@@ -200,6 +209,19 @@ def parse_validation_error(e: ValidationError) -> str:
 def find_config_error(
     e: ValidationError, lineno: int | None = None
 ) -> InvalidConfigError | None:
+    """ValidationErrorに含まれるInvalidConfigErrorを取り出す関数
+
+    Pydanticのバリデータ内で送出されたInvalidConfigErrorは
+    ValidationErrorに包まれるため、元の例外を取り出して返す
+    取り出した例外に行番号が設定されていない場合は、linenoを補う
+
+    Args:
+        e: 探索対象のValidationError
+        lineno: 例外に行番号が設定されていない場合に補う行番号
+
+    Returns:
+        見つかったInvalidConfigError、見つからなかった場合はNone
+    """
     for err in e.errors():
         ctx = err.get("ctx", {}).get("error")
         if isinstance(ctx, InvalidConfigError):

@@ -1,3 +1,5 @@
+"""シミュレーション全体の設定を表すモデルを定義するモジュール"""
+
 from typing import Any, Self
 
 from pydantic import (
@@ -34,7 +36,17 @@ class SimulationConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_duplicates(self) -> Self:
-        """ハブの重複を検証するバリデータ"""
+        """ハブと接続の整合性を検証するバリデータ
+
+        - ハブ名が重複していないことを確認する
+        - 開始ハブと終了ハブがそれぞれ1つずつ存在することを確認する
+        - 接続が定義済みのハブのみを参照していることを確認する
+        - 同じハブの組み合わせの接続が重複していないことを確認する
+
+        Raises:
+            InvalidConfigError: いずれかの条件を満たさない場合、
+                PydanticによってValidationErrorに包まれて送出される
+        """
         self._validate_hubs()
         self._validate_connections()
         return self

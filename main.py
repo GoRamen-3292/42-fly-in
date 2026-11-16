@@ -1,3 +1,5 @@
+"""fly-inのエントリーポイントとなるモジュール"""
+
 import argparse
 import sys
 
@@ -15,6 +17,7 @@ RESET = "\033[0m"
 
 
 def parse_args() -> argparse.Namespace:
+    """コマンドライン引数をパースする関数"""
     parser = argparse.ArgumentParser(
         prog="fly-in",
         description="A drone simulation program."
@@ -32,6 +35,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def print_colored_error(message: str, color: bool = False) -> None:
+    """エラーメッセージを標準エラー出力に表示する関数
+
+    colorがTrueの場合は、メッセージの1行目を赤色の太字で、
+    2行目以降を太文字で強調して表示する
+    """
     lines = message.splitlines()
 
     if color and lines:

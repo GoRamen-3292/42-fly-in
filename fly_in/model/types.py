@@ -1,3 +1,5 @@
+"""共通して利用する型や例外を定義するモジュール"""
+
 from enum import StrEnum
 
 type Coordinate = tuple[int, int]
@@ -30,15 +32,28 @@ class ZoneType(StrEnum):
 
 
 class HubType(StrEnum):
+    """ハブの種類を表す列挙型
+
+    - hub: 経由地となる通常のハブ
+    - start_hub: すべてのドローンの出発地点となるハブ
+    - end_hub: すべてのドローンの目的地となるハブ
+    """
+
     NORMAL_HUB = "hub"
     START_HUB = "start_hub"
     END_HUB = "end_hub"
 
 
 class InvalidConfigError(ValueError):
-    """無効な設定ファイルのエラーを表す例外クラス"""
+    """無効な設定ファイルのエラーを表す例外クラス
+
+    Attributes:
+        line_numbers: エラーの原因となった設定ファイルの行番号のリスト、
+            特定できない場合はNone
+    """
 
     def __str__(self) -> str:
+        """行番号を含めたエラーメッセージを返すメソッド"""
         if self.line_numbers:
             lines_str = ", ".join(str(line) for line in self.line_numbers)
             return (
@@ -50,5 +65,11 @@ class InvalidConfigError(ValueError):
     def __init__(
         self, message: str, line_numbers: list[int] | None = None
     ) -> None:
+        """InvalidConfigErrorを初期化するコンストラクタ
+
+        Args:
+            message: エラーの内容を表すメッセージ
+            line_numbers: エラーの原因となった設定ファイルの行番号のリスト
+        """
         super().__init__(message)
         self.line_numbers = line_numbers
