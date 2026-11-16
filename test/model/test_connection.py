@@ -37,6 +37,7 @@ def test_valid_hubs_connection(hubs: tuple[str, str]) -> None:
         (" \t"),  # 空白
         ("\t aaaa \t"),  # 空白
         (" aaaa "),  # 空白
+        (" \n "),  # 改行
         "fdasifa",
         4324431,
     ],
