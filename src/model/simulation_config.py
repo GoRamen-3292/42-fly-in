@@ -64,7 +64,7 @@ class SimulationConfig(BaseModel):
         if len(matches) != 1:
             raise InvalidConfigError(
                 f"hubs: There must be exactly one {hub_type} hub",
-                [hub.line_no for hub in matches if hub.line_no is not None]
+                [hub.line_no for hub in matches if hub.line_no is not None],
             )
 
     def _validate_connections(self) -> None:
