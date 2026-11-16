@@ -31,6 +31,15 @@ def parse_args() -> argparse.Namespace:
         default=False,
         help="Enable color output",
     )
+    parser.add_argument(
+        "-s",
+        "--max-file-size",
+        type=int,
+        help="Set the maximum file size in bytes." +
+        "If the file size exceeds this limit,"
+        " the program will read" +
+        " the first max_file_size bytes of the file. ",
+    )
     return parser.parse_args()
 
 
@@ -61,7 +70,7 @@ def main() -> int:
         args = parse_args()
         color = args.color
 
-        config = FileParser.parse_file(args.filename)
+        config = FileParser.parse_file(args.filename, args.max_file_size)
         fly_in = Simulation(config)
         result = fly_in.simulate()
         Visualizer(result, color, config.hubs).show_result()
