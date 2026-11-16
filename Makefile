@@ -1,5 +1,5 @@
 # ディレクトリ
-CHECK_PATHS = src sandbox main.py
+CHECK_PATHS = fly_in sandbox main.py
 TEST_PATHS = test
 CACHE_DIRS = .mypy_cache .pytest_cache
 MAP = test.txt

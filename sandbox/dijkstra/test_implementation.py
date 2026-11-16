@@ -1,8 +1,8 @@
 import heapq
 from dataclasses import dataclass
 
-from src.model import Connection, Hub
-from src.model.types import HubType, ZoneType
+from fly_in.model import Connection, Hub
+from fly_in.model.types import HubType, ZoneType
 
 
 @dataclass

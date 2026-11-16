@@ -1,7 +1,7 @@
 from pydantic import ValidationError
 
-from ..model import Connection, Hub, HubType, SimulationConfig
-from ..model.types import InvalidConfigError
+from .model import Connection, Hub, HubType, SimulationConfig
+from .model.types import InvalidConfigError
 
 
 class FileParser:

@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from src.model import Connection, normalize_connction_key
+from fly_in.model import Connection, normalize_connction_key
 
 
 @pytest.mark.parametrize(
@@ -37,6 +37,7 @@ def test_valid_hubs_connection(hubs: tuple[str, str]) -> None:
         (" \t"),  # 空白
         ("\t aaaa \t"),  # 空白
         (" aaaa "),  # 空白
+        (" \n "),  # 改行
         "fdasifa",
         4324431,
     ],

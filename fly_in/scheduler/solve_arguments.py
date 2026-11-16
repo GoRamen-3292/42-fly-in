@@ -1,7 +1,7 @@
 import heapq
 from typing import cast
 
-from src.model import (
+from ..model import (
     Connection,
     Hub,
     HubType,
@@ -9,7 +9,6 @@ from src.model import (
     ZoneType,
     normalize_connction_key,
 )
-
 from .types import (
     Drone,
     ParentMap,
