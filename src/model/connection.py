@@ -13,8 +13,7 @@ def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:
     """
     if conn[0] <= conn[1]:
         return conn
-    else:
-        return conn[1], conn[0]
+    return conn[1], conn[0]
 
 
 class Connection(BaseModel):

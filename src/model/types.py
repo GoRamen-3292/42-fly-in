@@ -45,8 +45,7 @@ class InvalidConfigError(ValueError):
                 f"Invalid configuration at line {lines_str}:\n"
                 + super().__str__()
             )
-        else:
-            return "Invalid configuration:\n" + super().__str__()
+        return "Invalid configuration:\n" + super().__str__()
 
     def __init__(
         self, message: str, line_numbers: list[int] | None = None

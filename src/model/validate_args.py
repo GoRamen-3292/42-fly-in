@@ -13,7 +13,7 @@ def validate_hub_name(name: str) -> str:
             "Hub name cannot contain '-' character. "
             "It uses '-' as a separator for hub names in connections."
         )
-    elif any(c.isspace() for c in name):
+    if any(c.isspace() for c in name):
         raise ValueError(
             "Hub name cannot contain spaces. "
             "It uses spaces as a separator for hub names in connections."

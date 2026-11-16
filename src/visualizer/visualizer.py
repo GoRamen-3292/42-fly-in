@@ -93,8 +93,7 @@ class Visualizer:
     def _create_pos_str(self, pos: str | ConnectionKey) -> str:
         if isinstance(pos, str):
             return self._create_formatted_name(pos)
-        else:
-            return "-".join([self._create_formatted_name(p) for p in pos])
+        return "-".join([self._create_formatted_name(p) for p in pos])
 
     def _create_formatted_name(self, name: str) -> str:
         if not self.color:
@@ -107,7 +106,7 @@ class Visualizer:
         )
         if color_name is None:
             return name
-        elif color_name.lower() == "rainbow":
+        if color_name.lower() == "rainbow":
             return _create_rainbow_name(name)
 
         color_code: str | None = COLOR_CODES.get(color_name.lower())

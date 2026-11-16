@@ -24,7 +24,7 @@ class FileParser:
         )
         lineno: int | None = None
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 for lineno, line in enumerate(
                     f.read(max_size).splitlines(), start=1
                 ):
@@ -74,10 +74,10 @@ class FileParser:
                     if value <= 0:
                         raise ValueError()
                     config.nb_drones = value
-                except ValueError:
+                except ValueError as e:
                     raise InvalidConfigError(
                         "The number of drones must be an integer",
-                    )
+                    ) from e
             else:
                 raise InvalidConfigError(f"Unknown key: {key}")
         except InvalidConfigError as e:
@@ -156,17 +156,16 @@ class FileParser:
                 hubs=(hub1, hub2),
                 line_no=lineno,
             )
-        else:
-            options = options[1:]
-            d: dict[str, str] = cls._parse_options(" ".join(options))
+        options = options[1:]
+        d: dict[str, str] = cls._parse_options(" ".join(options))
 
-            return Connection.model_validate(
-                {
-                    **d,
-                    "hubs": (hub1, hub2),
-                    "line_no": lineno,
-                }
-            )
+        return Connection.model_validate(
+            {
+                **d,
+                "hubs": (hub1, hub2),
+                "line_no": lineno,
+            }
+        )
 
 
 def extract_brackets(s: str) -> str:

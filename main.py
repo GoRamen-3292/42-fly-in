@@ -23,8 +23,7 @@ def parse_args() -> argparse.Namespace:
         default=False,
         help="Enable color output",
     )
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
 def print_colored_error(message: str, color: bool = False) -> None:
@@ -51,7 +50,6 @@ def main() -> int:
         fly_in = Simulation(config)
         result = fly_in.simulate()
         Visualizer(result, args.color, config.hubs).show_result()
-        return 0
     except (InvalidConfigError, RouteNotFoundError) as e:
         print_colored_error(str(e), args.color)
         return 1
@@ -66,12 +64,14 @@ def main() -> int:
     except KeyboardInterrupt:
         print_colored_error("Interrupted", args.color)
         return 130
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print_colored_error(
             f"UNEXPECTED ERROR: You should report this to the developer:\n{e}",
             args.color,
         )
         return 3
+
+    return 0
 
 
 if __name__ == "__main__":
