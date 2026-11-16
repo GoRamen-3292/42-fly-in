@@ -49,11 +49,12 @@ class Simulation:
             config.connections
         )
 
-        # 最大ターンの設定
-        # ハブの数 * 2 + ドローンの数 - 1
-        # 理由は、直線上のハブで、すべてがrestrictedで一度に1台しか通れない場合の手数が最多となるため
-        # 上限をギリギリにすることで不要な計算を減らすことができる
         self._max_turns = (len(self._hubs) - 1) * 2 + config.nb_drones - 1
+        """最大ターンの設定
+
+        直線上のハブで、すべてがrestrictedで
+        一度に1台しか通れない場合の手数が考えうる最大ターン数
+        """
 
         start_hub: SolverHub | None = next(
             (
@@ -193,7 +194,8 @@ class Simulation:
         if self._is_full_hub(new_el):
             return  # ドローンがいるハブはスキップする
         if new_turns > self._max_turns:
-            return  # 最大ターン数を超えた場合は最短経路ではないのでスキップする
+            # 最大ターン数を超えた場合は最短経路ではないのでスキップする
+            return
         if new_el in parent:
             return
 

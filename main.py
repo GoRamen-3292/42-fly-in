@@ -35,10 +35,10 @@ def parse_args() -> argparse.Namespace:
         "-s",
         "--max-file-size",
         type=int,
-        help="Set the maximum file size in bytes." +
-        "If the file size exceeds this limit,"
-        " the program will read" +
-        " the first max_file_size bytes of the file. ",
+        help="Set the maximum file size in bytes."
+        + "If the file size exceeds this limit,"
+        " the program will read"
+        + " the first max_file_size bytes of the file. ",
     )
     return parser.parse_args()
 

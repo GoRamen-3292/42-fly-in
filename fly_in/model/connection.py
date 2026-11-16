@@ -48,7 +48,8 @@ class Connection(BaseModel):
         """モデルの初期化後に接続のキーを正規化するメソッド
 
         Args:
-            context: Pydanticから渡される検証時のコンテキスト、このメソッドでは使用しない
+            context: Pydanticから渡される検証時のコンテキスト、
+                このメソッドでは使用しない
 
         Raises:
             ValueError: hubsが2つのハブ名からなるタプルでない場合
