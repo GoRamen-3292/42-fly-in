@@ -33,7 +33,7 @@ class SimulationConfig(BaseModel):
         return value
 
     @model_validator(mode="after")
-    def validate_hubs(self) -> Self:
+    def validate_duplicates(self) -> Self:
         """ハブの重複を検証するバリデータ"""
         self._validate_hubs()
         self._validate_connections()
@@ -44,32 +44,27 @@ class SimulationConfig(BaseModel):
 
         if len(hub_names) != len(set(hub_names)):
             for hub in self.hubs:
-                if hub_names.count(hub.name) > 1:
-                    lines: list[int] = [
-                        h.line_no
-                        for h in self.hubs
-                        if h.name == hub.name and h.line_no is not None
-                    ]
-                    raise InvalidConfigError(
-                        f"Duplicate hub name: {hub.name}",
-                        lines if lines else None,
-                    )
+                if hub_names.count(hub.name) <= 1:
+                    continue
+                lines: list[int] = [
+                    h.line_no
+                    for h in self.hubs
+                    if h.name == hub.name and h.line_no is not None
+                ]
+                raise InvalidConfigError(
+                    f"Duplicate hub name: {hub.name}",
+                    lines if lines else None,
+                )
 
-        start_hubs = [
-            hub for hub in self.hubs if (hub.hub_type == HubType.START_HUB)
-        ]
-        end_hubs = [
-            hub for hub in self.hubs if hub.hub_type == HubType.END_HUB
-        ]
-        if len(start_hubs) != 1:
+        for hubtype in (HubType.START_HUB, HubType.END_HUB):
+            self._check_hub_type(hubtype)
+
+    def _check_hub_type(self, hub_type: HubType) -> None:
+        matches = [hub for hub in self.hubs if hub.hub_type == hub_type]
+        if len(matches) != 1:
             raise InvalidConfigError(
-                "hubs: There must be exactly one start hub",
-                [hub.line_no for hub in start_hubs if hub.line_no is not None],
-            )
-        if len(end_hubs) != 1:
-            raise InvalidConfigError(
-                "hubs: There must be exactly one start hub and one end hub",
-                [hub.line_no for hub in end_hubs if hub.line_no is not None],
+                f"hubs: There must be exactly one {hub_type} hub",
+                [hub.line_no for hub in matches if hub.line_no is not None]
             )
 
     def _validate_connections(self) -> None:
