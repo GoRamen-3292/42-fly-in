@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-from src.model import ConnectionKey, Hub
-from src.solver.types import SimulationResult
+from .model import ConnectionKey, Hub
+from .scheduler.types import SimulationResult
 
 type OutputDict = defaultdict[int, list[str]]
 

@@ -9,7 +9,7 @@ from .model import (
     ZoneType,
 )
 from .parser import FileParser
-from .solver import Simulation
+from .scheduler import RouteNotFoundError, Simulation, SimulationResult
 from .visualizer import Visualizer
 
 __all__ = [
@@ -20,8 +20,10 @@ __all__ = [
     "Hub",
     "HubType",
     "InvalidConfigError",
+    "RouteNotFoundError",
     "Simulation",
     "SimulationConfig",
+    "SimulationResult",
     "Visualizer",
     "ZoneType",
 ]

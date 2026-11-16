@@ -1,8 +1,13 @@
 import argparse
 import sys
 
-from src import FileParser, InvalidConfigError, Simulation, Visualizer
-from src.solver.types import RouteNotFoundError
+from src import (
+    FileParser,
+    InvalidConfigError,
+    RouteNotFoundError,
+    Simulation,
+    Visualizer,
+)
 
 RED = "\033[91m"
 BOLD = "\033[1m"

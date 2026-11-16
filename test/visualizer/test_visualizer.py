@@ -1,6 +1,6 @@
 import pytest
 
-from src.solver.types import (
+from src.scheduler.types import (
     Drone,
     PlanConnectionElement,
     PlanElement,
