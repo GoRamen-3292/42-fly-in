@@ -35,3 +35,10 @@ dev = [
 
 [tool.ruff]
 line-length = 79
+
+[tool.ruff.lint]
+select = ["D"]
+
+# 日本語のDocStringであるため、末尾の文字を規定するためのルールを無視する
+ignore = ["D415"]
+pydocstyle.convention = "google"
