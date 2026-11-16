@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 from pydantic import ValidationError
 
-from src.model import Hub, HubType, ZoneType
+from fly_in.model import Hub, HubType, ZoneType
 
 
 @pytest.mark.parametrize(

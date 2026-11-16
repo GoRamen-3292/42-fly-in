@@ -1,12 +1,12 @@
 import pytest
 
-from src.scheduler.types import (
+from fly_in.scheduler.types import (
     Drone,
     PlanConnectionElement,
     PlanElement,
     SimulationResult,
 )
-from src.visualizer import Visualizer
+from fly_in.visualizer import Visualizer
 
 
 @pytest.mark.parametrize(

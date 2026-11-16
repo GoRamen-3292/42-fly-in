@@ -3,8 +3,7 @@ import sys
 
 import pytest
 
-from src import FileParser
-from src.model.types import InvalidConfigError
+from fly_in import FileParser, InvalidConfigError
 
 CASES: list[tuple[str, list[int] | None]] = [
     ("maps/errors/dupe_connection.txt", [10, 11]),

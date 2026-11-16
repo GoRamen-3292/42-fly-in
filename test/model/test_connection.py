@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from src.model import Connection, normalize_connction_key
+from fly_in.model import Connection, normalize_connction_key
 
 
 @pytest.mark.parametrize(

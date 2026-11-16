@@ -4,8 +4,7 @@ import warnings
 
 import pytest
 
-from src import FileParser
-from src.model import SimulationConfig
+from fly_in import FileParser, SimulationConfig
 
 type FileAndOptimalTurns = tuple[str, int]
 

@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from src import (
+from fly_in import (
     FileParser,
     InvalidConfigError,
     RouteNotFoundError,
