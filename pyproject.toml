@@ -63,8 +63,6 @@ ignore = [
     "TRY003",  # 長いexceptionへのメッセージを無視
     "TRY301",  # raise文の関数への分離についてのメッセージを無視
     "PLR2004",  # マジックナンバーでの比較を許容
-    # 以降は仮
-    "E501",  # 仮にline too longを無視
 ]
 pydocstyle.convention = "google"
 
