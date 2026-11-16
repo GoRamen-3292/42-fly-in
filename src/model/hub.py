@@ -27,7 +27,7 @@ class Hub(BaseModel):
 
     @field_validator("color", mode="after")
     @classmethod
-    def validate_zone(cls, value: str | None) -> str | None:
+    def validate_color(cls, value: str | None) -> str | None:
         if value:
             validate_metadata("color", value)
         return value
