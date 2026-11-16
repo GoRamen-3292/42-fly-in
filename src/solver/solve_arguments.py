@@ -270,16 +270,6 @@ class Simulation:
     def convert_connections(
         self, connections: list[Connection]
     ) -> list[Connection]:
-        result: list[Connection] = []
-        for conn in connections:
-            result.append(
-                Connection.model_validate(
-                    obj={
-                        "hubs": normalize_connction_key(conn.hubs),
-                        "max_link_capacity": conn.max_link_capacity,
-                    }
-                )
-            )
         return [
             Connection.model_validate(
                 obj={
