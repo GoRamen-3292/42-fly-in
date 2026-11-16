@@ -1,4 +1,5 @@
 import pytest
+from pydantic import ValidationError
 
 from src.model import Connection, normalize_connction_key
 
@@ -41,7 +42,7 @@ def test_valid_hubs_connection(hubs: tuple[str, str]) -> None:
     ],
 )
 def test_invalid_hubs_connection(hubs: tuple[str, str]) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         Connection(
             hubs=hubs,
             max_link_capacity=1,
@@ -74,7 +75,7 @@ def test_valid_max_link_capacity(max_link_capacity: int) -> None:
     ],
 )
 def test_invalid_max_link_capacity(max_link_capacity: int) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         Connection(
             hubs=("hub1", "hub2"),
             max_link_capacity=max_link_capacity,

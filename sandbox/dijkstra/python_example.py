@@ -1,5 +1,5 @@
-"""
-ダイクストラ法（Dijkstra's Algorithm）をPythonで実装する #Python - Qiita
+"""ダイクストラ法（Dijkstra's Algorithm）をPythonで実装する #Python - Qiita
+
 https://qiita.com/gomagoma000/items/edd3ff714e4d964c670c
 
 このコードは、gomagoma000さんによって執筆されました。
@@ -15,6 +15,7 @@ type Path = list[str]
 
 
 def shortest_path(graph: Graph, start: str, end: str) -> tuple[float, Path]:
+    """最短経路を求める関数"""
     queue: list[tuple[float, str, Path]] = [(0, start, [])]
     seen: set[str] = set()
     mins: dict[str, float] = {start: 0}

@@ -35,3 +35,40 @@ dev = [
 
 [tool.ruff]
 line-length = 79
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # pycodestyle
+    "F",       # pyflakes
+    "I",       # isort
+    "N",       # pep8-naming
+    "UP",      # pyupgrade
+    "ANN",     # 型注釈
+    "B",       # bugbear
+    "C4",      # comprehensions
+    "SIM",     # simplify
+    "RET",     # return
+    "PL",      # pylint
+    "TRY",     # tryceratops
+    "PERF",    # perflint
+    "PT",      # pytest
+    "ERA",     # コメントアウトされたコード
+    "RUF",     # ruff独自
+]
+
+ignore = [
+    "D415",    # 日本語のDocStringであるため、末尾の文字を規定するためのルールを無視する
+    "ANN401",  # 型注釈の型が不明な場合に警告を出すルールを無視
+    "TRY003",  # 長いexceptionへのメッセージを無視
+    "TRY301",  # raise文の関数への分離についてのメッセージを無視
+    "PLR2004",  # マジックナンバーでの比較を許容
+    # 以降は仮
+    "E501",  # 仮にline too longを無視
+    "D103",
+    "D100",
+]
+pydocstyle.convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"test/**" = ["E501"]
+"sandbox/**" = ["ALL"]

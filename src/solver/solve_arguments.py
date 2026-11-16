@@ -22,7 +22,7 @@ from .types import (
 
 
 class Simulation:
-    def __init__(self, config: SimulationConfig):
+    def __init__(self, config: SimulationConfig) -> None:
         self._config = config
         self._result: SimulationResult | None = None
         self._drones: list[Drone] = []
@@ -131,7 +131,7 @@ class Simulation:
         hub: SolverHub | None = self._hubs.get(hub_name)
         if not hub:
             raise ValueError(f"Cannot find hub with name: {hub_name}")
-        elif hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
+        if hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
             return False
 
         cur_drones: int = self._scheduler.get(plan, 0)
@@ -176,9 +176,9 @@ class Simulation:
 
         if self._is_full_hub(new_el):
             return  # ドローンがいるハブはスキップする
-        elif new_turns > self._max_turns:
+        if new_turns > self._max_turns:
             return  # 最大ターン数を超えた場合は最短経路ではないのでスキップする
-        elif new_el in parent:
+        if new_el in parent:
             return
 
         if next_hub.zone == ZoneType.RESTRICTED and prev_hub != next_hub.name:
@@ -270,14 +270,12 @@ class Simulation:
     def convert_connections(
         self, connections: list[Connection]
     ) -> list[Connection]:
-        result: list[Connection] = []
-        for conn in connections:
-            result.append(
-                Connection.model_validate(
-                    obj={
-                        "hubs": normalize_connction_key(conn.hubs),
-                        "max_link_capacity": conn.max_link_capacity,
-                    }
-                )
+        return [
+            Connection.model_validate(
+                obj={
+                    "hubs": normalize_connction_key(conn.hubs),
+                    "max_link_capacity": conn.max_link_capacity,
+                }
             )
-        return result
+            for conn in connections
+        ]

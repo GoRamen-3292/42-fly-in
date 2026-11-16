@@ -24,7 +24,7 @@ class FileParser:
         )
         lineno: int | None = None
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 for lineno, line in enumerate(
                     f.read(max_size).splitlines(), start=1
                 ):
@@ -64,22 +64,9 @@ class FileParser:
                     cls._parse_connection_line(value, lineno)
                 )
             elif key == "nb_drones":
-                if config.nb_drones is not None:
-                    raise InvalidConfigError(
-                        "Cannot set the number of drones multiple times",
-                    )
-                # validation前につき、config.nb_dronesの型はNoneである可能性がある
-                try:
-                    value = int(value)
-                    if value <= 0:
-                        raise ValueError()
-                    config.nb_drones = value
-                except ValueError:
-                    raise InvalidConfigError(
-                        "The number of drones must be an integer",
-                    )
+                cls._parse_nb_drones_line(config, value, lineno)
             else:
-                raise InvalidConfigError(f"Unknown key: {key}")
+                raise InvalidConfigError("Unknown key")
         except InvalidConfigError as e:
             e.args = (f"{key}: {e.args[0]}",)
             if e.line_numbers is None:
@@ -88,6 +75,30 @@ class FileParser:
         except ValidationError as e:
             raise find_config_error(e, lineno) or InvalidConfigError(
                 key + ": " + parse_validation_error(e), [lineno]
+            ) from e
+
+    @classmethod
+    def _parse_nb_drones_line(
+        cls, config: SimulationConfig, value: str, lineno: int
+    ) -> int:
+        """nb_dronesの行をパースする関数
+
+        Raises:
+            InvalidConfigError: 無効なnb_dronesの行の場合
+        """
+        if config.nb_drones is not None:
+            raise InvalidConfigError(
+                "Cannot set the number of drones multiple times",
+            )
+        # validation前につき、config.nb_dronesの型はNoneである可能性がある
+        try:
+            value = int(value)
+            if value <= 0:
+                raise ValueError
+            config.nb_drones = value
+        except ValueError as e:
+            raise InvalidConfigError(
+                "The number of drones must be an integer",
             ) from e
 
     @classmethod
@@ -156,17 +167,16 @@ class FileParser:
                 hubs=(hub1, hub2),
                 line_no=lineno,
             )
-        else:
-            options = options[1:]
-            d: dict[str, str] = cls._parse_options(" ".join(options))
+        options = options[1:]
+        d: dict[str, str] = cls._parse_options(" ".join(options))
 
-            return Connection.model_validate(
-                {
-                    **d,
-                    "hubs": (hub1, hub2),
-                    "line_no": lineno,
-                }
-            )
+        return Connection.model_validate(
+            {
+                **d,
+                "hubs": (hub1, hub2),
+                "line_no": lineno,
+            }
+        )
 
 
 def extract_brackets(s: str) -> str:
@@ -179,10 +189,11 @@ def extract_brackets(s: str) -> str:
 
 def parse_validation_error(e: ValidationError) -> str:
     """PydanticのValidationErrorをパースして、エラーメッセージを返す関数"""
-    err_list: list[str] = []
-    for err in e.errors():
-        if "loc" in err and "msg" in err:
-            err_list.append(f"{err.get('loc', ('unknown',))[0]}: {err['msg']}")
+    err_list: list[str] = [
+        f"{err.get('loc', ('unknown',))[0]}: {err['msg']}"
+        for err in e.errors()
+        if "loc" in err and "msg" in err
+    ]
     return "\n".join(err_list)
 
 
