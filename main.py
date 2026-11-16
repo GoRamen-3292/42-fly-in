@@ -57,7 +57,8 @@ def main() -> int:
         return 1
     except MemoryError as e:
         print_colored_error(
-            f"Out of memory\nPlease check your computer. {e}", args.color)
+            f"Out of memory\nPlease check your computer. {e}", args.color
+        )
         return 2
     except OSError as e:
         print_colored_error(f"Error while processing:\n{e}", args.color)
