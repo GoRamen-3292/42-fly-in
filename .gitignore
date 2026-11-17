@@ -23,6 +23,7 @@ wheels/
 en.subject.pdf
 maps.tar.gz
 *.txt
+!/example.txt
 !test/maps/*/*.txt
 !test/maps/*.txt
 !maps/*/*.txt
