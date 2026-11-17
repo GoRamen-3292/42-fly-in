@@ -2,9 +2,10 @@
 CHECK_PATHS = fly_in sandbox main.py
 TEST_PATHS = test
 CACHE_DIRS = .mypy_cache .pytest_cache
-MAP = test.txt
+MAP = example.txt
 
-all: color
+all: install
+	@uv run main.py --help
 
 install:
 	uv sync
@@ -12,8 +13,14 @@ install:
 run:
 	@uv run main.py $(MAP)
 
+r: run
+
 color:
 	@uv run main.py $(MAP) --color
+
+c: color
+
+visualize: color
 
 debug:
 	echo "Not implemented yet (debug mode)"
