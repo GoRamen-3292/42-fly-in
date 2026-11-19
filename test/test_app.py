@@ -85,6 +85,7 @@ def test_restricted_max(file: str) -> None:
         text=True,
         capture_output=True,
     )
+    print(result.stdout)
     lines = str(result.stdout).splitlines()
     # クラッシュやエラーなく実行できるかを確認する
     assert any("D1-start" in line for line in lines)
