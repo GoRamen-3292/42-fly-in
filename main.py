@@ -83,7 +83,7 @@ def main() -> int:
         )
         return 2
     except OSError as e:
-        print_colored_error(f"Error while processing:\n{e}", color)
+        print_colored_error(str(e), color)
         return 2
     except KeyboardInterrupt:
         print_colored_error("Interrupted", color)
