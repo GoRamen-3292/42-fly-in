@@ -110,7 +110,7 @@ class Visualizer:
                 pos: str | ConnectionKey = el[1]
                 pos_str = self._create_pos_str(pos)
                 dpos_str = f"D{drone.id}-{pos_str}"
-                if dpos_str in output_dict.get(i - 1, []):
+                if i > 0 and pos_str == drone.timeline[i - 1][1]:
                     continue
                 output_dict[i].append(dpos_str)
 
