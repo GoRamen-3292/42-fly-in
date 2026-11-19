@@ -65,6 +65,12 @@ def test_priority_hub_preference(file: str, color: bool) -> None:
     print(result.stdout)
     lines = str(result.stdout).splitlines()
     # path_aが優先されることを確認する
+    if color:
+        assert all("start" not in line for line in lines)
+        assert any("D1" in line and "goal" in line for line in lines)
+    else:
+        assert all("start" not in line for line in lines)
+        assert any("goal" in line for line in lines)
     assert any("path_a" in line for line in lines)
     assert not any("path_b" in line for line in lines)
     assert any("goal" in line for line in lines)
