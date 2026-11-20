@@ -1,9 +1,9 @@
 """fly-inのエントリーポイントとなるモジュール"""
 
-try:
-    import argparse
-    import sys
+import argparse
+import sys
 
+try:
     from fly_in import (
         FileParser,
         InvalidConfigError,
@@ -14,6 +14,16 @@ try:
 except (ImportError, ModuleNotFoundError) as e:
     print(f"Missing dependency: {e.name}\nPlease install it and try again.")
     sys.exit(2)
+
+RED = "\033[91m"
+BOLD = "\033[1m"
+RESET = "\033[0m"
+
+EXIT_SUCCESS = 0
+EXIT_INVALID = 1
+EXIT_SYSTEM = 2
+EXIT_UNEXPECTED = 3
+EXIT_INTERRUPTED = 130
 
 
 def parse_args() -> argparse.Namespace:
@@ -51,10 +61,6 @@ def print_colored_error(message: str, color: bool = False) -> None:
     colorがTrueの場合は、メッセージの1行目を赤色の太字で、
     2行目以降を太文字で強調して表示する
     """
-    RED = "\033[91m"
-    BOLD = "\033[1m"
-    RESET = "\033[0m"
-
     lines = message.splitlines()
 
     if color and lines:
@@ -78,7 +84,7 @@ def main() -> int:
         args = parse_args()
         color = args.color
 
-        status = "parsing configuration file"
+        status = "reading configuration file"
         config = FileParser.parse_file(args.filename, args.max_file_size)
 
         status = "instantiating simulation class"
@@ -89,31 +95,32 @@ def main() -> int:
 
         status = "visualizing"
         Visualizer(result, color, config.hubs).show_result()
-
-        status = "finished"
     except (InvalidConfigError, RouteNotFoundError) as e:
         print_colored_error(str(e), color)
         return 1
-    except (ImportError, ModuleNotFoundError) as e:
+    except (ImportError, MemoryError, OSError) as e:
+        err_msg: str = "Unknown error"
+        if isinstance(e, (ImportError, ModuleNotFoundError)):
+            err_msg = (
+                f"Missing dependency: {e.name}\n"
+                + "Please install it and try again."
+            )
+        elif isinstance(e, MemoryError):
+            err_msg = f"Out of memory while {status}\nPlease check your computer.\n{e}"
+        elif isinstance(e, OSError):
+            err_msg = f"{e}\n while {status}"
+
         print_colored_error(
-            f"Missing dependency: {e.name}\nPlease install it and try again.",
+            err_msg,
             color,
         )
-        return 2
-    except MemoryError as e:
-        print_colored_error(
-            f"Out of memory\nPlease check your computer. {e}", color
-        )
-        return 2
-    except OSError as e:
-        print_colored_error(str(e), color)
         return 2
     except KeyboardInterrupt:
         print_colored_error(f"Interrupted while {status}", color)
         return 130
     except Exception as e:
         print_colored_error(
-            f"UNEXPECTED ERROR: You should report this to the developer:\n{e}",
+            f"UNEXPECTED ERROR while {status}: You should report this to the developer:\n{e}",
             color,
         )
         return 3
