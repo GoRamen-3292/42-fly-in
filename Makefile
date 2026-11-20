@@ -9,6 +9,10 @@ all: install
 
 install:
 	uv sync
+	@if [ ! -f $(MAP) ]; then \
+		echo "Creating $(MAP) from example.txt"; \
+		cp example.txt $(MAP); \
+	fi
 
 run:
 	@uv run main.py $(MAP)
