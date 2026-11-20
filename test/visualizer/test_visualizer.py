@@ -1,6 +1,6 @@
 import pytest
 
-from fly_in.scheduler.types import (
+from fly_in.simulator.types import (
     Drone,
     PlanConnectionElement,
     PlanElement,

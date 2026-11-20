@@ -22,7 +22,7 @@ from .types import (
 )
 
 
-class Simulation:
+class Simulator:
     """与えられた設定から、ドローンの経路を計画するシミュレーションを提供するクラス
 
     ドローンを1台ずつ順番にダイクストラ法を用いて最短経路で計画し、

@@ -3,7 +3,7 @@
 from collections import defaultdict
 
 from .model import ConnectionKey, Hub
-from .scheduler.types import SimulationResult
+from .simulator.types import SimulationResult
 
 type OutputDict = defaultdict[int, list[str]]
 
