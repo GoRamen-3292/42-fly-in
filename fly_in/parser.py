@@ -1,19 +1,21 @@
 """設定ファイルからSimulationConfigを生成するパーサーを含むモジュール"""
 
+from dataclasses import dataclass, field
+
 from pydantic import ValidationError
 
 from .model import Connection, Hub, HubType, SimulationConfig
 from .model.types import InvalidConfigError
 
 
+@dataclass
 class _SimulationParserConfig:
     """設定ファイルの読み込み状態を表すクラス"""
 
-    def __init__(self) -> None:
-        self.nb_drones_line: int | None = None
-        self.nb_drones: str | None = None
-        self.hubs: list[Hub] = []
-        self.connections: list[Connection] = []
+    nb_drones_line: int | None = None
+    nb_drones: str | None = None
+    hubs: list[Hub] = field(default_factory=list)
+    connections: list[Connection] = field(default_factory=list)
 
 
 class FileParser:
@@ -36,17 +38,13 @@ class FileParser:
             InvalidConfigError: 無効な設定ファイルの場合
             OSError: 各種ファイル操作に失敗した場合
         """
-        if max_size <= 0:
-            raise InvalidConfigError("max_size must be a positive integer")
-
         try:
             with open(file_path, encoding="utf-8") as f:
                 file_txt: str = f.read(max_size + 1)
 
             if len(file_txt) > max_size:
                 raise InvalidConfigError(
-                    f"File size exceeds the limit of {max_size} bytes",
-                    None
+                    f"File size exceeds the limit of {max_size} bytes", None
                 )
 
             return cls.parse_text(file_txt)
