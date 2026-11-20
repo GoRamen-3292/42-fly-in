@@ -36,9 +36,18 @@ class FileParser:
             InvalidConfigError: 無効な設定ファイルの場合
             OSError: 各種ファイル操作に失敗した場合
         """
+        if max_size <= 0:
+            raise InvalidConfigError("max_size must be a positive integer")
+
         try:
             with open(file_path, encoding="utf-8") as f:
-                file_txt: str = f.read(max_size)
+                file_txt: str = f.read(max_size + 1)
+
+            if len(file_txt) > max_size:
+                raise InvalidConfigError(
+                    f"File size exceeds the limit of {max_size} bytes",
+                    None
+                )
 
             return cls.parse_text(file_txt)
 
