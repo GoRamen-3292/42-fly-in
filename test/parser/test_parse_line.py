@@ -11,6 +11,7 @@ parse_line = FileParser().parse_line
     [
         "hub:hub1 10.0 20",
         "hub:hub1 +10.0 20",
+        "hub:hub1 10 +20",
         "hub: hub1 10 20",
         "     hub     : hub1 10 20",
         "     hub     : hub1 10\t20",
@@ -32,7 +33,14 @@ def test_parse_line_with_values(line: str) -> None:
 
 @pytest.mark.parametrize(
     "line",
-    ["nb_drones: 10", "nb_drones: 1.0", "nb_drones: 1", "nb_drones: 1000"],
+    [
+        "nb_drones: 10",
+        "nb_drones: 1.0",
+        "nb_drones: 1",
+        "nb_drones: 1000",
+        "nb_drones: 100_000",
+        "nb_drones: 3.0",
+    ],
 )
 def test_parse_line_with_nb_drones(line: str) -> None:
     config = _SimulationParserConfig()
@@ -47,6 +55,8 @@ def test_parse_line_with_nb_drones(line: str) -> None:
         "hub:hub1 -5.0 0",
         "hub:ああああ -5.0 0",
         "hub:hub1 +5.0 0",
+        "hub:hub1 -0 0",
+        "hub:hub1 -42 0",
         "hub: test=hub 10 20",
         "hub: test/hub 10 20 [zone=priority]",
         "start_hub: test_hub 10 20 [zone=priority]",
