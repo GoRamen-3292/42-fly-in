@@ -2,13 +2,17 @@
 CHECK_PATHS = fly_in sandbox main.py
 TEST_PATHS = test
 CACHE_DIRS = .mypy_cache .pytest_cache
-MAP = example.txt
+MAP = config.txt
 
 all: install
 	@uv run main.py --help
 
 install:
 	uv sync
+	@if [ ! -f $(MAP) ]; then \
+		echo "Creating $(MAP) from example.txt"; \
+		cp example.txt $(MAP); \
+	fi
 
 run:
 	@uv run main.py $(MAP)

@@ -1,7 +1,7 @@
 import pytest
 
-from fly_in.model import HubType, SimulationConfig, ZoneType
-from fly_in.parser import FileParser
+from fly_in.model import HubType, ZoneType
+from fly_in.parser import FileParser, _SimulationParserConfig
 
 parse_line = FileParser().parse_line
 
@@ -9,6 +9,9 @@ parse_line = FileParser().parse_line
 @pytest.mark.parametrize(
     "line",
     [
+        "hub:hub1 10.0 20",
+        "hub:hub1 +10.0 20",
+        "hub:hub1 10 +20",
         "hub: hub1 10 20",
         "     hub     : hub1 10 20",
         "     hub     : hub1 10\t20",
@@ -19,11 +22,7 @@ parse_line = FileParser().parse_line
     ],
 )
 def test_parse_line_with_values(line: str) -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=10,
-        hubs=[],
-        connections=[],
-    )
+    config = _SimulationParserConfig()
     parse_line(line, config, 42)
     assert len(config.hubs) == 1
     assert config.hubs[0].name == "hub1"
@@ -35,6 +34,29 @@ def test_parse_line_with_values(line: str) -> None:
 @pytest.mark.parametrize(
     "line",
     [
+        "nb_drones: 10",
+        "nb_drones: 1.0",
+        "nb_drones: 1",
+        "nb_drones: 1000",
+        "nb_drones: 100_000",
+        "nb_drones: 3.0",
+    ],
+)
+def test_parse_line_with_nb_drones(line: str) -> None:
+    config = _SimulationParserConfig()
+    parse_line(line, config, 42)
+    assert config.nb_drones == line.partition(":")[2].strip()
+    assert config.nb_drones_line == 42
+
+
+@pytest.mark.parametrize(
+    "line",
+    [
+        "hub:hub1 -5.0 0",
+        "hub:ああああ -5.0 0",
+        "hub:hub1 +5.0 0",
+        "hub:hub1 -0 0",
+        "hub:hub1 -42 0",
         "hub: test=hub 10 20",
         "hub: test/hub 10 20 [zone=priority]",
         "start_hub: test_hub 10 20 [zone=priority]",
@@ -44,11 +66,7 @@ def test_parse_line_with_values(line: str) -> None:
     ],
 )
 def test_parse_line(line: str) -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=10,
-        hubs=[],
-        connections=[],
-    )
+    config = _SimulationParserConfig()
     parse_line(line, config, 42)
 
 
@@ -60,6 +78,7 @@ def test_parse_line(line: str) -> None:
         "hub: hub1 10 20 [zone=priority max_drones=5 color=red]",
         "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed]",
         "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed:]",
+        "hub: hub1 10 20 [zone=priority max_drones=5 color=あか]",
         "    hub: hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",
         "    hub\t:hub1\t10\t20\t[    zone=priority   max_drones=5    color=red   ]   ",
         "   hub   :   hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",
@@ -69,11 +88,7 @@ def test_parse_line(line: str) -> None:
     ],
 )
 def test_parse_line_with_options_with_values(line: str) -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=10,
-        hubs=[],
-        connections=[],
-    )
+    config = _SimulationParserConfig()
     parse_line(line, config, 42)
     assert len(config.hubs) == 1
     assert config.hubs[0].name == "hub1"
@@ -99,10 +114,6 @@ def test_parse_line_with_options_with_values(line: str) -> None:
     ],
 )
 def test_parse_line_with_options(line: str) -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=10,
-        hubs=[],
-        connections=[],
-    )
+    config = _SimulationParserConfig()
     parse_line(line, config, 42)
     assert len(config.hubs) == 1
