@@ -180,7 +180,7 @@ class FileParser:
                 "Hub line must contain at least 3 values: name, x, y", [lineno]
             )
         name, x, y = values[:3]
-        options = values[3:] if len(values) > 3 else []
+        options = values[3:]
 
         d: dict[str, str] = cls._parse_options(" ".join(options))
 
