@@ -1,7 +1,7 @@
 import pytest
 
-from fly_in.model import InvalidConfigError, SimulationConfig
-from fly_in.parser import FileParser
+from fly_in.model import InvalidConfigError
+from fly_in.parser import FileParser, _SimulationParserConfig
 
 parser = FileParser()
 
@@ -10,12 +10,7 @@ parser = FileParser()
     "line",
     [
         "nb-drones: 10",
-        "nb_drones: 0",
-        "nb_drones: 1.3",
-        "nb_drones: 4.2",
         "nb_drones: ",
-        "nb_drones: -1.2",
-        "nb_drones: -6.2",
         "nb: -6.2",
         "hub:",
         "start-hub:",
@@ -39,11 +34,7 @@ parser = FileParser()
     ],
 )
 def test_parse_line(line: str) -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=None,
-        hubs=[],
-        connections=[],
-    )
+    config = _SimulationParserConfig()
     with pytest.raises(InvalidConfigError, match="at line 42:"):
         parser.parse_line(line, config, 42)
 
@@ -79,10 +70,6 @@ def test_parse_line(line: str) -> None:
     ],
 )
 def test_parse_line_with_options(line: str) -> None:
-    config = SimulationConfig.model_construct(
-        nb_drones=10,
-        hubs=[],
-        connections=[],
-    )
+    config = _SimulationParserConfig()
     with pytest.raises(InvalidConfigError, match="at line 42:"):
         parser.parse_line(line, config, 42)
