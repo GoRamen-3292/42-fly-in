@@ -106,7 +106,10 @@ def main() -> int:
                 + "Please install it and try again."
             )
         elif isinstance(e, MemoryError):
-            err_msg = f"Out of memory while {status}\nPlease check your computer.\n{e}"
+            err_msg = (
+                f"Out of memory while {status}\n"
+                + "Please check your computer.\n{e}"
+            )
         elif isinstance(e, OSError):
             err_msg = f"{e}\n while {status}"
 
@@ -118,9 +121,10 @@ def main() -> int:
     except KeyboardInterrupt:
         print_colored_error(f"Interrupted while {status}", color)
         return 130
-    except Exception as e:
+    except Exception:
         print_colored_error(
-            f"UNEXPECTED ERROR while {status}: You should report this to the developer:\n{e}",
+            f"UNEXPECTED ERROR while {status}: "
+            + "You should report this to the developer:\n{e}",
             color,
         )
         return 3
