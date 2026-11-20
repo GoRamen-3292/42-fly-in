@@ -95,43 +95,47 @@ class Simulator:
         Returns:
             SimulationResult: シミュレーションの結果
         """
-        self._plan()
+        for drone in self._drones:
+            self._plan_one_drone(drone)
+
         self._result = SimulationResult(
             is_successful=True,
             drones=self._drones,
         )
         return self._result
 
-    def _plan(self) -> None:
-        # TODO: _plan_one_drone() 関数を作る
-        for drone in self._drones:
-            path: list[PlanElement | PlanConnectionElement] | None = (
-                self.get_shortest_path(drone.start_pos)
+    def _plan_one_drone(self, drone: Drone) -> None:
+        """1台のドローンの経路を計画するメソッド
+
+        ダイクストラ法を用いて、開始ハブから終了ハブまでの最短経路を探索する
+        """
+        path: list[PlanElement | PlanConnectionElement] | None = (
+            self.get_shortest_path(drone.start_pos)
+        )
+        if not path:
+            raise RouteNotFoundError(
+                f"Cannot find a valid path for drone with ID: {drone.id}"
             )
-            if not path:
-                raise RouteNotFoundError(
-                    f"Cannot find a valid path for drone with ID: {drone.id}"
+        prev_hub: str = drone.start_pos
+        for el in path:
+            drone.timeline.append(el)
+            if isinstance(el[1], str):
+                p_el: PlanElement = el[0], el[1]
+                self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
+                pc_el: PlanConnectionElement = (
+                    el[0],
+                    normalize_connction_key((prev_hub, el[1])),
                 )
-            prev_hub: str = drone.start_pos
-            for el in path:
-                drone.timeline.append(el)
-                if isinstance(el[1], str):
-                    p_el: PlanElement = el[0], el[1]
-                    self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
-                    pc_el: PlanConnectionElement = (
-                        el[0],
-                        normalize_connction_key((prev_hub, el[1])),
-                    )
-                    self._connection_scheduler[pc_el] = (
-                        self._connection_scheduler.get(pc_el, 0) + 1
-                    )
-                    prev_hub = el[1]
-                else:
-                    pc_el = (el[0], normalize_connction_key(el[1]))
-                    self._connection_scheduler[pc_el] = (
-                        self._connection_scheduler.get(pc_el, 0) + 1
-                    )
-                    prev_hub = el[1][1]
+                self._connection_scheduler[pc_el] = (
+                    self._connection_scheduler.get(pc_el, 0) + 1
+                )
+                prev_hub = el[1]
+            else:
+                pc_el = (el[0], normalize_connction_key(el[1]))
+                self._connection_scheduler[pc_el] = (
+                    self._connection_scheduler.get(pc_el, 0) + 1
+                )
+                prev_hub = el[1][1]
 
     def _is_full_connection(self, plan: PlanConnectionElement) -> bool:
         plan = plan[0], normalize_connction_key(plan[1])
