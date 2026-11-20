@@ -295,7 +295,7 @@ def _lines_from_loc(
     field = loc[0]
     if field == "nb_drones":
         return [config.nb_drones_line] if config.nb_drones_line else None
-    if field in ("hubs", "connections") and len(loc) > 1:
+    if field in {"hubs", "connections"} and len(loc) > 1:
         index = loc[1]
         items: list[Hub] | list[Connection] = (
             config.hubs if field == "hubs" else config.connections

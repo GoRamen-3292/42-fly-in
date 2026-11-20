@@ -6,13 +6,13 @@ from fly_in.model import Coordinate, Hub, HubType, ZoneType
 def test_hub_type() -> None:
     for hub_type in HubType.__members__.values():
         assert isinstance(hub_type, str)
-        assert hub_type in ("hub", "start_hub", "end_hub")
+        assert hub_type in {"hub", "start_hub", "end_hub"}
 
 
 def test_zone_type() -> None:
     for zone_type in ZoneType.__members__.values():
         assert isinstance(zone_type, str)
-        assert zone_type in ("normal", "blocked", "restricted", "priority")
+        assert zone_type in {"normal", "blocked", "restricted", "priority"}
 
 
 def test_correct_zonetype() -> None:
