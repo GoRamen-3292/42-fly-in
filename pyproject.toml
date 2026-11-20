@@ -67,5 +67,5 @@ ignore = [
 pydocstyle.convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
-"test/**" = ["E501", "D"]
+"test/**" = ["E501", "RUF001", "D"]
 "sandbox/**" = ["ALL"]

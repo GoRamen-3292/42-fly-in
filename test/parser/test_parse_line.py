@@ -9,6 +9,8 @@ parse_line = FileParser().parse_line
 @pytest.mark.parametrize(
     "line",
     [
+        "hub:hub1 10.0 20",
+        "hub:hub1 +10.0 20",
         "hub: hub1 10 20",
         "     hub     : hub1 10 20",
         "     hub     : hub1 10\t20",
@@ -34,7 +36,23 @@ def test_parse_line_with_values(line: str) -> None:
 
 @pytest.mark.parametrize(
     "line",
+    ["nb_drones: 10", "nb_drones: 1.0", "nb_drones: 1", "nb_drones: 1000"],
+)
+def test_parse_line_with_nb_drones(line: str) -> None:
+    config = SimulationConfig.model_construct(
+        nb_drones=None,
+        hubs=[],
+        connections=[],
+    )
+    parse_line(line, config, 42)
+
+
+@pytest.mark.parametrize(
+    "line",
     [
+        "hub:hub1 -5.0 0",
+        "hub:ああああ -5.0 0",
+        "hub:hub1 +5.0 0",
         "hub: test=hub 10 20",
         "hub: test/hub 10 20 [zone=priority]",
         "start_hub: test_hub 10 20 [zone=priority]",
@@ -60,6 +78,7 @@ def test_parse_line(line: str) -> None:
         "hub: hub1 10 20 [zone=priority max_drones=5 color=red]",
         "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed]",
         "hub: hub1 10 20 [zone=priority max_drones=5 color=r:::::ed:]",
+        "hub: hub1 10 20 [zone=priority max_drones=5 color=あか]",
         "    hub: hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",
         "    hub\t:hub1\t10\t20\t[    zone=priority   max_drones=5    color=red   ]   ",
         "   hub   :   hub1   10\t 20 [    zone=priority   max_drones=5    color=red   ]   ",

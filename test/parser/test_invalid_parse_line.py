@@ -9,7 +9,25 @@ parser = FileParser()
 @pytest.mark.parametrize(
     "line",
     [
+        "nb-drones: 10",
+        "nb_drones: 0",
+        "nb_drones: 1.3",
+        "nb_drones: 4.2",
+        "nb_drones: ",
+        "nb_drones: -1.2",
+        "nb_drones: -6.2",
+        "nb: -6.2",
+        "hub:",
+        "start-hub:",
+        "start_hub:",
+        "end-hub:",
+        "end_hub:",
+        "hub:       ",
         "hub hub1 10 20",
+        "hub: hub1 １０ ２０",
+        "hub:hub1 10.0 ２０ ",
+        ":hub hub1 10 20",
+        "::hub1 10 20",
         "     hub :: hub1 10 20",
         "     hub:      hub1 2 10\t20",
         "hub:hub1 1 0 20",
@@ -22,11 +40,11 @@ parser = FileParser()
 )
 def test_parse_line(line: str) -> None:
     config = SimulationConfig.model_construct(
-        nb_drones=10,
+        nb_drones=None,
         hubs=[],
         connections=[],
     )
-    with pytest.raises(InvalidConfigError):
+    with pytest.raises(InvalidConfigError, match="at line 42:"):
         parser.parse_line(line, config, 42)
 
 
@@ -36,6 +54,10 @@ def test_parse_line(line: str) -> None:
         "hub: invalid_drones 10 20 [max_drones=-1000 color=red]",
         "hub: invalid_drones 10 20 [max_drones=0 color=red]",
         "hub: invalid_drones 10.32 20.19 [max_drones=0 color=red]",
+        "hub: duplicate_options 10 20 [max_drones=10 max_drones=6]",
+        "hub: duplicate_options 10 20 [max_drones=1 max_drones=6]",
+        "hub: invalid_zone 10 20 [zone=adjdasjfa]",
+        "hub: invalid_zone 10 20 [zone=]",
         "hub: unclosed_equal 10 20 [zone= max_drones=5 color=red]",
         " hub   :  double_equals  10\t 20 [    zone=priority=x   max_drones=5    color=red   ]   ",
         " hub   :  double_equals  10\t 20 [    ==x   max_drones=5    color=red   ]   ",
@@ -62,5 +84,5 @@ def test_parse_line_with_options(line: str) -> None:
         hubs=[],
         connections=[],
     )
-    with pytest.raises(InvalidConfigError):
+    with pytest.raises(InvalidConfigError, match="at line 42:"):
         parser.parse_line(line, config, 42)

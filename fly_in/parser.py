@@ -63,6 +63,10 @@ class FileParser:
                 "Line must contain a ':' separator", [lineno]
             )
         key, value = (x.strip() for x in (splits[i] for i in (0, 2)))
+        if not key or not value:
+            raise InvalidConfigError(
+                "Line must contain a key and a value", [lineno]
+            )
         try:
             if key in HubType.__members__.values():
                 config.hubs.append(
@@ -75,7 +79,7 @@ class FileParser:
             elif key == "nb_drones":
                 cls._parse_nb_drones_line(config, value, lineno)
             else:
-                raise InvalidConfigError("Unknown key")
+                raise InvalidConfigError(f"Unknown key {key}", [lineno])
         except InvalidConfigError as e:
             e.args = (f"{key}: {e.args[0]}",)
             if e.line_numbers is None:
@@ -129,6 +133,11 @@ class FileParser:
 
         d: dict[str, str] = cls._parse_options(" ".join(options))
 
+        if any(k in d for k in ["hub_type", "name", "coordinate", "line_no"]):
+            raise InvalidConfigError(
+                "Cannot set 'hub_type', 'name', 'coordinate', or 'line_no'"
+                + " in hub options"
+            )
         return Hub.model_validate(
             {
                 **d,
@@ -154,6 +163,14 @@ class FileParser:
                     f"Invalid option format: {option}. Expected: key=value"
                 )
             key, value = items
+
+            if not key or not value:
+                raise InvalidConfigError(
+                    f"Invalid option format: {option}. "
+                    + "Key and value must be non-empty"
+                )
+            if key in result:
+                raise InvalidConfigError(f"Duplicate option key: {key}")
             result[key] = value
 
         return result
@@ -179,6 +196,10 @@ class FileParser:
         options = options[1:]
         d: dict[str, str] = cls._parse_options(" ".join(options))
 
+        if any(k in d for k in ["hubs", "line_no"]):
+            raise InvalidConfigError(
+                "Cannot set 'hubs' or 'line_no' in connection options"
+            )
         return Connection.model_validate(
             {
                 **d,
