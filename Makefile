@@ -2,7 +2,7 @@
 CHECK_PATHS = fly_in sandbox main.py
 TEST_PATHS = test
 CACHE_DIRS = .mypy_cache .pytest_cache
-MAP = example.txt
+MAP = config.txt
 
 all: install
 	@uv run main.py --help
