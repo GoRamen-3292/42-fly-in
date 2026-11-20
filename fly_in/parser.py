@@ -271,10 +271,7 @@ def _parse_validation_error(e: ValidationError) -> str:
     for err in e.errors():
         err_loc: tuple[int | str, ...] = err.get("loc", ("unknown",))
         err_loc_str: str = f"{err_loc[0]}: " if err_loc else ""
-        if err["msg"] is None:
-            err_list.append(f"Unknown error at {err_loc_str}")
-        else:
-            err_list.append(err_loc_str + err["msg"])
+        err_list.append(err_loc_str + err["msg"])
     return "\n".join(err_list)
 
 
