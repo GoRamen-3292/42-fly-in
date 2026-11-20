@@ -1,7 +1,7 @@
 import pytest
 
 from fly_in.model import HubType, ZoneType
-from fly_in.parser import FileParser, _SimulationParserConfig
+from fly_in.parser import FileParser, SimulationParserConfig
 
 parse_line = FileParser().parse_line
 
@@ -22,7 +22,7 @@ parse_line = FileParser().parse_line
     ],
 )
 def test_parse_line_with_values(line: str) -> None:
-    config = _SimulationParserConfig()
+    config = SimulationParserConfig()
     parse_line(line, config, 42)
     assert len(config.hubs) == 1
     assert config.hubs[0].name == "hub1"
@@ -43,7 +43,7 @@ def test_parse_line_with_values(line: str) -> None:
     ],
 )
 def test_parse_line_with_nb_drones(line: str) -> None:
-    config = _SimulationParserConfig()
+    config = SimulationParserConfig()
     parse_line(line, config, 42)
     assert config.nb_drones == line.partition(":")[2].strip()
     assert config.nb_drones_line == 42
@@ -66,7 +66,7 @@ def test_parse_line_with_nb_drones(line: str) -> None:
     ],
 )
 def test_parse_line(line: str) -> None:
-    config = _SimulationParserConfig()
+    config = SimulationParserConfig()
     parse_line(line, config, 42)
 
 
@@ -88,7 +88,7 @@ def test_parse_line(line: str) -> None:
     ],
 )
 def test_parse_line_with_options_with_values(line: str) -> None:
-    config = _SimulationParserConfig()
+    config = SimulationParserConfig()
     parse_line(line, config, 42)
     assert len(config.hubs) == 1
     assert config.hubs[0].name == "hub1"
@@ -114,6 +114,6 @@ def test_parse_line_with_options_with_values(line: str) -> None:
     ],
 )
 def test_parse_line_with_options(line: str) -> None:
-    config = _SimulationParserConfig()
+    config = SimulationParserConfig()
     parse_line(line, config, 42)
     assert len(config.hubs) == 1

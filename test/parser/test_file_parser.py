@@ -2,7 +2,7 @@ import pytest
 from pydantic import ValidationError
 
 from fly_in import InvalidConfigError, SimulationConfig
-from fly_in.parser import FileParser, _SimulationParserConfig
+from fly_in.parser import FileParser, SimulationParserConfig
 
 parser = FileParser()
 
@@ -21,7 +21,7 @@ parser = FileParser()
     ],
 )
 def test_multiple_start_end_hubs(lines: list[str]) -> None:
-    config = _SimulationParserConfig()
+    config = SimulationParserConfig()
     for line in lines:
         parser.parse_line(line, config, 42)
     assert len(config.hubs) == 2
@@ -48,7 +48,7 @@ def test_multiple_start_end_hubs(lines: list[str]) -> None:
     ],
 )
 def test_parse_line_with_invalid_nb_drones(nb_drones: str) -> None:
-    config = _SimulationParserConfig()
+    config = SimulationParserConfig()
     parser.parse_line(nb_drones, config, 42)
     with pytest.raises(InvalidConfigError):
         parser.parse_text(

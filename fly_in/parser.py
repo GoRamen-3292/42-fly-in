@@ -9,7 +9,7 @@ from .model.types import InvalidConfigError
 
 
 @dataclass
-class _SimulationParserConfig:
+class SimulationParserConfig:
     """設定ファイルの読み込み状態を表すクラス"""
 
     nb_drones_line: int | None = None
@@ -67,7 +67,7 @@ class FileParser:
         Raises:
             InvalidConfigError: 無効な設定ファイルの場合
         """
-        config = _SimulationParserConfig()
+        config = SimulationParserConfig()
         lineno: int | None = None
 
         try:
@@ -104,7 +104,7 @@ class FileParser:
 
     @classmethod
     def parse_line(
-        cls, line: str, config: _SimulationParserConfig, lineno: int
+        cls, line: str, config: SimulationParserConfig, lineno: int
     ) -> None:
         """1行のパースをする関数"""
         if line.startswith("#") or not line:
@@ -151,7 +151,7 @@ class FileParser:
 
     @classmethod
     def _parse_nb_drones_line(
-        cls, config: _SimulationParserConfig, value: str, lineno: int
+        cls, config: SimulationParserConfig, value: str, lineno: int
     ) -> None:
         """nb_dronesの行をパースする関数
 
@@ -276,7 +276,7 @@ def _parse_validation_error(e: ValidationError) -> str:
 
 
 def _lines_from_loc(
-    loc: tuple[int | str, ...], config: _SimulationParserConfig
+    loc: tuple[int | str, ...], config: SimulationParserConfig
 ) -> list[int] | None:
     """Pydanticのエラー位置(loc)から設定ファイルの行番号を求める関数
 
