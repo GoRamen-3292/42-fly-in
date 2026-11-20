@@ -148,14 +148,15 @@ class Simulation:
         hub: SolverHub | None = self._hubs.get(hub_name)
         if not hub:
             raise ValueError(f"Cannot find hub with name: {hub_name}")
-        if hub.hub_type in (HubType.START_HUB, HubType.END_HUB):
+        if hub.hub_type in {HubType.START_HUB, HubType.END_HUB}:
             return False
 
         cur_drones: int = self._scheduler.get(plan, 0)
         return cur_drones >= hub.max_drones
 
+    @staticmethod
     def trace_back_path(
-        self, parent: ParentMap, end_hub: PlanElement
+        parent: ParentMap, end_hub: PlanElement
     ) -> list[PlanElement | PlanConnectionElement]:
         """最短経路を復元するメソッド"""
         current_hub: PlanElement | PlanConnectionElement | None = end_hub
@@ -282,8 +283,9 @@ class Simulation:
 
         return None
 
+    @staticmethod
     def convert_hubs(
-        self, hubs: list[Hub], connections: list[Connection]
+        hubs: list[Hub], connections: list[Connection]
     ) -> dict[str, SolverHub]:
         """HubのリストをSimulation内で利用するSolverHubに変換するメソッド
 
@@ -307,8 +309,9 @@ class Simulation:
             result[hub_2].connections.add(hub_1)
         return result
 
+    @staticmethod
     def convert_connections(
-        self, connections: list[Connection]
+        connections: list[Connection]
     ) -> list[Connection]:
         """接続のキーを正規化したConnectionのリストを作成するメソッド
 
