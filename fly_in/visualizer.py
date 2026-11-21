@@ -107,10 +107,9 @@ class Visualizer:
         output_dict: OutputDict = defaultdict(list)
         for drone in self.result.drones:
             for i, el in enumerate(drone.timeline):
-                pos: str | ConnectionKey = el[1]
-                pos_str = self._create_pos_str(pos)
+                pos_str = self._create_pos_str(el)
                 dpos_str = f"D{drone.id}-{pos_str}"
-                if i > 0 and pos_str == drone.timeline[i - 1][1]:
+                if i > 0 and pos_str == drone.timeline[i - 1]:
                     continue
                 output_dict[i].append(dpos_str)
 

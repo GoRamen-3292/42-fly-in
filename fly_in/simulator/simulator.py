@@ -123,7 +123,7 @@ class Simulator:
             )
         prev_hub: str = drone.start_pos
         for el in path:
-            drone.timeline.append(el)
+            drone.timeline.append(el[1])
             if isinstance(el[1], str):
                 p_el: PlanElement = el[0], el[1]
                 self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
@@ -275,7 +275,8 @@ class Simulator:
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
                 return self.trace_back_path(
-                    parent, (current_turns, True, current_pos)
+                    parent, (current_turns, current_hub.zone !=
+                             ZoneType.PRIORITY, current_pos)
                 )
 
             # そのまま待機する場合も探索の候補に追加

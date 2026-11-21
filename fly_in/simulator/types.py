@@ -13,9 +13,9 @@ type PlanElement = tuple[int, str]
 
 type PlanHeapqElement = tuple[int, bool, str]
 """
-[0] ターン  
-[1] 通常ハブであるか(True) : 通常ハブでないか(False)で、Falseが優先される  
-[2] 現在滞在しているハブ  
+- [0] ターン
+- [1] 通常ハブであるか(True) : 通常ハブでないか(False)で、Falseが優先される
+- [2] 現在滞在しているハブ
 
 についてのタプル型
 
@@ -64,14 +64,13 @@ class Drone:
     Attributes:
         id: ドローンの識別子
         start_pos: ドローンの初期位置となるハブの名前
-        timeline: ドローンのターンごとの位置の履歴、[0]に初期位置
+        timeline: ドローンのターンごとの位置の履歴、
+        [0]に初期位置で、[n]にターンnの位置が格納される
     """
 
     id: int
     start_pos: str
-    timeline: list[PlanElement | PlanConnectionElement] = field(
-        default_factory=list
-    )
+    timeline: list[str | ConnectionKey] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
