@@ -96,6 +96,9 @@ class Simulator:
         Returns:
             SimulationResult: シミュレーションの結果
         """
+        if self._result is not None:
+            return self._result
+
         for drone in self._drones:
             self._plan_one_drone(drone)
 
