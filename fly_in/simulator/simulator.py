@@ -22,10 +22,6 @@ from .types import (
     SolverHub,
 )
 
-type HeapPushArgs = tuple[
-    list[PlanHeapqElement], PlanHeapqElement, str, ParentMap
-]
-
 
 class Simulator:
     """与えられた設定から、ドローンの経路を計画するシミュレーションを提供するクラス
@@ -275,23 +271,22 @@ class Simulator:
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
                 return self.trace_back_path(
-                    parent, (current_turns, current_hub.zone !=
-                             ZoneType.PRIORITY, current_pos)
+                    parent,
+                    (
+                        current_turns,
+                        current_hub.zone != ZoneType.PRIORITY,
+                        current_pos,
+                    ),
                 )
 
             # そのまま待機する場合も探索の候補に追加
-            values: list[HeapPushArgs] = [
-                (queue, current, current_pos, parent)
-            ]
+            self.heappush_next_hubs(queue, current, current_pos, parent)
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
                 next_node: SolverHub = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
-                values.append((queue, current, next_name, parent))
-
-            for queue, current, next_name, parent in values:
                 self.heappush_next_hubs(queue, current, next_name, parent)
 
         return None
