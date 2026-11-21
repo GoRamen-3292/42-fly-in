@@ -1,4 +1,3 @@
-# ディレクトリ
 CHECK_PATHS = fly_in sandbox main.py
 TEST_PATHS = test
 CACHE_DIRS = .mypy_cache .pytest_cache
@@ -7,12 +6,12 @@ MAP = config.txt
 all: install
 	@uv run main.py --help
 
-install:
+install: $(MAP)
 	uv sync
-	@if [ ! -f $(MAP) ]; then \
-		echo "Creating $(MAP) from example.txt"; \
-		cp example.txt $(MAP); \
-	fi
+
+$(MAP):
+	@echo "Creating $(MAP) from example.txt"
+	cp example.txt $(MAP)
 
 run:
 	@uv run main.py $(MAP)
@@ -60,4 +59,5 @@ check: lint-strict test
 test:
 	uv run pytest
 
-.PHONY: install run debug clean lint lint-strict lint-fix check test
+.PHONY: all install run r color c visualize debug clean fclean \
+        lint lint-strict lint-fix check test
