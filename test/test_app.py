@@ -50,12 +50,12 @@ def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
     ("file", "expected", "unexpected"),
     [
         (
-            "test/maps/no_path_b/01_simple_fork_priority.txt",
+            "test/maps/priority/01_simple_fork_priority.txt",
             "path_a",
             "path_b",
         ),
         (
-            "test/maps/no_path_b/02_simple_fork_priority.txt",
+            "test/maps/priority/02_simple_fork_priority.txt",
             "path_b",
             "path_a",
         ),
