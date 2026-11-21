@@ -190,13 +190,15 @@ D1-hub
 
 ### 概要
 
-このプログラムでは、ダイクストラ法を用いてそれぞれのドローンに対して最短の経路となるものを求めたあと、それをさらに貪欲法と呼ばれるアルゴリズムを用いてすべてのドローンそれぞれに対して経路を求めた。
+このプログラムでは、ダイクストラ法を用いてそれぞれのドローンに対して最短の経路となるものを求めたあと、それをさらにPrioritized Planningと呼ばれる方法で貪欲に順番にすべてのドローンそれぞれに対して経路を求めた。
+
+<!-- TODO: オーダーについて書く -->
 
 ### ダイクストラ法とは?
 
 - 最短経路を算出するためのアルゴリズム
 - それぞれのnodeに対して最短の距離を算出して保存する
-- その後、最短距離をたどっていくことで最短経路を算出する
+- ゴールまでの経路を見つけた後、最短距離となる経路をスタートへとたどっていくことで最短経路を算出する
 
 #### 具体的には?
 
@@ -205,10 +207,15 @@ D1-hub
 1. キューの中から最小のコストとなるノードを取得し、キューからは削除する。
 1. それを「訪れた」とマークする。
 1. 現在のノードとエッジにより接続されている、まだ訪れていないノードに対して以下のことをする。
-  - それぞれ、そこまで現在のノードから到達した場合のコストを算出する。
-  - もし、そのコストが現時点とのその最小コストより低い場合、またはまだコストが未設定である場合には、現在のコストで置き換える。
+
+- それぞれ、そこまで現在のノードから到達した場合のコストを算出する。
+- もし、そのコストが現時点とのその最小コストより低い場合、またはまだコストが未設定である場合には、現在のコストで置き換える。
 
 その上で、ゴールのハブに到達した場合には、そこまでの最短経路を算出することができる。
+
+### Prioritized Planningとは?
+
+Prioritized Planning（優先順位付け計画）は、複数のタスクやアクションを優先順位に従って処理するための手法である。
 
 ### 今回の課題では
 
@@ -245,6 +252,20 @@ heapqは、リストへの要素の取り出しや操作を効率的に行うこ
 
 ---
 
+## Schedule
+
+| 時期         | PR       | 内容                                                    | 主に利用したこと・学んだこと                     |
+| ------------ | -------- | ------------------------------------------------------- | ------------------------------------------------ |
+| 10/21〜10/24 | #1       | 各種モデルの定義（Hub / Connection / SimulationConfig） | uv、Pydantic、Enum                               |
+| 10/24〜10/29 | #2       | パーサー、ファイルの読み込み                            | pytest.parametrize、str.partition、str.isspace   |
+| 10/29〜11/08 | #3       | Simulator、Dijkstra 法 + Scheduler                      | heapq、dataclass                                 |
+| 11/09〜11/13 | #4〜#11  | restricted / priority への対応、argparse、Ruff の導入   | argparse の終了の仕方、Ruff                      |
+| 11/14〜11/16 | #12〜#16 | color出力、例外処理、ディレクトリの再構成、docstring    | 終了コード、パッケージにしない構成、Google Style |
+| 11/17〜11/20 | #18、#19 | パーサーのエラーに行番号を付与、Simulator の整理        | ValidationError の構造                           |
+| 11/21 —      |          | ドキュメント、Makefileの微調整                          | Make の各種ルール                                |
+
+---
+
 ## Resources
 
 ### AI Usage
@@ -278,6 +299,13 @@ Pythonのドキュメントの仕様について、常に公式のドキュメ�
 - [Pydantic Validation | Pydantic Docs](https://pydantic.dev/docs/validation/2.14/get-started/)
 - [Models | Pydantic Docs](https://pydantic.dev/docs/validation/2.14/usage/models/)
 - [BaseModel | Pydantic Docs](https://pydantic.dev/docs/validation/latest/api/pydantic/base_model/)
+
+#### MAPF
+
+MAPFと呼ばれる言葉については、主に以下の記事を参照した。
+
+- [Multi-agent pathfinding](https://en.wikipedia.org/wiki/Multi-agent_pathfinding)
+- [マルチエージェント経路計画の紹介 | Kei18's Note](https://kei18.github.io/note/posts/mapf-tutorial/#%e6%9c%80%e9%81%a9%e6%80%a7%e3%82%92%e7%8a%a0%e7%89%b2%e3%81%ab%e3%81%99%e3%82%8b-%e6%9c%89%e7%95%8c%e6%ba%96%e6%9c%80%e9%81%a9%e6%80%a7%e3%81%aa%e3%82%a2%e3%83%ab%e3%82%b4%e3%83%aa%e3%82%ba%e3%83%a0)
 
 #### ダイクストラ法
 
