@@ -16,24 +16,6 @@ _This project has been created as part of the 42 curriculum by ktomita._
 
 ### Makefile
 
-#### コマンド先頭のprefix
-
-コマンド先頭の `-` は、終了コードが0でなくても続行するというオプションです
-
-```sh
-example-rule:
-    -uv run ruff check
-    @echo "これは常に実行されます！"
-```
-
-のように書けば、末尾のechoは常に実行されます！
-
-(なお、コマンド先頭の `@` は `make example-rule` を実行した際に `echo "これは常に実行されます！"`を表示しないオプションとなっています。)
-
-参考:
-
-- [makefile - Make: how to continue after a command fails? - Stack Overflow](https://stackoverflow.com/questions/2670130/make-how-to-continue-after-a-command-fails)
-- [Top (GNU make)](https://www.gnu.org/software/make/manual/html_node/index.html)
 
 ### findコマンド
 
