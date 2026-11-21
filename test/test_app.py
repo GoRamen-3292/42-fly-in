@@ -47,14 +47,24 @@ def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
 
 
 @pytest.mark.parametrize(
-    "file",
+    ("file", "expected", "unexpected"),
     [
-        "test/maps/no_path_b/01_simple_fork_priority.txt",
-        "test/maps/no_path_b/02_simple_fork_priority.txt",
+        (
+            "test/maps/no_path_b/01_simple_fork_priority.txt",
+            "path_a",
+            "path_b",
+        ),
+        (
+            "test/maps/no_path_b/02_simple_fork_priority.txt",
+            "path_b",
+            "path_a",
+        ),
     ],
 )
 @pytest.mark.parametrize("color", [True, False])
-def test_priority_hub_preference(file: str, color: bool) -> None:
+def test_priority_hub_preference(
+    file: str, expected: str, unexpected: str, color: bool
+) -> None:
     opts = ["--color"] if color else []
     result = subprocess.run(
         [sys.executable, "main.py", *opts, file],
@@ -70,8 +80,8 @@ def test_priority_hub_preference(file: str, color: bool) -> None:
         assert any("D1" in line and "goal" in line for line in lines)
     else:
         assert any("D1-goal" in line for line in lines)
-    assert any("path_a" in line for line in lines)
-    assert not any("path_b" in line for line in lines)
+    assert any(expected in line for line in lines)
+    assert not any(unexpected in line for line in lines)
     assert any("goal" in line for line in lines)
 
 
