@@ -88,15 +88,34 @@ flake8よりも高速である上、追加のルールの指定などをする�
 
 ## Makefile
 
-## @から始まる行
+### @から始まる行
 
-- コマンドの通常のオプションには表示されない
+- コマンドが通常のオプションには表示されない
 
-[GNU make](https://www.gnu.org/software/make/manual/make.html#Echoing)
-
-## -から始まる行
+### -から始まる行
 
 - 終了コードが0以外で失敗しても、makeはそのエラーを無視して次のコマンドを実行する
 
-[GNU make](https://www.gnu.org/software/make/manual/make.html#Errors)
+コマンド先頭の `-` は、終了コードが0でなくても続行するというオプションです
 
+```sh
+example-rule:
+    -uv run ruff check
+    @echo "これは常に実行されます！"
+```
+
+のように書けば、末尾のechoは常に実行されます。
+
+(なお、コマンド先頭の `@` は `make example-rule` を実行した際に `echo "これは常に実行されます！"`を表示しないオプションとなっています。)
+
+- [makefile - Make: how to continue after a command fails? - Stack Overflow](https://stackoverflow.com/questions/2670130/make-how-to-continue-after-a-command-fails)
+- [GNU make - 5.2 Recipe Echoing](https://www.gnu.org/software/make/manual/make.html#Echoing)
+- [GNU make 5.5 Errors in Recipes](https://www.gnu.org/software/make/manual/make.html#Errors)
+
+### .PHONY
+
+.PHONYは、makefileのターゲットがファイル名と同じ名前であっても、常にそのターゲットを実行するようにするための宣言です。
+
+これにより、ターゲット名と同じ名前のファイルが存在しても、makeはそのターゲットを実行することが保証されます。
+
+[GNU make - 4.9 Special Built-in Target Names](https://www.gnu.org/software/make/manual/make.html#Special-Targets)
