@@ -4,6 +4,22 @@
 
 ---
 
+## Words
+
+#### キュー
+
+データ構造について。LIFO(Last in first out)という、最後に追加したものが最後に取り出されるという特性を持つ。
+
+#### ノード
+
+グラフ理論における、接続を表すもの。
+
+#### エッジ
+
+グラフ理論における、
+
+---
+
 ## Enum
 
 Enumのメンバーは慣習的に**大文字**で書かれる。
@@ -32,6 +48,19 @@ See also: [列挙型 HOWTO — Python 3.14.9 ドキュメント](https://docs.py
 argparseは、コマンドライン引数をパースするための標準ライブラリであり、終了時には自動的に`SystemExit` を送出する。
 
 これはExceptionクラスの子クラスではないため、`except Exception` でcatchすることはしなかった。
+
+---
+
+## pytest
+
+基本的には、`test_` で始まる関数を定義することで、pytestはその関数をテストとして認識する。`assert` 文を使って条件をチェックし、失敗した場合はテストが失敗する。
+
+### raises
+
+pytest.raises() を使って、例外が発生することを確認するテストを作成できる。
+
+- [【Python3】pytestで例外を検出する方法 #メモ - Qiita](https://qiita.com/Jazuma/items/cb8dcd9ff01ed1c2d1f2)
+- [API Reference - pytest documentation](https://docs.pytest.org/en/stable/reference/reference.html#pytest.raises)
 
 ---
 
