@@ -25,9 +25,16 @@ _This project has been created as part of the 42 curriculum by ktomita._
 - スタートのHubとゴールのHubが1つずつ与えられる
 - それ以外のHubが0個以上与えられる
 - Hubの座標は整数で与えられる
+- Hubには最大1台、設定で指定された場合には複数台のドローンが同時に存在することができる
 
 #### Drone - ドローン
 
 - Droneの数は1以上の整数で与えられる
 - DroneはHubとHubの間を原則1ターン、restrictedという属性を持つHubに移動する際には2ターンをかけて移動する
-- 
+- ...
+
+#### Connection - ハブ間の接続
+
+- Connectionは、HubとHubの間の接続を表す
+- この接続は、双方向である
+- この接続には上限が存在する

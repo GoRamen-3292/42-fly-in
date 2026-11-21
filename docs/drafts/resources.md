@@ -42,6 +42,8 @@ Pythonのドキュメントの仕様について、常に公式のドキュメ�
 
 - [ダイクストラ法についてまとめてみた【経路探索アルゴリズム】｜らるす](https://note.com/rarusu/n/na7c9ca8ba1a0)
 - [マップ上の最短距離を見つけるダイクストラ法を図解でわかりやすく説明 | python実装あり｜スイスのアボカド](https://note.com/avocado81230/n/n1a0e8a835d05)
+- [うさぎでもわかる離散数学（グラフ理論）　第14羽　ダイクストラ法による最短経路の求め方 - 工業大学生ももやまのうさぎ塾 (Momousagi Academy)](https://www.momoyama-usagi.com/entry/math-risan14#gsc.tab=0)
+- [【これでわかる！】具体例を使ってダイクストラ法のアルゴリズムについてなるべくわかりやすく解説してみた](https://yukashun.com/shortest_path_dijkstra/)
 
 #### A\* アルゴリズム
 
