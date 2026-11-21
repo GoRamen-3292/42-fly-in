@@ -14,8 +14,8 @@ class SimulationParserConfig:
 
     nb_drones_line: int | None = None
     nb_drones: str | None = None
-    hubs: list[Hub] = field(default_factory=list)
-    connections: list[Connection] = field(default_factory=list)
+    hubs: list[Hub] = field(default_factory=list[Hub])
+    connections: list[Connection] = field(default_factory=list[Connection])
 
 
 class FileParser:
