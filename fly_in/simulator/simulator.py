@@ -162,10 +162,11 @@ class Simulator:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
 
-        queue: list[PlanHeapqElement] = [(0, True, start_hub)]
+        queue: list[PlanHeapqElement] = []
         """
-        キューを用いて、次に探索するハブを管理する
+        heapqを用いて、次に探索するハブを管理する
         """
+        heapq.heappush(queue, (0, True, start_hub))
 
         visited: set[PlanHeapqElement] = set()
         """
