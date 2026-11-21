@@ -8,7 +8,7 @@ try:
         FileParser,
         InvalidConfigError,
         RouteNotFoundError,
-        Simulation,
+        Simulator,
         Visualizer,
     )
 except (ImportError, ModuleNotFoundError) as e:
@@ -88,7 +88,7 @@ def main() -> int:
         config = FileParser.parse_file(args.filename, args.max_file_size)
 
         status = "instantiating simulation class"
-        fly_in = Simulation(config)
+        fly_in = Simulator(config)
 
         status = "simulating"
         result = fly_in.simulate()

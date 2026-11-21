@@ -1,9 +1,8 @@
 import pytest
 
-from fly_in.scheduler.types import (
+from fly_in.model.types import ConnectionKey
+from fly_in.simulator.types import (
     Drone,
-    PlanConnectionElement,
-    PlanElement,
     SimulationResult,
 )
 from fly_in.visualizer import Visualizer
@@ -18,7 +17,7 @@ from fly_in.visualizer import Visualizer
                 Drone(
                     id=0,
                     start_pos="start",
-                    timeline=[(0, "start"), (0, ("start", "end")), (1, "end")],
+                    timeline=["start", ("start", "end"), "end"],
                 )
             ],
         )
@@ -31,18 +30,18 @@ def test_visualizer(data: SimulationResult) -> None:
 @pytest.mark.parametrize(
     "timeline",
     [
-        [(0, "start"), (0, ("start", "end")), (1, "end")],
+        ["start", ("start", "end"), "end"],
         [
-            (0, "start"),
-            (0, ("start", "end")),
-            (1, "end"),
-            (1, ("end", "start")),
-            (2, "start"),
+            "start",
+            ("start", "end"),
+            "end",
+            ("end", "start"),
+            "start",
         ],
     ],
 )
 def test_visualizer_timeline(
-    timeline: list[PlanElement | PlanConnectionElement],
+    timeline: list[str | ConnectionKey],
 ) -> None:
     result = SimulationResult(
         is_successful=True,

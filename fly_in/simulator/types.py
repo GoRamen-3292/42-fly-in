@@ -8,6 +8,17 @@ type PlanElement = tuple[int, str]
 """
 ターンと現在滞在しているハブについてのタプル型
 
+探索の結果がスケジュールとして出力される際に利用する
+"""
+
+type PlanHeapqElement = tuple[int, bool, str]
+"""
+- [0] ターン
+- [1] 通常ハブであるか(True) : 通常ハブでないか(False)で、Falseが優先される
+- [2] 現在滞在しているハブ
+
+についてのタプル型
+
 時間を活用した探索のためのもの
 """
 
@@ -19,8 +30,8 @@ type PlanConnectionElement = tuple[int, ConnectionKey]
 """
 
 type ParentMap = dict[
-    PlanElement | PlanConnectionElement,
-    PlanElement | PlanConnectionElement | None,
+    PlanHeapqElement | PlanConnectionElement,
+    PlanHeapqElement | PlanConnectionElement | None,
 ]
 """
 直前にいたハブを記録し、最後に経路を復元するための辞書型
@@ -53,14 +64,13 @@ class Drone:
     Attributes:
         id: ドローンの識別子
         start_pos: ドローンの初期位置となるハブの名前
-        timeline: ドローンのターンごとの位置の履歴、[0]に初期位置
+        timeline: ドローンのターンごとの位置の履歴、
+        [0]に初期位置で、[n]にターンnの位置が格納される
     """
 
     id: int
     start_pos: str
-    timeline: list[PlanElement | PlanConnectionElement] = field(
-        default_factory=list
-    )
+    timeline: list[str | ConnectionKey] = field(default_factory=list)
 
 
 @dataclass(frozen=True)

@@ -1,6 +1,6 @@
 """ドローンの経路を計画するスケジューラのパッケージ"""
 
-from .solve_arguments import Simulation
+from .simulator import Simulator
 from .types import (
     RouteNotFoundError,
     SimulationResult,
@@ -8,6 +8,6 @@ from .types import (
 
 __all__ = [
     "RouteNotFoundError",
-    "Simulation",
     "SimulationResult",
+    "Simulator",
 ]

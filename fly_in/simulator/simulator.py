@@ -16,13 +16,14 @@ from .types import (
     ParentMap,
     PlanConnectionElement,
     PlanElement,
+    PlanHeapqElement,
     RouteNotFoundError,
     SimulationResult,
     SolverHub,
 )
 
 
-class Simulation:
+class Simulator:
     """与えられた設定から、ドローンの経路を計画するシミュレーションを提供するクラス
 
     ドローンを1台ずつ順番にダイクストラ法を用いて最短経路で計画し、
@@ -95,120 +96,52 @@ class Simulation:
         Returns:
             SimulationResult: シミュレーションの結果
         """
-        self._plan()
+        if self._result is not None:
+            return self._result
+
+        for drone in self._drones:
+            self._plan_one_drone(drone)
+
         self._result = SimulationResult(
             is_successful=True,
             drones=self._drones,
         )
         return self._result
 
-    def _plan(self) -> None:
-        # TODO: _plan_one_drone() 関数を作る
-        for drone in self._drones:
-            path: list[PlanElement | PlanConnectionElement] | None = (
-                self.get_shortest_path(drone.start_pos)
-            )
-            if not path:
-                raise RouteNotFoundError(
-                    f"Cannot find a valid path for drone with ID: {drone.id}"
-                )
-            prev_hub: str = drone.start_pos
-            for el in path:
-                drone.timeline.append(el)
-                if isinstance(el[1], str):
-                    p_el: PlanElement = el[0], el[1]
-                    self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
-                    pc_el: PlanConnectionElement = (
-                        el[0],
-                        normalize_connction_key((prev_hub, el[1])),
-                    )
-                    self._connection_scheduler[pc_el] = (
-                        self._connection_scheduler.get(pc_el, 0) + 1
-                    )
-                    prev_hub = el[1]
-                else:
-                    pc_el = (el[0], normalize_connction_key(el[1]))
-                    self._connection_scheduler[pc_el] = (
-                        self._connection_scheduler.get(pc_el, 0) + 1
-                    )
-                    prev_hub = el[1][1]
+    def _plan_one_drone(self, drone: Drone) -> None:
+        """1台のドローンの経路を計画するメソッド
 
-    def _is_full_connection(self, plan: PlanConnectionElement) -> bool:
-        plan = plan[0], normalize_connction_key(plan[1])
-        connection: Connection = next(
-            el for el in self._connections if el.hubs == plan[1]
+        ダイクストラ法を用いて、開始ハブから終了ハブまでの最短経路を探索する
+        """
+        path: list[PlanElement | PlanConnectionElement] | None = (
+            self._get_shortest_path(drone.start_pos)
         )
-        max_con = connection.max_link_capacity
-        cur_drones = self._connection_scheduler.get(plan, 0)
-        return cur_drones >= max_con
+        if not path:
+            raise RouteNotFoundError(
+                f"Cannot find a valid path for drone with ID: {drone.id}"
+            )
+        prev_hub: str = drone.start_pos
+        for el in path:
+            drone.timeline.append(el[1])
+            if isinstance(el[1], str):
+                p_el: PlanElement = el[0], el[1]
+                self._scheduler[p_el] = self._scheduler.get(p_el, 0) + 1
+                pc_el: PlanConnectionElement = (
+                    el[0],
+                    normalize_connction_key((prev_hub, el[1])),
+                )
+                self._connection_scheduler[pc_el] = (
+                    self._connection_scheduler.get(pc_el, 0) + 1
+                )
+                prev_hub = el[1]
+            else:
+                pc_el = (el[0], normalize_connction_key(el[1]))
+                self._connection_scheduler[pc_el] = (
+                    self._connection_scheduler.get(pc_el, 0) + 1
+                )
+                prev_hub = el[1][1]
 
-    def _is_full_hub(self, plan: PlanElement) -> bool:
-        """指定されたハブが満杯かどうかを判定するメソッド"""
-        hub_name: str = plan[1]
-        hub: SolverHub | None = self._hubs.get(hub_name)
-        if not hub:
-            raise ValueError(f"Cannot find hub with name: {hub_name}")
-        if hub.hub_type in {HubType.START_HUB, HubType.END_HUB}:
-            return False
-
-        cur_drones: int = self._scheduler.get(plan, 0)
-        return cur_drones >= hub.max_drones
-
-    @staticmethod
-    def trace_back_path(
-        parent: ParentMap, end_hub: PlanElement
-    ) -> list[PlanElement | PlanConnectionElement]:
-        """最短経路を復元するメソッド"""
-        current_hub: PlanElement | PlanConnectionElement | None = end_hub
-        path: list[PlanElement | PlanConnectionElement] = []
-        while current_hub is not None:
-            path.append(current_hub)
-            current_hub = parent[current_hub]
-        path.reverse()
-        return path
-
-    def heappush_next_hubs(
-        self,
-        queue: list[PlanElement],
-        current: PlanElement,
-        next_name: str,
-        parent: ParentMap,
-    ) -> None:
-        """次のハブをヒープに追加するメソッド"""
-        new_turns = current[0] + 1
-
-        next_hub = self._hubs[next_name]
-        prev_turns, prev_hub = current
-
-        conn_turn: PlanConnectionElement | None = None
-        if next_hub.zone != ZoneType.RESTRICTED or prev_hub == next_hub.name:
-            new_turns = prev_turns + 1
-        else:
-            new_turns = prev_turns + 2
-
-        if prev_hub != next_hub.name:
-            conn_turn = (prev_turns + 1, (prev_hub, next_name))
-            if self._is_full_connection(conn_turn):
-                return  # Connectionはいっぱいである
-        new_el: PlanElement = (new_turns, next_name)
-
-        if self._is_full_hub(new_el):
-            return  # ドローンがいるハブはスキップする
-        if new_turns > self._max_turns:
-            # 最大ターン数を超えた場合は最短経路ではないのでスキップする
-            return
-        if new_el in parent:
-            return
-
-        if next_hub.zone == ZoneType.RESTRICTED and prev_hub != next_hub.name:
-            conn_turn = cast(PlanConnectionElement, conn_turn)
-            parent[conn_turn] = current
-            parent[new_el] = conn_turn
-        else:
-            parent[new_el] = current
-        heapq.heappush(queue, new_el)
-
-    def get_shortest_path(
+    def _get_shortest_path(
         self, start_hub: str
     ) -> list[PlanElement | PlanConnectionElement] | None:
         """開始ハブから終了ハブまでの最短経路を探索するメソッド
@@ -229,26 +162,24 @@ class Simulation:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
 
-        queue: list[PlanElement] = [(0, start_hub)]
+        queue: list[PlanHeapqElement] = [(0, True, start_hub)]
         """
         キューを用いて、次に探索するハブを管理する
-
-        tuple型で、コストとハブ名を格納
         """
 
-        visited: set[PlanElement] = set()
+        visited: set[PlanHeapqElement] = set()
         """
         「来訪済み」のハブ、除外に利用
         """
 
-        parent: ParentMap = {(0, start_hub): None}
+        parent: ParentMap = {(0, True, start_hub): None}
         """
         直前のハブを記録する
         """
 
         while queue:
-            current: PlanElement = heapq.heappop(queue)
-            current_turns, current_pos = current
+            current: PlanHeapqElement = heapq.heappop(queue)
+            current_turns, _, current_pos = current
             current_hub: SolverHub = self._hubs[current_pos]
             # 来訪済みなら、return
             if current in visited:
@@ -259,29 +190,107 @@ class Simulation:
             # ゴール到達
             if current_hub.hub_type == HubType.END_HUB:
                 return self.trace_back_path(
-                    parent, (current_turns, current_pos)
+                    parent,
+                    (
+                        current_turns,
+                        current_hub.zone != ZoneType.PRIORITY,
+                        current_pos,
+                    ),
                 )
 
             # そのまま待機する場合も探索の候補に追加
-            values = [(queue, current, current_pos, parent)]
+            self._heappush_next_hubs(queue, current, current_pos, parent)
 
             # すべての接続に対して...
             for next_name in current_hub.connections:
                 next_node: SolverHub = self._hubs[next_name]
                 if next_node.zone == ZoneType.BLOCKED:
                     continue  # 制限区域のハブはスキップする
-                values.append((queue, current, next_name, parent))
-
-            # 優先度の高いハブを先に探索する
-            values = sorted(
-                values,
-                key=lambda x: self._hubs[x[2]].zone is ZoneType.PRIORITY,
-                reverse=True,
-            )
-            for queue, current, next_name, parent in values:
-                self.heappush_next_hubs(queue, current, next_name, parent)
+                self._heappush_next_hubs(queue, current, next_name, parent)
 
         return None
+
+    def _heappush_next_hubs(
+        self,
+        queue: list[PlanHeapqElement],
+        current: PlanHeapqElement,
+        next_name: str,
+        parent: ParentMap,
+    ) -> None:
+        """次のハブをヒープに追加するメソッド"""
+        new_turns = current[0] + 1
+
+        next_hub = self._hubs[next_name]
+        prev_turns, _, prev_hub = current
+
+        conn_turn: PlanConnectionElement | None = None
+        if next_hub.zone != ZoneType.RESTRICTED or prev_hub == next_hub.name:
+            new_turns = prev_turns + 1
+        else:
+            new_turns = prev_turns + 2
+
+        if prev_hub != next_hub.name:
+            conn_turn = (prev_turns + 1, (prev_hub, next_name))
+            if self._is_full_connection(conn_turn):
+                return  # Connectionはいっぱいである
+        new_el: PlanHeapqElement = (
+            new_turns,
+            next_hub.zone != ZoneType.PRIORITY,
+            next_name,
+        )
+
+        if self._is_full_hub(new_el):
+            return  # ドローンがいるハブはスキップする
+        if new_turns > self._max_turns:
+            # 最大ターン数を超えた場合は最短経路ではないのでスキップする
+            return
+        if new_el in parent:
+            return
+
+        if next_hub.zone == ZoneType.RESTRICTED and prev_hub != next_hub.name:
+            conn_turn = cast(PlanConnectionElement, conn_turn)
+            parent[conn_turn] = current
+            parent[new_el] = conn_turn
+        else:
+            parent[new_el] = current
+        heapq.heappush(queue, new_el)
+
+    @staticmethod
+    def trace_back_path(
+        parent: ParentMap, end_hub: PlanHeapqElement
+    ) -> list[PlanElement | PlanConnectionElement]:
+        """最短経路を復元するメソッド"""
+        current_hub: PlanHeapqElement | PlanConnectionElement | None = end_hub
+        path: list[PlanElement | PlanConnectionElement] = []
+        while current_hub is not None:
+            if len(current_hub) == 2:
+                path.append((current_hub[0], current_hub[1]))
+            else:
+                path.append((current_hub[0], current_hub[2]))
+            current_hub = parent[current_hub]
+        path.reverse()
+        return path
+
+    def _is_full_connection(self, plan: PlanConnectionElement) -> bool:
+        plan = plan[0], normalize_connction_key(plan[1])
+        connection: Connection = next(
+            el for el in self._connections if el.hubs == plan[1]
+        )
+        max_con = connection.max_link_capacity
+        cur_drones = self._connection_scheduler.get(plan, 0)
+        return cur_drones >= max_con
+
+    def _is_full_hub(self, plan: PlanHeapqElement) -> bool:
+        """指定されたハブが満杯かどうかを判定するメソッド"""
+        hub_name: str = plan[2]
+        hub: SolverHub | None = self._hubs.get(hub_name)
+        if not hub:
+            raise ValueError(f"Cannot find hub with name: {hub_name}")
+        if hub.hub_type in {HubType.START_HUB, HubType.END_HUB}:
+            return False
+
+        cur_drones: int = self._scheduler.get((plan[0], plan[2]), 0)
+        return cur_drones >= hub.max_drones
 
     @staticmethod
     def convert_hubs(
@@ -310,9 +319,7 @@ class Simulation:
         return result
 
     @staticmethod
-    def convert_connections(
-        connections: list[Connection]
-    ) -> list[Connection]:
+    def convert_connections(connections: list[Connection]) -> list[Connection]:
         """接続のキーを正規化したConnectionのリストを作成するメソッド
 
         経路の計画に不要な行番号などの情報は取り除かれる

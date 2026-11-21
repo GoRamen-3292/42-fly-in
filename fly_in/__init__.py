@@ -14,7 +14,7 @@ from .model import (
     ZoneType,
 )
 from .parser import FileParser
-from .scheduler import RouteNotFoundError, Simulation, SimulationResult
+from .simulator import RouteNotFoundError, SimulationResult, Simulator
 from .visualizer import Visualizer
 
 __all__ = [
@@ -26,9 +26,9 @@ __all__ = [
     "HubType",
     "InvalidConfigError",
     "RouteNotFoundError",
-    "Simulation",
     "SimulationConfig",
     "SimulationResult",
+    "Simulator",
     "Visualizer",
     "ZoneType",
 ]
