@@ -17,7 +17,7 @@
       "request": "launch",
       "program": "${workspaceFolder}/main.py",
       "args": [
-        "${workspaceFolder}/test.txt"
+        "${workspaceFolder}/config.txt"
       ]
     },
   ]
