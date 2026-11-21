@@ -17,21 +17,7 @@ _This project has been created as part of the 42 curriculum by ktomita._
 ### Makefile
 
 
-### findコマンド
 
-```txt
-find: コマンド
-. : cwd
--type d: ディレクトリに限定
-\( condition \): 条件
--exec rm -rf {} +: ファイル削除、 {} はファイル名、 +は複数ファイルをまとめてrmで削除するオプション
-```
-
-### argparse
-
-すごく例外的なケースを除いて例外を発生させない
-
-- TODO: 検証
 
 ### Others
 

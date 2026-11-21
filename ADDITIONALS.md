@@ -4,22 +4,6 @@
 
 ---
 
-## Words
-
-#### キュー
-
-データ構造について。LIFO(Last in first out)という、最後に追加したものが最後に取り出されるという特性を持つ。
-
-#### ノード
-
-グラフ理論における、接続を表すもの。
-
-#### エッジ
-
-グラフ理論における、
-
----
-
 ## Enum
 
 Enumのメンバーは慣習的に**大文字**で書かれる。
@@ -47,7 +31,7 @@ See also: [列挙型 HOWTO — Python 3.14.9 ドキュメント](https://docs.py
 
 argparseは、コマンドライン引数をパースするための標準ライブラリであり、終了時には自動的に`SystemExit` を送出する。
 
-これはExceptionクラスの子クラスではないため、`except Exception` でcatchすることはしなかった。
+これはExceptionクラスの子クラスではないため、`except Exception` ではcatchできない。
 
 ---
 
@@ -71,8 +55,8 @@ Pydanticのモデルの振る舞いなどについてまとめる・
 ### Pydanticが値をvalidateするタイミング
 
 - Pydanticはモデルのインスタンス化をしたときにvalidateする
-- `model.test = 3` のような、モデルの属性に値を代入したときにはvalidateしない
-  - オプションで変更可能。 See also: [Configuration | Pydantic Docs](https://pydantic.dev/docs/validation/latest/api/pydantic/config/#pydantic.config.ConfigDict.validate_assignment)
+- `model.test = 3` のように、モデルの属性に値を代入したときにはvalidateは発生しない
+  - これはオプションで変更可能。 [Configuration | Pydantic Docs](https://pydantic.dev/docs/validation/latest/api/pydantic/config/#pydantic.config.ConfigDict.validate_assignment)
 
 ---
 
@@ -82,35 +66,29 @@ Ruffは、Pythonのコードを静的に分析し品質を向上させるため�
 
 flake8よりも高速である上、追加のルールの指定などをすることができるため、今回のプロジェクトではflake8とruffの両方を利用した。
 
-しかしながら、課題提出の際にflake8でのチェックがあるため、今回はflake8も依存関係に追加し、またチェックをするようにした。
+しかしながら、課題提出の際にflake8でのチェックがあるため、今回はflake8もあわせてチェックをするようにした。
 
 ---
 
 ## Makefile
 
-### @から始まる行
-
-- コマンドが通常のオプションには表示されない
-
-### -から始まる行
-
-- 終了コードが0以外で失敗しても、makeはそのエラーを無視して次のコマンドを実行する
-
-コマンド先頭の `-` は、終了コードが0でなくても続行するというオプションです
-
-```sh
+```makefile
 example-rule:
     -uv run ruff check
     @echo "これは常に実行されます！"
 ```
 
-のように書けば、末尾のechoは常に実行されます。
+### @から始まる行
 
-(なお、コマンド先頭の `@` は `make example-rule` を実行した際に `echo "これは常に実行されます！"`を表示しないオプションとなっています。)
+コマンド先頭の `@` は `make example-rule` を実行した際に `echo "これは常に実行されます！"`を表示しないオプションとなっています。
+
+### -から始まる行
+
+コマンド先頭の `-` は、終了コードが0でなくても続行するというオプションである。このため、末尾のechoは常に実行される。
 
 - [makefile - Make: how to continue after a command fails? - Stack Overflow](https://stackoverflow.com/questions/2670130/make-how-to-continue-after-a-command-fails)
 - [GNU make - 5.2 Recipe Echoing](https://www.gnu.org/software/make/manual/make.html#Echoing)
-- [GNU make 5.5 Errors in Recipes](https://www.gnu.org/software/make/manual/make.html#Errors)
+- [GNU make - 5.5 Errors in Recipes](https://www.gnu.org/software/make/manual/make.html#Errors)
 
 ### .PHONY
 
@@ -119,3 +97,15 @@ example-rule:
 これにより、ターゲット名と同じ名前のファイルが存在しても、makeはそのターゲットを実行することが保証されます。
 
 [GNU make - 4.9 Special Built-in Target Names](https://www.gnu.org/software/make/manual/make.html#Special-Targets)
+
+---
+
+## findコマンド
+
+```txt
+find: コマンド
+. : cwd
+-type d: ディレクトリに限定
+\( condition \): 条件
+-exec rm -rf {} +: ファイル削除、 {} はファイル名、 +は複数ファイルをまとめてrmで削除するオプション
+```
