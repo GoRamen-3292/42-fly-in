@@ -23,6 +23,18 @@ See also: [列挙型 HOWTO — Python 3.14.9 ドキュメント](https://docs.py
 
 ## heapq
 
+<!-- TODO:  -->
+
+---
+
+## argparse
+
+argparseは、コマンドライン引数をパースするための標準ライブラリであり、終了時には自動的に`SystemExit` を送出する。
+
+これはExceptionクラスの子クラスではないため、`except Exception` でcatchすることはしなかった。
+
+---
+
 ## Pydantic
 
 Pydanticのモデルの振る舞いなどについてまとめる・
