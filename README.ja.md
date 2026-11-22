@@ -135,10 +135,10 @@ uv run main.py /path/to/file
 以下について、`<0以上の数字>` のように`<` と `>` で挟まれた文字を `42` のように、`<` や `>` を含めずに置き換えてください。
 
 ```txt
-キー: <値1> <値2> <...> [オプション1=値 オプション2=値]
+キー: <値1> <値2> <...> [<オプション1>=<値> <オプション2>=<値>]
 ```
 
-`[]`
+`[]` で囲まれた部分はオプションであり、省略可能です。
 
 `str.isspace()` 関数でTrueを返す任意の文字を区切り文字として扱います。このため、値やオプションにこれらの文字を利用することはできません。
 
@@ -331,6 +331,7 @@ MAPFと呼ばれる言葉については、主に以下の記事を参照した�
 #### DocString
 
 - [GoogleスタイルのPython Docstringの入門 #新人プログラマ応援 - Qiita](https://qiita.com/11ohina017/items/118b3b42b612e527dc1d)
+- [Google Style Guides | Style guides for Google-originated open-source projects](https://google.github.io/styleguide/pyguide.html)
 
 ---
 
