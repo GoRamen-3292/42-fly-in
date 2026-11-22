@@ -42,14 +42,12 @@ lint:
 	--disallow-untyped-defs --check-untyped-defs $(CHECK_PATHS)
 	uv run flake8 $(CHECK_PATHS)
 
-# TODO: $(TEST_PATHS) のルールの見直し、先頭の `-` の条件の見直し
 lint-strict:
 	uv run mypy --strict $(CHECK_PATHS) $(TEST_PATHS)
 	uv run flake8 --disable-noqa $(CHECK_PATHS)
 	uv run flake8 --max-line-length 200 --disable-noqa $(TEST_PATHS)
 	-uv run ruff check $(CHECK_PATHS) $(TEST_PATHS)
 
-# TODO: 先頭の `-`の条件の見直し
 lint-fix:
 	uv run ruff format $(CHECK_PATHS) $(TEST_PATHS)
 	-uv run ruff check --fix $(CHECK_PATHS) $(TEST_PATHS)

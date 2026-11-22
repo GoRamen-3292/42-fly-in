@@ -33,7 +33,7 @@ def get_shortest_path(
     while queue:
         _, current_name = heapq.heappop(
             queue
-        )  # TODO: heapqの意義について調べる
+        )
         current_hub = hubs[current_name]
         # 来訪済みなら、return
         if current_hub.seen:

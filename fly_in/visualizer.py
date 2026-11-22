@@ -18,7 +18,6 @@ def _fg256(n: int) -> str:
 
 
 RESET_CODE = "\033[0m"
-# TODO: 256色のANSIエスケープシーケンスについて調べる
 COLOR_CODES: dict[str, str] = {
     # basic 8 colors
     "black": "\033[30m",
