@@ -43,6 +43,7 @@ def test_main_program_with_optimal_turns(file: FileAndOptimalTurns) -> None:
             f"File: {file[0]} | Optimal turns: {file[1]} | Actual turns: {lines}",
             stacklevel=2,
         )
+    assert result.returncode == 0
     assert file[1] <= lines <= file[1] * 1.25
 
 
@@ -75,6 +76,7 @@ def test_priority_hub_preference(
     print(result.stdout)
     lines = str(result.stdout).splitlines()
     # path_aが優先されることを確認する
+    assert result.returncode == 0
     assert all("start" not in line for line in lines)
     if color:
         assert any("D1" in line and "goal" in line for line in lines)
@@ -103,5 +105,54 @@ def test_restricted_max(file: str) -> None:
     print(result.stdout)
     lines = str(result.stdout).splitlines()
     # クラッシュやエラーなく実行できるかを確認する
+    assert result.returncode == 0
     assert any("D1-start" in line for line in lines)
     assert any("D1-goal" in line for line in lines)
+
+
+@pytest.mark.parametrize(
+    "file",
+    [
+        "test/maps/start_end_max_drones/start_max_drones copy 2.txt",
+        "test/maps/start_end_max_drones/start_equal_drones.txt",
+        "test/maps/start_end_max_drones/start_smaller_than_drones.txt",
+        "test/maps/start_end_max_drones/start_one.txt",
+        "test/maps/start_end_max_drones/end_smaller_than_drones.txt",
+        "test/maps/start_end_max_drones/end_one.txt",
+        "test/maps/start_end_max_drones/both_small.txt",
+    ],
+)
+def test_start_end_max_drones_ignored(file: str) -> None:
+    result = subprocess.run(
+        [sys.executable, "main.py", file],
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    print(result.stdout)
+    lines = str(result.stdout).splitlines()
+    # 10台全てがゴールに到達していることを確認する
+    assert len(lines) == 3
+    last_moves = lines[-1].split()
+    assert sorted(last_moves) == sorted(f"D{i}-goal" for i in range(1, 11))
+
+
+@pytest.mark.parametrize(
+    "file",
+    [
+        "test/maps/start_end_max_drones/start_max_drones.txt",
+        "test/maps/start_end_max_drones/start_max_drones copy.txt",
+        "test/maps/start_end_max_drones/end_zero.txt",
+        "test/maps/start_end_max_drones/end_negative.txt",
+    ],
+)
+def test_start_end_max_drones_invalid(file: str) -> None:
+    """start/endハブのmax_dronesが0以下の場合は設定エラーになる"""
+    result = subprocess.run(
+        [sys.executable, "main.py", file],
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+    assert result.returncode == 1
+    assert "max_drones" in result.stdout + result.stderr

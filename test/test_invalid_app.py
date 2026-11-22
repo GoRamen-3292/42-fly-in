@@ -50,6 +50,7 @@ def test_invalid_main_program(
     result = subprocess.run(args, check=False, text=True, capture_output=True)
     print(result.stderr)
 
+    assert result.returncode == 1
     assert "Invalid configuration" in result.stderr
     if lines:
         expected = ", ".join(str(n) for n in lines)
