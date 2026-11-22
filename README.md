@@ -186,6 +186,8 @@ D1-loop_b-exit_point D2-loop_b D4-loop_a
 
 The first line shows each drone's action in turn 1, the second line shows each drone's action in turn 2, and so on.
 
+If the `--color` option is enabled, the drones' hubs are output in color using ASCII rendering.
+
 ---
 
 ## Algorithm
