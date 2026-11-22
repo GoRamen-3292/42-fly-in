@@ -1,5 +1,3 @@
-CHECK_PATHS = fly_in sandbox main.py
-TEST_PATHS = test
 CACHE_DIRS = .mypy_cache .pytest_cache
 MAP = config.txt
 
@@ -39,23 +37,19 @@ fclean: clean
 # TODO: ${CHECK_PATHS} を cwd `.` で置き換える
 lint:
 	uv run mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports \
-	--disallow-untyped-defs --check-untyped-defs $(CHECK_PATHS)
-	uv run flake8 $(CHECK_PATHS)
+	--disallow-untyped-defs --check-untyped-defs .
+	uv run flake8 .
 
 lint-strict:
-	uv run mypy --strict $(CHECK_PATHS) $(TEST_PATHS)
-	uv run flake8 --disable-noqa $(CHECK_PATHS)
-	uv run flake8 --max-line-length 200 --disable-noqa $(TEST_PATHS)
-	-uv run ruff check $(CHECK_PATHS) $(TEST_PATHS)
-
+	uv run mypy --strict .
+	uv run flake8 --disable-noqa .
+	-uv run ruff check .
 lint-fix:
-	uv run ruff format $(CHECK_PATHS) $(TEST_PATHS)
-	-uv run ruff check --fix $(CHECK_PATHS) $(TEST_PATHS)
+	uv run ruff format .
+	-uv run ruff check --fix .
 
-check: lint-strict test
+check: lint-strict
 
-test:
-	uv run pytest
 
 .PHONY: all install run r color c visualize debug clean fclean \
-        lint lint-strict lint-fix check test
+        lint lint-strict lint-fix check

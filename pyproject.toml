@@ -27,7 +27,6 @@ dev = [
     "flake8>=7.5.0",
     "mypy>=2.4.1",
     "ruff>=0.17.5",
-    "pytest>=9.2.0",
 ]
 
 [tool.ruff]
