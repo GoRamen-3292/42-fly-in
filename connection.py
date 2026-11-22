@@ -4,8 +4,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, PositiveInt, field_validator
 
-from .types import ConnectionKey
-from .validate_args import validate_hub_name
+from model_types import ConnectionKey
+from validate_args import validate_hub_name
 
 
 def normalize_connction_key(conn: ConnectionKey) -> ConnectionKey:

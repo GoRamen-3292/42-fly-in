@@ -4,8 +4,10 @@ from dataclasses import dataclass, field
 
 from pydantic import ValidationError
 
-from .model import Connection, Hub, HubType, SimulationConfig
-from .model.types import InvalidConfigError
+from connection import Connection
+from hub import Hub
+from model_types import HubType, InvalidConfigError
+from simulation_config import SimulationConfig
 
 
 @dataclass

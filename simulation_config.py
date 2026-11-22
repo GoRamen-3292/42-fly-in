@@ -10,9 +10,9 @@ from pydantic import (
     model_validator,
 )
 
-from .connection import Connection
-from .hub import Hub
-from .types import HubType, InvalidConfigError
+from connection import Connection
+from hub import Hub
+from model_types import HubType, InvalidConfigError
 
 
 class SimulationConfig(BaseModel):

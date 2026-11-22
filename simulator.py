@@ -3,15 +3,11 @@
 import heapq
 from typing import cast
 
-from ..model import (
-    Connection,
-    Hub,
-    HubType,
-    SimulationConfig,
-    ZoneType,
-    normalize_connction_key,
-)
-from .types import (
+from connection import Connection, normalize_connction_key
+from hub import Hub
+from model_types import HubType, ZoneType
+from simulation_config import SimulationConfig
+from simulator_types import (
     Drone,
     ParentMap,
     PlanConnectionElement,

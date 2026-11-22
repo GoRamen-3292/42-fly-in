@@ -2,8 +2,8 @@
 
 from pydantic import BaseModel, ConfigDict, Field, PositiveInt, field_validator
 
-from .types import Coordinate, HubType, ZoneType
-from .validate_args import validate_hub_name, validate_metadata
+from model_types import Coordinate, HubType, ZoneType
+from validate_args import validate_hub_name, validate_metadata
 
 
 class Hub(BaseModel):

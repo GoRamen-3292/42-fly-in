@@ -2,8 +2,9 @@
 
 from collections import defaultdict
 
-from .model import ConnectionKey, Hub
-from .simulator.types import SimulationResult
+from hub import Hub
+from model_types import ConnectionKey
+from simulator_types import SimulationResult
 
 type OutputDict = defaultdict[int, list[str]]
 

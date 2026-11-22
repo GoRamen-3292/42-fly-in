@@ -4,13 +4,11 @@ import argparse
 import sys
 
 try:
-    from fly_in import (
-        FileParser,
-        InvalidConfigError,
-        RouteNotFoundError,
-        Simulator,
-        Visualizer,
-    )
+    from model_types import InvalidConfigError
+    from parser import FileParser
+    from simulator import Simulator
+    from simulator_types import RouteNotFoundError
+    from visualizer import Visualizer
 except (ImportError, ModuleNotFoundError) as e:
     print(f"Missing dependency: {e.name}\nPlease install it and try again.")
     sys.exit(2)

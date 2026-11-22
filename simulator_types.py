@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass, field
 
-from ..model import ConnectionKey, HubType, ZoneType
+from model_types import ConnectionKey, HubType, ZoneType
 
 type PlanElement = tuple[int, str]
 """
