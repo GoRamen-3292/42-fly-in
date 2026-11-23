@@ -162,8 +162,8 @@ class Simulator:
         if start_hub not in self._hubs:
             raise ValueError(f"Start hub '{start_hub}' not found in hubs.")
         if (
-            self._hubs[start_hub].zone != ZoneType.BLOCKED
-            and self._hubs[start_hub].hub_type != HubType.START_HUB
+            self._hubs[start_hub].zone == ZoneType.BLOCKED
+            or self._hubs[start_hub].hub_type != HubType.START_HUB
         ):
             raise ValueError(
                 f"Start hub '{start_hub}' is not a valid starting point."
