@@ -75,7 +75,7 @@ def print_colored_error(message: str, color: bool = False) -> None:
         print("ERROR:", message, sep="\n", file=sys.stderr)
 
 
-def main() -> int:
+def main() -> None:
     """メイン関数"""
     color: bool = False
     status: str = "initializing"
@@ -95,9 +95,10 @@ def main() -> int:
 
         status = "visualizing"
         Visualizer(result, color, config.hubs).show_result()
+        sys.exit(EXIT_SUCCESS)
     except (InvalidConfigError, RouteNotFoundError) as e:
         print_colored_error(str(e), color)
-        return 1
+        sys.exit(EXIT_INVALID)
     except (ImportError, MemoryError, OSError) as e:
         err_msg: str = "Unknown error"
         if isinstance(e, (ImportError, ModuleNotFoundError)):
@@ -117,20 +118,18 @@ def main() -> int:
             err_msg,
             color,
         )
-        return 2
+        sys.exit(EXIT_SYSTEM)
     except KeyboardInterrupt:
         print_colored_error(f"Interrupted while {status}", color)
-        return 130
+        sys.exit(EXIT_INTERRUPTED)
     except Exception as e:
         print_colored_error(
             f"UNEXPECTED ERROR while {status}: "
             + f"You should report this to the developer:\n{e}",
             color,
         )
-        return 3
-
-    return 0
+        sys.exit(EXIT_UNEXPECTED)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
