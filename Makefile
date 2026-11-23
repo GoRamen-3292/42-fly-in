@@ -26,7 +26,7 @@ c: color
 visualize: color
 
 debug:
-	echo "Not implemented yet (debug mode)"
+	@uv run python3 -m pdb main.py $(MAP)
 
 clean:
 	-uv run ruff clean
@@ -36,7 +36,6 @@ clean:
 fclean: clean
 	rm -rf .venv
 
-# TODO: ${CHECK_PATHS} を cwd `.` で置き換える
 lint:
 	uv run mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports \
 	--disallow-untyped-defs --check-untyped-defs $(CHECK_PATHS)
