@@ -31,9 +31,7 @@ def get_shortest_path(
     if not queue:
         raise IndexError("No Start Hub found.")
     while queue:
-        _, current_name = heapq.heappop(
-            queue
-        )
+        _, current_name = heapq.heappop(queue)
         current_hub = hubs[current_name]
         # 来訪済みなら、return
         if current_hub.seen:
